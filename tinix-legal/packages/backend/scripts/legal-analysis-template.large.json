@@ -1,0 +1,4418 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "ontology_version": "2.0",
+  "description": "Legal Knowledge Graph Ontology v2 — Norm-centric. Graph xoay quanh Legal Rule (Norm): một điều luật = micro knowledge graph (Subject-Action-Object-Condition-Exception-Consequence). Dùng cho GraphRAG + Compliance + AI Agent + Legal Reasoning. Validator: scripts/validate-analysis.ts.",
+  "_architecture": {
+    "center": "Norm",
+    "flow": "LegalDocument → Structure(Article/Clause/Point) → Norm → [Subject, Action, Object, Condition, Exception, Consequence] → Entity/Event/Asset/Constraint/Exception/Penalty",
+    "statement": "Mỗi Điều luật gồm nhiều câu. Node Statement giữ ngữ cảnh câu; Norm HAS_STATEMENT Statement; Statement GENERATES Norm. Truy vết ngược đến câu chính xác."
+  },
+  "_ontology": {
+    "layers": [
+      "Document",
+      "Structure",
+      "Norm",
+      "Semantic",
+      "Event",
+      "Procedure",
+      "Temporal",
+      "Constraint",
+      "Reference",
+      "Ontology",
+      "Reasoning",
+      "Provenance"
+    ],
+    "entityTypes": {
+      "Document": [
+        "LegalDocument",
+        "Law",
+        "Code",
+        "Resolution",
+        "Ordinance",
+        "Decree",
+        "Circular",
+        "Decision",
+        "Guideline",
+        "OfficialLetter",
+        "Appendix",
+        "Attachment",
+        "Template",
+        "Form",
+        "DraftLaw",
+        "Constitution",
+        "Treaty",
+        "Convention",
+        "Agreement",
+        "TechnicalStandard",
+        "NationalStandard",
+        "LocalRegulation",
+        "Judgment",
+        "CaseLaw",
+        "InterpretationDoc",
+        "LegalOpinion",
+        "QnA",
+        "FAQ"
+      ],
+      "Structure": [
+        "Part",
+        "Chapter",
+        "Section",
+        "Subsection",
+        "Article",
+        "Clause",
+        "Point",
+        "Paragraph",
+        "Sentence",
+        "Illustration",
+        "Example",
+        "Footnote",
+        "Title",
+        "Preface",
+        "Scope",
+        "Purpose",
+        "Principle",
+        "DefinitionSection",
+        "Table",
+        "Formula",
+        "Note"
+      ],
+      "Norm": [
+        "Norm",
+        "Obligation",
+        "Permission",
+        "Right",
+        "Prohibition",
+        "Recommendation",
+        "Authorization",
+        "Delegation",
+        "Exception",
+        "Condition",
+        "Precondition",
+        "Postcondition",
+        "Eligibility",
+        "Validity",
+        "Termination",
+        "Responsibility",
+        "Liability",
+        "CalculationRule",
+        "PriorityRule",
+        "ConflictRule",
+        "InterpretationRule",
+        "ReferenceRule",
+        "TransitionRule",
+        "Rule",
+        "Sanction"
+      ],
+      "Semantic_Subject": [
+        "NaturalPerson",
+        "LegalEntity",
+        "GovernmentAgency",
+        "Authority",
+        "Organization",
+        "Association",
+        "Enterprise",
+        "Household",
+        "Representative",
+        "Guardian",
+        "Employee",
+        "Employer",
+        "Taxpayer",
+        "Citizen",
+        "Foreigner",
+        "Competence"
+      ],
+      "Semantic_Object": [
+        "Property",
+        "Land",
+        "Money",
+        "Asset",
+        "Tax",
+        "Vehicle",
+        "Building",
+        "License",
+        "Certificate",
+        "Permit",
+        "Evidence",
+        "Invoice",
+        "Contract",
+        "Application",
+        "DigitalDocument",
+        "PersonalData",
+        "SensitiveData",
+        "PublicData",
+        "Information"
+      ],
+      "Semantic_Concept": [
+        "LegalConcept",
+        "LegalDefinition",
+        "LegalPrinciple",
+        "LegalPurpose",
+        "LegalInterest",
+        "LegalStatus",
+        "LegalCapacity",
+        "CivilCapacity",
+        "AdministrativeViolation",
+        "Crime",
+        "Ownership",
+        "Possession",
+        "Residence",
+        "ForceMajeure",
+        "Fact",
+        "LegalTransaction"
+      ],
+      "Semantic_Action": [
+        "Register",
+        "Declare",
+        "Submit",
+        "Approve",
+        "Reject",
+        "Issue",
+        "Revoke",
+        "Inspect",
+        "Audit",
+        "Investigate",
+        "Authorize",
+        "Pay",
+        "Transfer",
+        "Buy",
+        "Sell",
+        "Lease",
+        "Mortgage",
+        "Donate",
+        "Build",
+        "Destroy",
+        "Demolish",
+        "Sign",
+        "Verify",
+        "Authenticate",
+        "Notarize",
+        "Store",
+        "Collect",
+        "Publish",
+        "Modify",
+        "Delete",
+        "Access",
+        "Use",
+        "Possess",
+        "Own",
+        "Transport",
+        "Import",
+        "Export",
+        "Action"
+      ],
+      "Statement": [
+        "Statement",
+        "DefinitionStatement",
+        "ObligationStatement",
+        "ExceptionStatement",
+        "ConditionStatement",
+        "PenaltyStatement",
+        "ReferenceStatement"
+      ],
+      "Event": [
+        "LegalEvent",
+        "NaturalEvent",
+        "AdministrativeEvent",
+        "CivilEvent",
+        "CommercialEvent",
+        "TaxEvent",
+        "ConstructionEvent",
+        "JudicialEvent",
+        "InvestigationEvent",
+        "InspectionEvent",
+        "ViolationEvent",
+        "PaymentEvent",
+        "TransferEvent",
+        "RegistrationEvent"
+      ],
+      "Procedure": [
+        "Procedure",
+        "Workflow",
+        "Step",
+        "Task",
+        "Approval",
+        "Verification",
+        "Review",
+        "Submission",
+        "Processing",
+        "Decision",
+        "Notification",
+        "Execution",
+        "Completion",
+        "Cancellation"
+      ],
+      "Temporal": [
+        "Date",
+        "Time",
+        "Deadline",
+        "Duration",
+        "EffectivePeriod",
+        "ValidityPeriod",
+        "GracePeriod",
+        "WaitingPeriod",
+        "BusinessDay",
+        "WorkingHour",
+        "FiscalYear",
+        "TaxPeriod"
+      ],
+      "Constraint": [
+        "Constraint",
+        "AgeConstraint",
+        "AreaConstraint",
+        "MoneyConstraint",
+        "TaxConstraint",
+        "PercentageConstraint",
+        "DistanceConstraint",
+        "TimeConstraint",
+        "DocumentConstraint",
+        "QualificationConstraint"
+      ],
+      "Reference": [
+        "LegalReference",
+        "DocumentReference",
+        "ArticleReference",
+        "ClauseReference",
+        "PointReference",
+        "CaseReference",
+        "JudgmentReference",
+        "StandardReference"
+      ],
+      "Ontology": [
+        "Synonym",
+        "Abbreviation",
+        "Alias",
+        "EquivalentConcept",
+        "BroaderConcept",
+        "NarrowerConcept",
+        "ParentConcept",
+        "ChildConcept",
+        "Domain",
+        "Category"
+      ],
+      "Reasoning": [
+        "InferenceRule",
+        "DerivedFact",
+        "Conflict",
+        "Priority",
+        "Override",
+        "Dependency",
+        "Requirement",
+        "Trigger",
+        "Cause",
+        "Effect",
+        "Precondition",
+        "Postcondition"
+      ]
+    },
+    "relationshipTypes": {
+      "Structure": [
+        "HAS_PART",
+        "HAS_CHAPTER",
+        "HAS_SECTION",
+        "HAS_SUBSECTION",
+        "HAS_ARTICLE",
+        "HAS_CLAUSE",
+        "HAS_POINT",
+        "HAS_PARAGRAPH",
+        "HAS_SENTENCE",
+        "PART_OF",
+        "NEXT",
+        "PREVIOUS"
+      ],
+      "Document": [
+        "IMPLEMENTS",
+        "DETAILS",
+        "GUIDES",
+        "INTERPRETS",
+        "REFERS_TO",
+        "CITES",
+        "AMENDS",
+        "REPEALS",
+        "REPLACES",
+        "SUPERSEDES",
+        "DERIVED_FROM",
+        "RELATED_DOCUMENT"
+      ],
+      "Norm": [
+        "HAS_NORM",
+        "HAS_SUBJECT",
+        "HAS_OBJECT",
+        "HAS_ACTION",
+        "HAS_CONDITION",
+        "HAS_EXCEPTION",
+        "HAS_DEADLINE",
+        "HAS_AUTHORITY",
+        "HAS_CONSEQUENCE",
+        "HAS_SCOPE",
+        "HAS_PRIORITY",
+        "HAS_REFERENCE",
+        "HAS_FORMULA",
+        "HAS_REQUIREMENT",
+        "HAS_ELIGIBILITY",
+        "HAS_VALIDITY",
+        "HAS_TERMINATION",
+        "HAS_STATEMENT",
+        "HAS_RIGHT",
+        "HAS_OBLIGATION",
+        "HAS_PERMISSION",
+        "HAS_PROHIBITION",
+        "HAS_DEFINITION",
+        "HAS_RULE",
+        "HAS_ANTECEDENT",
+        "HAS_CONSEQUENT"
+      ],
+      "Statement": [
+        "GENERATES",
+        "STATEMENT_OF"
+      ],
+      "Semantic": [
+        "INSTANCE_OF",
+        "SUBCLASS_OF",
+        "RELATED_TO",
+        "SAME_AS",
+        "ALIAS_OF",
+        "SYNONYM_OF",
+        "ABBREVIATION_OF",
+        "GENERALIZES",
+        "SPECIALIZES",
+        "IS_A",
+        "HAS_ROLE",
+        "REPRESENTS",
+        "WORKS_FOR",
+        "OWNS",
+        "USES",
+        "MEMBER_OF",
+        "BELONGS_TO",
+        "SUPERVISES",
+        "MANAGES"
+      ],
+      "Reference": [
+        "REFERENCES_ARTICLE",
+        "REFERENCES_CLAUSE",
+        "REFERENCES_POINT",
+        "REFERENCES_APPENDIX",
+        "POINTS_TO",
+        "HAS_REFERENCE_NODE"
+      ],
+      "Workflow": [
+        "STARTS",
+        "ENDS",
+        "NEXT_STEP",
+        "PREVIOUS_STEP",
+        "BELONGS_TO_PROCEDURE",
+        "REQUIRES",
+        "VALIDATES",
+        "HAS_STATE",
+        "TRANSITIONS_TO",
+        "PARALLEL_WITH",
+        "OPTIONAL_STEP",
+        "MANDATORY_STEP",
+        "REPEAT_STEP"
+      ],
+      "Authority": [
+        "AUTHORIZES",
+        "INSPECTS",
+        "AUDITS",
+        "MONITORS",
+        "REGULATES",
+        "ENFORCES",
+        "ISSUES",
+        "REVOKES",
+        "CERTIFIES"
+      ],
+      "Penalty": [
+        "VIOLATES",
+        "PENALIZED_BY",
+        "FINED_BY",
+        "IMPRISONED_BY",
+        "SUSPENDED_BY",
+        "CONFISCATED_BY",
+        "COMPENSATED_BY",
+        "RESTORED_BY"
+      ],
+      "Temporal": [
+        "BEFORE",
+        "AFTER",
+        "WITHIN",
+        "UNTIL",
+        "SINCE",
+        "DURING",
+        "VALID_FROM",
+        "VALID_TO",
+        "EFFECTIVE_FROM",
+        "EXPIRES_ON"
+      ],
+      "Quantitative": [
+        "HAS_AMOUNT",
+        "HAS_RATE",
+        "HAS_LIMIT",
+        "HAS_THRESHOLD",
+        "HAS_DURATION",
+        "HAS_AREA",
+        "HAS_WEIGHT",
+        "HAS_DISTANCE",
+        "HAS_PERCENTAGE"
+      ],
+      "Formula": [
+        "USES_VARIABLE",
+        "CALCULATES",
+        "OUTPUT",
+        "HAS_EXPRESSION",
+        "BASED_ON_FORMULA"
+      ],
+      "SemanticLink": [
+        "EQUIVALENT_TO",
+        "SIMILAR_TO",
+        "BROADER_THAN",
+        "NARROWER_THAN",
+        "SYNONYM",
+        "ABBREVIATION",
+        "EXPANDS_TO",
+        "HAS_ALIAS"
+      ],
+      "Reasoning": [
+        "IMPLIES",
+        "CONTRADICTS",
+        "OVERRIDES",
+        "DERIVES",
+        "DEPENDS_ON",
+        "BLOCKS",
+        "ENABLES",
+        "ACTIVATES",
+        "DEACTIVATES",
+        "PRECONDITION_OF",
+        "POSTCONDITION_OF",
+        "ALTERNATIVE_TO",
+        "EXCLUSIVE_WITH"
+      ],
+      "CrossDocument": [
+        "REFERENCES",
+        "REPLACED_BY",
+        "ABOLISHED_BY",
+        "INTRODUCED_BY",
+        "MODIFIED_BY",
+        "IS_VERSION_OF"
+      ],
+      "Scope": [
+        "APPLIES_TO",
+        "NOT_APPLIES_TO",
+        "HAS_SCOPE_OF",
+        "REGULATES_SCOPE"
+      ],
+      "Definition": [
+        "DEFINES",
+        "HAS_TERM",
+        "HAS_BODY",
+        "DEFINED_IN"
+      ],
+      "Event": [
+        "TRIGGERS",
+        "CAUSES",
+        "INITIATES",
+        "TERMINATES",
+        "PRECEDES",
+        "FOLLOWS"
+      ],
+      "Calculation": [
+        "CALCULATED_BY",
+        "BASED_ON_RATE",
+        "BASED_ON_AMOUNT",
+        "MULTIPLIED_BY",
+        "REDUCED_BY"
+      ],
+      "Location": [
+        "LOCATED_IN",
+        "HAS_JURISDICTION",
+        "UNDER_AUTHORITY_OF",
+        "APPLIES_IN_REGION"
+      ],
+      "Industry": [
+        "BELONGS_TO_INDUSTRY",
+        "REGULATES_INDUSTRY"
+      ],
+      "Compliance": [
+        "COMPLIES_WITH",
+        "NON_COMPLIANT_WITH",
+        "SATISFIES",
+        "FAILS"
+      ],
+      "Lifecycle": [
+        "CREATED_BY",
+        "UPDATED_BY",
+        "INVALIDATED_BY"
+      ],
+      "Evidence": [
+        "SUPPORTED_BY",
+        "PROVEN_BY",
+        "DOCUMENTED_BY",
+        "VERIFIED_BY"
+      ],
+      "Decision": [
+        "RESULTS_IN",
+        "BASED_ON",
+        "DENIES",
+        "ANNULS",
+        "UPHOLDS"
+      ],
+      "Principle": [
+        "BASED_ON_PRINCIPLE",
+        "SERVES_PURPOSE",
+        "INTERPRETED_AS"
+      ]
+    }
+  },
+  "_governance": {
+    "stable_id": "Mỗi entity/relation có mã định danh ổn định, không đổi khi đổi tên hiển thị. Quy ước: <LAYER>:<TypeName> (VD 'Norm:Obligation', 'Rel:HAS_OBLIGATION'). Lưu vào field stable_id.",
+    "ontology_uri": "IRI chuẩn hóa để map sang LKIF-Core / LegalRuleML / Akoma Ntoso (VD 'lkif:Obligation'). Tùy chọn.",
+    "versioning": "ontology_version tăng theo semver. Node có riêng version (sửa nội dung). Edge status: active|superseded khi bị thay thế bởi văn bản mới.",
+    "naming": "TypeName PascalCase tiếng Anh; relation UPPER_SNAKE; không dấu, không tiếng Việt trong id. name/aliases tiếng Việt.",
+    "extensibility": "Thêm lĩnh vực mới = thêm node type vào đúng layer + relation group tương ứng, KHÔNG đổi schema. Prompt sinh graph đọc _ontology động."
+  },
+  "_nodeSchema": {
+    "id": "PREFIX_NNN (VD NORM_001, SUBJECT_001, STMT_001, REF_001)",
+    "stable_id": "Norm:Obligation",
+    "type": "một giá trị trong _ontology.entityTypes",
+    "layer": "một giá trị trong _ontology.layers",
+    "name": "tên tiếng Việt",
+    "canonical_name": "tên chuẩn hóa để dedup",
+    "normalized_name": "lowercase bỏ dấu để so khớp",
+    "aliases": [
+      "tên gọi khác / viết tắt"
+    ],
+    "description": "mô tả ngắn",
+    "language": "vi",
+    "embedding_id": "id vector, null nếu chưa có",
+    "parent": "id node cha (Structure/Role), null nếu gốc",
+    "status": "active|inactive|deprecated|superseded",
+    "version": "1",
+    "hash": "sha1(canonical_name+type)",
+    "source_ref": {
+      "document": "",
+      "article": "",
+      "clause": "",
+      "point": "",
+      "sentence_index": 0,
+      "page": 0,
+      "paragraph": 0,
+      "character_start": 0,
+      "character_end": 0,
+      "token_start": 0,
+      "token_end": 0
+    },
+    "provenance": {
+      "source": "",
+      "revision": "",
+      "author": "",
+      "extraction_method": "LLM|regex|human",
+      "confidence": 0,
+      "embedding_id": null,
+      "hash": ""
+    },
+    "confidence": "0.0–1.0",
+    "created_by": "LLM|regex|human",
+    "created_time": "ISO8601",
+    "updated_time": "ISO8601",
+    "ontology_version": "2.0",
+    "_reference_extra": "CHỈ type=LegalReference: target_document, target_article, target_clause, target_point",
+    "_statement_extra": "CHỈ type=Statement*: statement_type, text (nguyên văn câu), norm_refs[]"
+  },
+  "_relationshipSchema": {
+    "id": "REL_NNNNNN",
+    "stable_id": "Rel:HAS_OBLIGATION",
+    "source": "node id nguồn",
+    "relation": "một giá trị trong _ontology.relationshipTypes",
+    "target": "node id đích",
+    "attributes": {
+      "condition": "",
+      "priority": "mandatory|optional|prohibited",
+      "effective_from": "YYYY-MM-DD",
+      "weight": "0.0–1.0",
+      "negated": "boolean (VD KHÔNG áp dụng)",
+      "modality": "obligatory|permitted|prohibited|declarative",
+      "certainty": "certain|probable|possible",
+      "reason": "diễn giải ngắn"
+    },
+    "source_ref": {
+      "document": "",
+      "article": "",
+      "clause": "",
+      "point": "",
+      "sentence_index": 0,
+      "page": 0,
+      "paragraph": 0,
+      "character_start": 0,
+      "character_end": 0,
+      "token_start": 0,
+      "token_end": 0
+    },
+    "provenance": {
+      "extraction_method": "LLM|regex|human",
+      "revision": "",
+      "hash": ""
+    },
+    "confidence": "0.0–1.0",
+    "version": "1",
+    "status": "active|superseded",
+    "created_by": "LLM|regex|human"
+  },
+  "document": {
+    "id": "",
+    "documentNumber": "",
+    "title": "",
+    "documentType": "",
+    "promulgationDate": "",
+    "effectiveDate": "",
+    "validityStatus": ""
+  },
+  "nodes": [],
+  "relationships": [],
+  "_example": {
+    "_note": "Norm-centric micro-graph. Điều 95 Khoản 1 Luật Đất đai 2024 → 1 Norm với Subject/Action/Condition/Deadline/Authority + Statement giữ nguyên văn câu + LegalReference node.",
+    "nodes": [
+      {
+        "id": "ART_095",
+        "type": "Article",
+        "layer": "Structure",
+        "name": "Điều 95",
+        "stable_id": "Structure:Article",
+        "canonical_name": "Điều 95",
+        "normalized_name": "dieu 95",
+        "aliases": [],
+        "description": "Đăng ký biến động",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "",
+          "point": "",
+          "sentence_index": 0,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 0,
+          "character_end": 300,
+          "token_start": 0,
+          "token_end": 80
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.99,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.99,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "NORM_001",
+        "type": "Obligation",
+        "layer": "Norm",
+        "name": "Nghĩa vụ đăng ký biến động",
+        "stable_id": "Norm:Obligation",
+        "canonical_name": "Nghĩa vụ đăng ký biến động đất đai",
+        "normalized_name": "nghia vu dang ky bien dong dat dai",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 260,
+          "token_start": 30,
+          "token_end": 70
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.98,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.98,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "STMT_001",
+        "type": "ObligationStatement",
+        "layer": "Norm",
+        "name": "Câu 1 Điều 95",
+        "stable_id": "Statement:ObligationStatement",
+        "canonical_name": "Người sử dụng đất phải đăng ký biến động",
+        "normalized_name": "nguoi su dung dat phai dang ky bien dong",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "statement_type": "obligation",
+        "text": "Người sử dụng đất phải đăng ký biến động quyền sử dụng đất trong thời hạn 30 ngày.",
+        "norm_refs": [
+          "NORM_001"
+        ],
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 200,
+          "token_start": 30,
+          "token_end": 50
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.98,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.98,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "SUBJECT_001",
+        "type": "NaturalPerson",
+        "layer": "Semantic",
+        "name": "Người sử dụng đất",
+        "stable_id": "Semantic:NaturalPerson",
+        "canonical_name": "Người sử dụng đất",
+        "normalized_name": "nguoi su dung dat",
+        "aliases": [
+          "Người SDĐ"
+        ],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 210,
+          "token_start": 30,
+          "token_end": 55
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.99,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.99,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "ACTION_003",
+        "type": "Register",
+        "layer": "Semantic",
+        "name": "Đăng ký biến động",
+        "stable_id": "Semantic:Register",
+        "canonical_name": "Đăng ký biến động",
+        "normalized_name": "dang ky bien dong",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 150,
+          "character_end": 200,
+          "token_start": 40,
+          "token_end": 50
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.97,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.97,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "COND_001",
+        "type": "Condition",
+        "layer": "Norm",
+        "name": "Có biến động quyền sử dụng đất",
+        "stable_id": "Norm:Condition",
+        "canonical_name": "Có biến động quyền sử dụng đất",
+        "normalized_name": "co bien dong quyen su dung dat",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 210,
+          "character_end": 250,
+          "token_start": 55,
+          "token_end": 65
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.95,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.95,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "DEADLINE_001",
+        "type": "Deadline",
+        "layer": "Norm",
+        "name": "30 ngày",
+        "stable_id": "Norm:Deadline",
+        "canonical_name": "30 ngày",
+        "normalized_name": "30 ngay",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 133",
+          "clause": "",
+          "point": "",
+          "sentence_index": 1,
+          "page": 60,
+          "paragraph": 1,
+          "character_start": 10,
+          "character_end": 40,
+          "token_start": 3,
+          "token_end": 8
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.96,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.96,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "AUTHORITY_001",
+        "type": "GovernmentAgency",
+        "layer": "Semantic",
+        "name": "Văn phòng đăng ký đất đai",
+        "stable_id": "Semantic:GovernmentAgency",
+        "canonical_name": "Văn phòng đăng ký đất đai",
+        "normalized_name": "van phong dang ky dat dai",
+        "aliases": [
+          "VPĐKĐĐ"
+        ],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 4,
+          "character_start": 0,
+          "character_end": 40,
+          "token_start": 0,
+          "token_end": 10
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.97,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.97,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "REF_001",
+        "type": "LegalReference",
+        "layer": "Reference",
+        "name": "Điều 133 Luật Đất đai 2024",
+        "stable_id": "Reference:LegalReference",
+        "canonical_name": "Điều 133 Luật Đất đai 2024",
+        "normalized_name": "dieu 133 luat dat dai 2024",
+        "aliases": [],
+        "description": "Tham chiếu thời hạn",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "target_document": "Luật Đất đai 2024",
+        "target_article": "Điều 133",
+        "target_clause": "",
+        "target_point": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 250,
+          "character_end": 290,
+          "token_start": 65,
+          "token_end": 75
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.94,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.94,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      }
+    ],
+    "relationships": [
+      {
+        "id": "REL_000001",
+        "stable_id": "Rel:HAS_STATEMENT",
+        "source": "NORM_001",
+        "relation": "HAS_STATEMENT",
+        "target": "STMT_001",
+        "attributes": {
+          "priority": "mandatory",
+          "modality": "obligatory",
+          "certainty": "certain",
+          "negated": false,
+          "weight": 0.98
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 260,
+          "token_start": 30,
+          "token_end": 70
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.98,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000002",
+        "stable_id": "Rel:HAS_SUBJECT",
+        "source": "NORM_001",
+        "relation": "HAS_SUBJECT",
+        "target": "SUBJECT_001",
+        "attributes": {
+          "modality": "obligatory",
+          "certainty": "certain"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 150,
+          "token_start": 30,
+          "token_end": 40
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.99,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000003",
+        "stable_id": "Rel:HAS_ACTION",
+        "source": "NORM_001",
+        "relation": "HAS_ACTION",
+        "target": "ACTION_003",
+        "attributes": {
+          "modality": "obligatory",
+          "certainty": "certain"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 150,
+          "character_end": 200,
+          "token_start": 40,
+          "token_end": 50
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.98,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000004",
+        "stable_id": "Rel:HAS_CONDITION",
+        "source": "NORM_001",
+        "relation": "HAS_CONDITION",
+        "target": "COND_001",
+        "attributes": {
+          "certainty": "certain"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 210,
+          "character_end": 250,
+          "token_start": 55,
+          "token_end": 65
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.95,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000005",
+        "stable_id": "Rel:HAS_DEADLINE",
+        "source": "NORM_001",
+        "relation": "HAS_DEADLINE",
+        "target": "DEADLINE_001",
+        "attributes": {
+          "unit": "ngày",
+          "value": 30,
+          "certainty": "certain"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 133",
+          "clause": "",
+          "point": "",
+          "sentence_index": 1,
+          "page": 60,
+          "paragraph": 1,
+          "character_start": 10,
+          "character_end": 40,
+          "token_start": 3,
+          "token_end": 8
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.96,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000006",
+        "stable_id": "Rel:HAS_AUTHORITY",
+        "source": "NORM_001",
+        "relation": "HAS_AUTHORITY",
+        "target": "AUTHORITY_001",
+        "attributes": {},
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 4,
+          "character_start": 0,
+          "character_end": 40,
+          "token_start": 0,
+          "token_end": 10
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.97,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000007",
+        "stable_id": "Rel:HAS_REFERENCE",
+        "source": "NORM_001",
+        "relation": "HAS_REFERENCE",
+        "target": "REF_001",
+        "attributes": {
+          "reason": "Thời hạn 30 ngày dẫn chiếu Điều 133"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 250,
+          "character_end": 290,
+          "token_start": 65,
+          "token_end": 75
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.94,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000008",
+        "stable_id": "Rel:PART_OF",
+        "source": "ART_095",
+        "relation": "PART_OF",
+        "target": "NORM_001",
+        "attributes": {},
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "",
+          "point": "",
+          "sentence_index": 0,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 0,
+          "character_end": 300,
+          "token_start": 0,
+          "token_end": 80
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.99,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      }
+    ]
+  },
+  "_entityDescriptions": {
+    "LegalDocument": {
+      "desc": "Văn bản do cơ quan có thẩm quyền ban hành hoặc cá nhân lập để ghi nhận sự kiện pháp lý. Làm phát sinh, thay đổi hoặc chấm dứt quyền nghĩa vụ.",
+      "examples": [
+        "Giấy chứng nhận quyền sử dụng đất",
+        "Di chúc hợp pháp"
+      ]
+    },
+    "Law": {
+      "desc": "Văn bản quy phạm pháp luật do cơ quan nhà nước có thẩm quyền ban hành, quy định quy tắc xử sự bắt buộc chung và có hiệu lực pháp lý cao nhất trong hệ thống.",
+      "examples": [
+        "Luật Doanh nghiệp 2020",
+        "Bộ luật Dân sự 2015"
+      ]
+    },
+    "Code": {
+      "desc": "Bộ luật là văn bản quy phạm pháp luật do Quốc hội ban hành dưới dạng tổng hợp quy định toàn diện một lĩnh vực pháp luật.",
+      "examples": [
+        "Bộ luật Dân sự 2015",
+        "Bộ luật Hình sự 2015"
+      ]
+    },
+    "Resolution": {
+      "desc": "Nghị quyết là văn bản do cơ quan nhà nước có thẩm quyền ban hành để quyết định các vấn đề chính sách hoặc quy phạm pháp luật.",
+      "examples": [
+        "Nghị quyết số 43/2022/QH15 về chính sách tài khóa tiền tệ",
+        "Nghị quyết Hội đồng nhân dân tỉnh về quy hoạch đất đai"
+      ]
+    },
+    "Ordinance": {
+      "desc": "Pháp lệnh là văn bản quy phạm pháp luật do Ủy ban Thường vụ Quốc hội ban hành để quy định chi tiết luật hoặc lĩnh vực được giao.",
+      "examples": [
+        "Pháp lệnh Thủ tục bắt giữ tàu biển",
+        "Pháp lệnh Quản lý thị trường"
+      ]
+    },
+    "Decree": {
+      "desc": "Văn bản quy phạm pháp luật do Chính phủ ban hành để quy định chi tiết thi hành luật, nghị quyết của Quốc hội.",
+      "examples": [
+        "Nghị định 01/2021/NĐ-CP về đăng ký doanh nghiệp",
+        "Nghị định 15/2020/NĐ-CP xử phạt vi phạm hành chính"
+      ]
+    },
+    "Circular": {
+      "desc": "Văn bản quy phạm pháp luật do bộ hoặc cơ quan ngang bộ phát hành để hướng dẫn thi hành luật, nghị định và quy định thủ tục cụ thể.",
+      "examples": [
+        "Thông tư 80/2021/TT-BTC về thuế",
+        "Thông tư 02/2019/TT-VKSTC"
+      ]
+    },
+    "Decision": {
+      "desc": "Kết quả cuối cùng của thủ tục do cơ quan có thẩm quyền ban hành dưới dạng văn bản hoặc hành động pháp lý xác nhận.",
+      "examples": [
+        "Cấp giấy phép xây dựng",
+        "Quyết định xử phạt vi phạm hành chính"
+      ]
+    },
+    "Guideline": {
+      "desc": "Văn bản hướng dẫn nghiệp vụ hoặc áp dụng pháp luật do cơ quan chuyên môn phát hành, không phải văn bản quy phạm.",
+      "examples": [
+        "Hướng dẫn số 01/HD-TANDTC về áp dụng án lệ",
+        "Tài liệu hướng dẫn kỹ thuật của Cục Thuế"
+      ]
+    },
+    "OfficialLetter": {
+      "desc": "Văn bản hành chính dùng để truyền đạt ý kiến chỉ đạo, hướng dẫn hoặc trả lời của cơ quan nhà nước.",
+      "examples": [
+        "Công văn 456/BTC-TCT trả lời vướng mắc về thuế",
+        "Công văn 01/UBND-VX về tổ chức lễ hội"
+      ]
+    },
+    "Appendix": {
+      "desc": "Phần bổ sung kèm theo văn bản pháp luật hoặc hợp đồng để làm rõ hoặc bổ sung chi tiết nội dung chính.",
+      "examples": [
+        "Phụ lục 01 về danh mục hàng hóa cấm xuất khẩu",
+        "Phụ lục hợp đồng lao động quy định mức lương thưởng"
+      ]
+    },
+    "Attachment": {
+      "desc": "Tài liệu đi kèm văn bản chính nhằm cung cấp thông tin tham khảo hoặc chứng minh nội dung được nêu.",
+      "examples": [
+        "Bản sao công chứng giấy tờ tùy thân đính kèm đơn",
+        "Báo cáo tài chính đính kèm tờ trình"
+      ]
+    },
+    "Template": {
+      "desc": "Mẫu văn bản được thiết lập sẵn cấu trúc và định dạng để tạo ra các giấy tờ pháp lý thống nhất.",
+      "examples": [
+        "Mẫu hợp đồng mua bán tài sản theo Thông tư 01/2020",
+        "Mẫu đơn xin cấp phép xây dựng"
+      ]
+    },
+    "Form": {
+      "desc": "Biểu mẫu có sẵn các trường thông tin cần khai báo để cá nhân hoặc tổ chức cung cấp dữ liệu pháp lý.",
+      "examples": [
+        "Tờ khai đăng ký doanh nghiệp",
+        "Phiếu yêu cầu cấp bản sao trích lục hộ tịch"
+      ]
+    },
+    "DraftLaw": {
+      "desc": "Dự thảo văn bản quy phạm pháp luật đang trong quá trình soạn thảo và chưa được cơ quan có thẩm quyền thông qua.",
+      "examples": [
+        "Dự thảo Luật Đất đai sửa đổi năm 2024",
+        "Dự thảo Nghị định quy định về hóa đơn điện tử"
+      ]
+    },
+    "NationalStandard": {
+      "desc": "Văn bản quy chuẩn kỹ thuật do cơ quan nhà nước có thẩm quyền ban hành quy định mức giới hạn của đặc tính kỹ thuật nhằm đảm bảo an toàn và chất lượng.",
+      "examples": [
+        "Quy chuẩn kỹ thuật quốc gia về an toàn cháy cho nhà cao tầng",
+        "TCVN 7451:2004 về chất lượng nước sinh hoạt"
+      ]
+    },
+    "LocalRegulation": {
+      "desc": "Văn bản quy phạm pháp luật do Hội đồng nhân dân hoặc Ủy ban nhân dân cấp tỉnh ban hành để quy định chi tiết luật tại địa phương.",
+      "examples": [
+        "Nghị quyết của HĐND TP Hà Nội về thu phí bảo vệ môi trường",
+        "Quy định của UBND tỉnh về quản lý trật tự xây dựng đô thị"
+      ]
+    },
+    "Judgment": {
+      "desc": "Bản án hoặc quyết định của Tòa án đã có hiệu lực hoặc chưa có hiệu lực giải quyết vụ việc cụ thể giữa các đương sự.",
+      "examples": [
+        "Bản án hình sự sơ thẩm vụ án tham ô tài sản",
+        "Quyết định công nhận thuận tình ly hôn"
+      ]
+    },
+    "CaseLaw": {
+      "desc": "Các phán quyết của Tòa án được chọn làm tiền lệ áp dụng thống nhất trong xét xử theo quy định của Hội đồng Thẩm phán TAND tối cao.",
+      "examples": [
+        "Án lệ số 01/2016/AL về hợp đồng tín dụng",
+        "Án lệ số 12/2017/AL về thừa kế quyền sử dụng đất"
+      ]
+    },
+    "InterpretationDoc": {
+      "desc": "Văn bản giải thích luật, pháp lệnh do cơ quan có thẩm quyền ban hành để làm rõ nội dung điều luật khi áp dụng.",
+      "examples": [
+        "Nghị quyết giải thích Hiến pháp của Ủy ban Thường vụ Quốc hội",
+        "Công văn giải đáp của TAND tối cao về tội danh mới"
+      ]
+    },
+    "LegalOpinion": {
+      "desc": "Văn bản tư vấn pháp lý do luật sư hoặc tổ chức hành nghề luật sư ban hành, nêu quan điểm pháp lý về một vấn đề cụ thể. Không phải văn bản quy phạm pháp luật, chỉ có giá trị tham khảo.",
+      "examples": [
+        "Công văn tư vấn hợp đồng chuyển nhượng quyền sử dụng đất",
+        "Bản góp ý pháp lý về việc giải thể công ty TNHH"
+      ]
+    },
+    "QnA": {
+      "desc": "Văn bản ghi nhận câu hỏi pháp lý từ cá nhân/tổ chức và câu trả lời từ cơ quan nhà nước hoặc chuyên gia. Giúp làm rõ cách áp dụng pháp luật vào tình huống cụ thể.",
+      "examples": [
+        "Công dân hỏi thủ tục cấp hộ chiếu, Cục Xuất nhập cảnh trả lời",
+        "Doanh nghiệp hỏi về thuế VAT, Tổng cục Thuế giải đáp"
+      ]
+    },
+    "FAQ": {
+      "desc": "Tài liệu tổng hợp các câu hỏi phổ biến và câu trả lời ngắn gọn về thủ tục hoặc quy định pháp lý. Nhằm hướng dẫn người dân tiếp cận thông tin pháp luật nhanh chóng.",
+      "examples": [
+        "Câu hỏi thường gặp về đăng ký kết hôn với người nước ngoài",
+        "FAQ thủ tục hưởng trợ cấp thất nghiệp"
+      ]
+    },
+    "Part": {
+      "desc": "Đơn vị cấu trúc lớn nhất trong văn bản quy phạm pháp luật, tập hợp các chương có nội dung liên quan cùng chủ đề lớn.",
+      "examples": [
+        "Phần thứ nhất Bộ luật Hình sự về những quy định chung",
+        "Phần II Luật Doanh nghiệp về thành lập doanh nghiệp"
+      ]
+    },
+    "Chapter": {
+      "desc": "Đơn vị chia nhỏ Part hoặc văn bản độc lập, gồm các điều hoặc mục có chủ đề thống nhất.",
+      "examples": [
+        "Chương I Bộ luật Dân sự về quyền sở hữu",
+        "Chương III Luật Đất đai về quyền và nghĩa vụ của người sử dụng đất"
+      ]
+    },
+    "Section": {
+      "desc": "Đơn vị chia nhỏ Chapter để nhóm các điều cùng phạm vi chi tiết trong một chủ đề nhỏ.",
+      "examples": [
+        "Mục 1 Chương XIV Bộ luật Tố tụng Dân sự về thủ tục sơ thẩm",
+        "Mục 2 Luật Đầu tư về điều kiện đầu tư kinh doanh"
+      ]
+    },
+    "Subsection": {
+      "desc": "Đơn vị chia nhỏ Section nhằm chi tiết hóa nội dung chuyên sâu hơn trong cùng một mục.",
+      "examples": [
+        "Tiểu mục 1 Mục 1 về chủ thể hợp đồng",
+        "Tiểu mục 2 Mục 3 về hình thức giao dịch"
+      ]
+    },
+    "Article": {
+      "desc": "Đơn vị cơ bản chứa quy phạm pháp luật cụ thể, được đánh số thứ tự riêng trong văn bản.",
+      "examples": [
+        "Điều 1 Bộ luật Dân sự về phạm vi điều chỉnh",
+        "Điều 17 Hiến pháp về quyền bình đẳng của công dân"
+      ]
+    },
+    "Clause": {
+      "desc": "Phần của hợp đồng hoặc văn bản pháp lý quy định cụ thể quyền, nghĩa vụ hoặc điều kiện giữa các bên.",
+      "examples": [
+        "Điều khoản bảo mật thông tin",
+        "Điều khoản giải quyết tranh chấp"
+      ]
+    },
+    "Point": {
+      "desc": "Mục được đánh dấu chữ cái hoặc số nhỏ trong khoản dùng để liệt kê nội dung chi tiết.",
+      "examples": [
+        "Điểm a khoản 1 Điều 4",
+        "Điểm c về xử lý vi phạm"
+      ]
+    },
+    "Paragraph": {
+      "desc": "Đoạn văn bản được đánh số thứ tự trong một điều luật hoặc điều khoản hợp đồng.",
+      "examples": [
+        "Khoản 2 Điều 10 Luật Doanh nghiệp",
+        "Khoản 3 phụ lục hợp đồng"
+      ]
+    },
+    "Sentence": {
+      "desc": "Đơn vị ngôn ngữ hoàn chỉnh trong văn bản pháp lý thể hiện một ý nghĩa hoặc quy định độc lập.",
+      "examples": [
+        "Bên thuê phải trả tiền trước ngày 5 hàng tháng.",
+        "Hợp đồng vô hiệu nếu thiếu chữ ký."
+      ]
+    },
+    "Illustration": {
+      "desc": "Hình ảnh, biểu đồ hoặc sơ đồ kèm theo văn bản để làm rõ nội dung quy định.",
+      "examples": [
+        "Sơ đồ cơ cấu tổ chức trong điều lệ",
+        "Hình vẽ mô tả ranh giới thửa đất"
+      ]
+    },
+    "Example": {
+      "desc": "Minh họa cụ thể hóa quy định pháp luật để làm rõ cách áp dụng thực tế.",
+      "examples": [
+        "Hợp đồng mua bán nhà phải công chứng.",
+        "Phạt 800k với xe vượt đèn đỏ."
+      ]
+    },
+    "Footnote": {
+      "desc": "Chú thích cuối trang cung cấp thông tin tham chiếu hoặc giải thích thuật ngữ.",
+      "examples": [
+        "Chú thích 1: Căn cứ Luật Đất đai 2013.",
+        "Chú thích 2: Định nghĩa 'tổ chức tín dụng'."
+      ]
+    },
+    "Title": {
+      "desc": "Tên gọi chính thức của văn bản hoặc đề mục phần chương trong văn bản pháp lý.",
+      "examples": [
+        "Luật Doanh nghiệp 2020",
+        "Chương II: Thành lập doanh nghiệp"
+      ]
+    },
+    "Preface": {
+      "desc": "Phần mở đầu nêu lý do ban hành và mục đích của văn bản pháp luật.",
+      "examples": [
+        "Lời nói đầu: Nhằm bảo vệ người tiêu dùng.",
+        "Căn cứ Hiến pháp ban hành luật này."
+      ]
+    },
+    "Scope": {
+      "desc": "Xác định đối tượng và lĩnh vực văn bản pháp luật điều chỉnh.",
+      "examples": [
+        "Áp dụng với tổ chức, cá nhân tại Việt Nam.",
+        "Phạm vi: quan hệ lao động."
+      ]
+    },
+    "Purpose": {
+      "desc": "Mục đích của văn bản pháp luật hoặc điều khoản, xác định lý do và mục tiêu ban hành.",
+      "examples": [
+        "Ngăn chặn hành vi gian lận thuế",
+        "Bảo vệ quyền lợi người tiêu dùng"
+      ]
+    },
+    "Principle": {
+      "desc": "Nguyên tắc pháp lý cơ bản chi phối cách giải thích và áp dụng quy định.",
+      "examples": [
+        "Nguyên tắc suy đoán vô tội",
+        "Nguyên tắc bình đẳng trước pháp luật"
+      ]
+    },
+    "DefinitionSection": {
+      "desc": "Phần quy định giải nghĩa các thuật ngữ dùng trong văn bản để đảm bảo thống nhất hiểu biết.",
+      "examples": [
+        "Điều 3 Luật Doanh nghiệp định nghĩa 'doanh nghiệp'",
+        "Khoản 1 Điều 4 quy định 'tài sản công'"
+      ]
+    },
+    "Table": {
+      "desc": "Bảng biểu trình bày dữ liệu pháp lý như mức thuế, biểu thuế hoặc danh mục kèm theo văn bản.",
+      "examples": [
+        "Biểu thuế xuất nhập khẩu ưu đãi",
+        "Bảng lương cơ sở theo ngạch bậc"
+      ]
+    },
+    "Formula": {
+      "desc": "Công thức tính toán quy định cách xác định một giá trị pháp lý hoặc tài chính cụ thể.",
+      "examples": [
+        "Thuế TNDN = Thu nhập chịu thuế × 20%",
+        "Tiền phạt = Mức lương tối thiểu × hệ số vi phạm"
+      ]
+    },
+    "Norm": {
+      "desc": "Quy tắc xử sự bắt buộc chung do nhà nước ban hành và bảo đảm thực hiện, điều chỉnh các quan hệ xã hội.",
+      "examples": [
+        "Bộ luật Dân sự quy định về giao kết hợp đồng",
+        "Luật Giao thông đường bộ quy định giới hạn tốc độ"
+      ]
+    },
+    "Obligation": {
+      "desc": "Nghĩa vụ pháp lý buộc chủ thể phải thực hiện hoặc không thực hiện một hành vi nhất định. Được bảo đảm bằng cưỡng chế nhà nước.",
+      "examples": [
+        "Nghĩa vụ nộp thuế",
+        "Nghĩa vụ cấp dưỡng"
+      ]
+    },
+    "Permission": {
+      "desc": "Sự công nhận của pháp luật cho chủ thể tự do lựa chọn hành động trong phạm vi không bị cấm.",
+      "examples": [
+        "Được phép đăng ký hộ kinh doanh cá thể",
+        "Được quyền lập di chúc"
+      ]
+    },
+    "Right": {
+      "desc": "Khả năng pháp lý được làm hoặc đòi hỏi người khác làm hành vi nhất định, được nhà nước bảo vệ.",
+      "examples": [
+        "Quyền sở hữu đối với bất động sản",
+        "Quyền khởi kiện đòi nợ"
+      ]
+    },
+    "Prohibition": {
+      "desc": "Sự nghiêm cấm bằng pháp luật đối với hành vi cụ thể, vi phạm sẽ bị xử lý chế tài.",
+      "examples": [
+        "Cấm vận chuyển hàng lậu",
+        "Cấm khai thác rừng trái phép"
+      ]
+    },
+    "Recommendation": {
+      "desc": "Đề xuất pháp lý không mang tính bắt buộc, do cơ quan có thẩm quyền hoặc bên liên quan đưa ra để hướng dẫn hành vi.",
+      "examples": [
+        "Khuyến nghị của Ngân hàng Nhà nước về lãi suất cho vay",
+        "Khuyến nghị của tòa án về mức bồi thường"
+      ]
+    },
+    "Authorization": {
+      "desc": "Văn bản hoặc quyết định hợp pháp cho phép chủ thể thực hiện một hành vi nhất định trong phạm vi luật định.",
+      "examples": [
+        "Giấy phép xây dựng do UBND cấp",
+        "Lệnh bắt giữ người trong trường hợp khẩn cấp"
+      ]
+    },
+    "Delegation": {
+      "desc": "Hành vi ủy quyền cho bên thứ ba thực hiện một hoặc nhiều quyền pháp lý thay mặt bên ủy quyền theo văn bản hợp lệ.",
+      "examples": [
+        "Giấy ủy quyền bán nhà",
+        "Chỉ định đại diện theo pháp luật"
+      ]
+    },
+    "Exception": {
+      "desc": "Quy định loại trừ việc áp dụng nguyên tắc pháp lý chung đối với một trường hợp cụ thể được xác định rõ.",
+      "examples": [
+        "Miễn trừ trách nhiệm hình sự cho ngoại giao đoàn",
+        "Trường hợp bất khả kháng miễn nghĩa vụ hợp đồng"
+      ]
+    },
+    "Condition": {
+      "desc": "Sự kiện hoặc yêu cầu pháp lý phải xảy ra hoặc được thỏa mãn để làm phát sinh, thay đổi hoặc chấm dứt hiệu lực của quan hệ pháp luật.",
+      "examples": [
+        "Điều kiện tiên quyết để hợp đồng có hiệu lực",
+        "Yêu cầu vốn điều lệ tối thiểu để cấp phép ngân hàng"
+      ]
+    },
+    "Precondition": {
+      "desc": "Điều kiện phải được thỏa mãn trước khi một quyền được thực hiện hoặc nghĩa vụ pháp lý phát sinh theo quy định pháp luật hoặc hợp đồng.",
+      "examples": [
+        "Giấy phép hành nghề phải có trước khi bác sĩ thực hiện phẫu thuật",
+        "Hợp đồng phải công chứng trước khi chuyển nhượng quyền sử dụng đất"
+      ]
+    },
+    "Postcondition": {
+      "desc": "Trạng thái pháp lý hoặc thực tế buộc phải tồn tại sau khi một hành vi pháp lý hoặc thủ tục hoàn tất.",
+      "examples": [
+        "Quyền sở hữu tài sản sang tên bên mua sau khi đăng ký tại cơ quan thẩm quyền",
+        "Hợp đồng chấm dứt sau khi hai bên hoàn thành nghĩa vụ thanh toán"
+      ]
+    },
+    "Eligibility": {
+      "desc": "Tiêu chuẩn chủ thể cần thỏa mãn để được hưởng quyền hoặc tham gia quan hệ pháp luật.",
+      "examples": [
+        "Công dân đủ 18 tuổi mới được bầu cử",
+        "Doanh nghiệp vừa và nhỏ được nhận hỗ trợ thuế"
+      ]
+    },
+    "Validity": {
+      "desc": "Khoảng thời gian hoặc phạm vi mà văn bản pháp luật hoặc giao dịch được công nhận ràng buộc.",
+      "examples": [
+        "Hợp đồng có hiệu lực trong 2 năm",
+        "Luật này áp dụng tại lãnh thổ quốc gia"
+      ]
+    },
+    "Termination": {
+      "desc": "Hành vi chấm dứt hiệu lực của hợp đồng hoặc quan hệ pháp lý hiện hữu theo thỏa thuận hoặc quyết định cơ quan có thẩm quyền.",
+      "examples": [
+        "Đơn phương hủy hợp đồng thuê",
+        "Thu hồi giấy phép kinh doanh"
+      ]
+    },
+    "Responsibility": {
+      "desc": "Nghĩa vụ pháp lý buộc chủ thể phải thực hiện hoặc không thực hiện một hành vi nhất định. Vi phạm có thể dẫn đến chế tài từ cơ quan nhà nước.",
+      "examples": [
+        "Công ty phải nộp thuế thu nhập doanh nghiệp đúng hạn.",
+        "Cha mẹ có trách nhiệm nuôi dưỡng con chưa thành niên."
+      ]
+    },
+    "Liability": {
+      "desc": "Nghĩa vụ tài sản hoặc trách nhiệm bồi thường thiệt hại được pháp luật xác định khi chủ thể gây thiệt hại hoặc vi phạm hợp đồng. Thường biểu hiện bằng số tiền phải trả.",
+      "examples": [
+        "Bồi thường 500 triệu đồng do làm hư hại tài sản người khác.",
+        "Khoản nợ vay ngân hàng đến hạn phải thanh toán."
+      ]
+    },
+    "CalculationRule": {
+      "desc": "Quy định xác định cách thức, công thức hoặc căn cứ để tính ra một giá trị pháp lý như thuế, phạt, thời hạn. Giúp bảo đảm tính thống nhất khi áp dụng.",
+      "examples": [
+        "Thuế VAT = giá chưa thuế × 10%.",
+        "Tiền phạt chậm nộp = số tiền thuế × 0,03%/ngày."
+      ]
+    },
+    "PriorityRule": {
+      "desc": "Quy tắc xác định thứ tự áp dụng văn bản hoặc quyền khi có nhiều chủ thể cùng đối tượng. Bảo đảm sự nhất quán trong thi hành.",
+      "examples": [
+        "Luật cao hơn nghị định khi cùng quy định một vấn đề.",
+        "Cổ đông ưu đãi cổ tức được nhận trước cổ đông thường."
+      ]
+    },
+    "ConflictRule": {
+      "desc": "Quy định giải quyết mâu thuẫn giữa các điều khoản hoặc văn bản pháp luật khác nhau trong cùng một tình huống. Ngăn chặn áp dụng sai quy định.",
+      "examples": [
+        "Điều khoản hợp đồng quốc tế thắng quy định nội địa nếu có cam kết WTO.",
+        "Quy định mới bãi bỏ quy định cũ mâu thuẫn cùng lĩnh vực."
+      ]
+    },
+    "InterpretationRule": {
+      "desc": "Quy tắc pháp lý dùng để xác định ý nghĩa, phạm vi áp dụng của thuật ngữ hoặc điều khoản trong văn bản quy phạm pháp luật.",
+      "examples": [
+        "Điều 3 Luật Giao thông đường bộ giải thích 'xe cơ giới' bao gồm cả xe máy điện",
+        "Nguyên tắc giải thích luật theo hướng có lợi cho người tiêu dùng trong bảo vệ quyền lợi người tiêu dùng"
+      ]
+    },
+    "ReferenceRule": {
+      "desc": "Quy định dẫn chiếu việc áp dụng văn bản pháp luật khác hoặc điều khoản khác để bổ sung điều chỉnh quan hệ pháp luật.",
+      "examples": [
+        "Điều 12 Nghị định này viện dẫn áp dụng Điều 30 Luật Đất đai về cấp sổ đỏ",
+        "Quy định xử phạt vi phạm hành chính dẫn chiếu sang Thông tư bộ tài chính về mức phạt tiền"
+      ]
+    },
+    "TransitionRule": {
+      "desc": "Quy tắc xác định hiệu lực pháp lý của văn bản mới đối với tình tiết, quan hệ pháp luật phát sinh trước thời điểm luật mới có hiệu lực.",
+      "examples": [
+        "Luật mới quy định hợp đồng thuê đất ký trước 2020 tiếp tục thực hiện đến hết hạn",
+        "Vụ án đang xử phúc thẩm áp dụng thủ tục tố tụng cũ theo điều khoản chuyển tiếp"
+      ]
+    },
+    "NaturalPerson": {
+      "desc": "Cá nhân con người có năng lực pháp luật và năng lực hành vi theo quy định pháp luật. Là chủ thể nguyên thủy của mọi quan hệ pháp luật.",
+      "examples": [
+        "Lê Văn C",
+        "Phạm Thị D"
+      ]
+    },
+    "LegalEntity": {
+      "desc": "Pháp nhân là tổ chức được thành lập hợp pháp, có tư cách pháp nhân, có tài sản độc lập và tự chịu trách nhiệm bằng tài sản đó.",
+      "examples": [
+        "Công ty TNHH Minh Anh",
+        "Trường Đại học Quốc gia"
+      ]
+    },
+    "GovernmentAgency": {
+      "desc": "Cơ quan nhà nước là tổ chức thuộc bộ máy nhà nước, được giao thực hiện quyền lực nhà nước hoặc quản lý hành chính công.",
+      "examples": [
+        "Bộ Tài chính",
+        "UBND tỉnh Đồng Nai"
+      ]
+    },
+    "Authority": {
+      "desc": "Cơ quan có thẩm quyền là tổ chức hoặc người được pháp luật giao quyền ra quyết định hành chính hoặc thực thi công vụ bắt buộc.",
+      "examples": [
+        "Cục Thuế TP.HCM",
+        "Thanh tra Sở Y tế"
+      ]
+    },
+    "Organization": {
+      "desc": "Tổ chức là tập hợp người hoặc tài sản có mục đích hoạt động nhất định, có thể chưa có tư cách pháp nhân.",
+      "examples": [
+        "Chi hội Chữ thập đỏ phường",
+        "Ban tổ chức lễ hội"
+      ]
+    },
+    "Association": {
+      "desc": "Tổ chức được thành lập hợp pháp bởi cá nhân hoặc tổ chức cùng chung mục đích, hoạt động không vì lợi nhuận theo quy định pháp luật.",
+      "examples": [
+        "Hội Luật gia Việt Nam",
+        "Hội Bảo vệ thiên nhiên và môi trường"
+      ]
+    },
+    "Enterprise": {
+      "desc": "Tổ chức kinh tế có tên riêng, có tài sản, có trụ sở giao dịch, được thành lập để thực hiện các hoạt động kinh doanh thu lợi nhuận.",
+      "examples": [
+        "Công ty Cổ phần FPT",
+        "Công ty TNHH ABC"
+      ]
+    },
+    "Household": {
+      "desc": "Nhóm người cùng chung sống và có tài sản chung trong một gia đình theo quy định của pháp luật dân sự và hộ kinh doanh.",
+      "examples": [
+        "Hộ kinh doanh cá thể tại chợ",
+        "Gia đình nhiều thế hệ cùng sinh sống"
+      ]
+    },
+    "Representative": {
+      "desc": "Cá nhân hoặc tổ chức được pháp luật hoặc chủ thể khác ủy quyền để thay mặt thực hiện giao dịch trong phạm vi quyền hạn.",
+      "examples": [
+        "Giám đốc công ty ký hợp đồng",
+        "Người đại diện theo pháp luật của doanh nghiệp"
+      ]
+    },
+    "Guardian": {
+      "desc": "Cá nhân hoặc tổ chức được cơ quan nhà nước có thẩm quyền chỉ định để chăm sóc và bảo vệ quyền lợi cho người chưa thành niên hoặc mất năng lực hành vi dân sự.",
+      "examples": [
+        "Cha mẹ đối với con chưa thành niên",
+        "Người giám hộ cho người mất năng lực hành vi dân sự"
+      ]
+    },
+    "Employee": {
+      "desc": "Người lao động làm việc cho người sử dụng lao động theo hợp đồng lao động, được trả lương và chịu sự quản lý, điều hành của họ.",
+      "examples": [
+        "Công nhân ký hợp đồng tại nhà máy",
+        "Nhân viên văn phòng làm việc full-time"
+      ]
+    },
+    "Employer": {
+      "desc": "Cá nhân, hộ gia đình, tổ chức hoặc cơ quan thuê mướn người lao động theo hợp đồng lao động và trả lương cho công việc đó.",
+      "examples": [
+        "Công ty TNHH thuê nhân viên kỹ thuật",
+        "Hộ kinh doanh cá thể thuê người bán hàng"
+      ]
+    },
+    "Taxpayer": {
+      "desc": "Tổ chức, hộ gia đình, cá nhân có nghĩa vụ nộp thuế theo quy định pháp luật đối với thu nhập, tài sản hoặc hoạt động chịu thuế.",
+      "examples": [
+        "Cá nhân có thu nhập từ lương trên mức giảm trừ gia cảnh",
+        "Doanh nghiệp nộp thuế giá trị gia tăng"
+      ]
+    },
+    "Citizen": {
+      "desc": "Cá nhân mang quốc tịch của một quốc gia, được nhà nước đó bảo hộ và có đầy đủ quyền, nghĩa vụ công dân theo Hiến pháp.",
+      "examples": [
+        "Người sinh ra tại Việt Nam có cha mẹ là công dân Việt Nam",
+        "Người nhập quốc tịch Việt Nam hợp pháp"
+      ]
+    },
+    "Foreigner": {
+      "desc": "Cá nhân là công dân nước ngoài hoặc người không quốc tịch đang cư trú, làm việc trên lãnh thổ một quốc gia không phải nước gốc.",
+      "examples": [
+        "Chuyên gia Nhật Bản sang làm việc tại Việt Nam",
+        "Người không quốc tịch tạm trú theo giấy phép"
+      ]
+    },
+    "Evidence": {
+      "desc": "Chứng cứ là tài liệu, vật chứng hoặc dữ liệu được thu thập hợp pháp nhằm chứng minh sự thật trong vụ việc pháp lý.",
+      "examples": [
+        "Biên bản khám nghiệm hiện trường",
+        "Ghi âm cuộc gọi đe dọa được cơ quan chức năng niêm phong"
+      ]
+    },
+    "Invoice": {
+      "desc": "Hóa đơn là chứng từ do người bán hàng hóa, cung cấp dịch vụ lập để ghi nhận nghĩa vụ thanh toán và kê khai thuế theo pháp luật.",
+      "examples": [
+        "Hóa đơn điện tử VAT mua thiết bị văn phòng",
+        "Hóa đơn bán lẻ tại cửa hàng"
+      ]
+    },
+    "Contract": {
+      "desc": "Hợp đồng là thỏa thuận giữa các bên về việc xác lập, thay đổi hoặc chấm dứt quyền, nghĩa vụ dân sự theo quy định pháp luật.",
+      "examples": [
+        "Hợp đồng mua bán căn hộ chung cư",
+        "Hợp đồng lao động xác định thời hạn"
+      ]
+    },
+    "Application": {
+      "desc": "Đơn là văn bản hoặc bản điện tử cá nhân, tổ chức gửi cơ quan nhà nước để yêu cầu giải quyết thủ tục hành chính hoặc cấp phép.",
+      "examples": [
+        "Đơn xin cấp giấy phép xây dựng",
+        "Đơn đăng ký thuế qua cổng dịch vụ công"
+      ]
+    },
+    "DigitalDocument": {
+      "desc": "Tài liệu điện tử là thông điệp dữ liệu được tạo, lưu trữ trên môi trường điện tử và có giá trị pháp lý như văn bản giấy khi đáp ứng quy định xác thực.",
+      "examples": [
+        "Quyết định hành chính ký số",
+        "Sổ hộ tịch điện tử"
+      ]
+    },
+    "LegalConcept": {
+      "desc": "Khái niệm pháp lý là ý niệm trừu tượng được pháp luật quy định hoặc công nhận để điều chỉnh quan hệ xã hội. Nó làm nền tảng cho việc phân loại và giải quyết vụ việc.",
+      "examples": [
+        "Quyền sở hữu tài sản",
+        "Năng lực pháp luật của cá nhân"
+      ]
+    },
+    "LegalDefinition": {
+      "desc": "Định nghĩa pháp lý là sự giải thích rõ ràng về nội dung, phạm vi của một thuật ngữ trong văn bản quy phạm pháp luật. Nó tạo cơ sở thống nhất khi áp dụng luật.",
+      "examples": [
+        "'Cán bộ' theo Luật Cán bộ công chức là công dân Việt Nam được bầu cử vào vị trí có thẩm quyền",
+        "Tội phạm là hành vi nguy hiểm cho xã hội được quy định trong Bộ luật Hình sự"
+      ]
+    },
+    "LegalPrinciple": {
+      "desc": "Nguyên tắc pháp lý là quy luật nền tảng được hệ thống pháp luật thừa nhận làm căn cứ giải quyết nhất quán.",
+      "examples": [
+        "Nguyên tắc suy đoán vô tội",
+        "Nguyên tắc tự do hợp đồng"
+      ]
+    },
+    "LegalPurpose": {
+      "desc": "Mục đích pháp lý là lý do, ý định mà nhà làm luật hướng tới khi ban hành quy định. Nó giúp giải thích và diễn giải luật khi có độ mở.",
+      "examples": [
+        "Bảo vệ lợi ích công cộng qua luật môi trường",
+        "Đảm bảo an toàn giao thông qua quy định giới hạn tốc độ"
+      ]
+    },
+    "LegalInterest": {
+      "desc": "Lợi ích pháp lý là quyền lợi được pháp luật bảo vệ hoặc công nhận cho chủ thể. Sự xâm phạm lợi ích này có thể phát sinh trách nhiệm pháp lý.",
+      "examples": [
+        "Quyền lợi người tiêu dùng được hoàn tiền hàng lỗi",
+        "Lợi ích hợp đồng được đối tác thực hiện đúng hạn"
+      ]
+    },
+    "Ownership": {
+      "desc": "Quyền của chủ sở hữu đối với tài sản, bao gồm quyền chiếm hữu, sử dụng và định đoạt theo quy định pháp luật.",
+      "examples": [
+        "Chủ đất có quyền chuyển nhượng thửa ruộng",
+        "Công ty sở hữu hợp pháp bản quyền phần mềm"
+      ]
+    },
+    "Possession": {
+      "desc": "Việc chủ thể nắm giữ, quản lý tài sản thực tế dù không phải là chủ sở hữu hợp pháp.",
+      "examples": [
+        "Người thuê nhà đang cư ngụ trong căn hộ",
+        "Người được ủy quyền giữ ký gửi xe máy"
+      ]
+    },
+    "Residence": {
+      "desc": "Nơi cá nhân thường xuyên sinh sống và có đăng ký thường trú hoặc tạm trú theo luật cư trú.",
+      "examples": [
+        "Hộ khẩu thường trú tại phường Bến Nghé",
+        "Chỗ ở tạm trú của công nhân xa quê"
+      ]
+    },
+    "ForceMajeure": {
+      "desc": "Sự kiện xảy ra khách quan không thể lường trước và không thể khắc phục dù đã áp dụng mọi biện pháp cần thiết.",
+      "examples": [
+        "Động đất phá hủy toàn bộ công trình xây dựng",
+        "Lệnh phong tỏa hành chính do dịch bệnh của cơ quan nhà nước"
+      ]
+    },
+    "Issue": {
+      "desc": "Hành động ban hành hoặc cấp phát văn bản, giấy phép, chứng chỉ có giá trị pháp lý bởi cơ quan có thẩm quyền.",
+      "examples": [
+        "Cơ quan cấp phép ban hành giấy phép xây dựng",
+        "Sở Y tế cấp chứng chỉ hành nghề cho bác sĩ"
+      ]
+    },
+    "Revoke": {
+      "desc": "Hành động thu hồi, hủy bỏ hiệu lực của giấy phép, quyết định hoặc quyền đã được cấp trước đó theo quy định pháp luật.",
+      "examples": [
+        "Thu hồi giấy phép kinh doanh do vi phạm",
+        "Hủy bỏ quyết định bổ nhiệm sai quy trình"
+      ]
+    },
+    "Inspect": {
+      "desc": "Hoạt động kiểm tra, thanh tra hiện trạng, điều kiện thực tế của đối tượng để đảm bảo tuân thủ quy định.",
+      "examples": [
+        "Kiểm tra an toàn phòng cháy tại chung cư",
+        "Thanh tra điều kiện vệ sinh tại nhà hàng"
+      ]
+    },
+    "Audit": {
+      "desc": "Việc rà soát, kiểm toán hồ sơ, sổ sách, báo cáo để xác minh tính hợp pháp và chính xác của thông tin.",
+      "examples": [
+        "Kiểm toán báo cáo tài chính doanh nghiệp nhà nước",
+        "Rà soát hồ sơ đấu thầu công khai"
+      ]
+    },
+    "Investigate": {
+      "desc": "Quá trình điều tra, thu thập chứng cứ để làm rõ vụ việc vi phạm pháp luật hoặc tranh chấp.",
+      "examples": [
+        "Điều tra vụ tai nạn lao động chết người",
+        "Điều tra hành vi gian lận thuế"
+      ]
+    },
+    "Authorize": {
+      "desc": "Hành động cấp quyền hoặc sự đồng ý hợp pháp cho phép thực hiện giao dịch hoặc truy cập tài nguyên, thể hiện ý chí chủ thể được pháp luật công nhận.",
+      "examples": [
+        "Chủ thẻ ký duyệt giao dịch qua mã OTP",
+        "Người dùng cấp quyền ứng dụng truy cập dữ liệu cá nhân"
+      ]
+    },
+    "Pay": {
+      "desc": "Hành động thanh toán tiền để chi trả hàng hóa, dịch vụ hoặc khoản nợ, tạo nghĩa vụ tài chính chấm dứt khi bên nhận nhận đủ.",
+      "examples": [
+        "Khách hàng quét QR thanh toán hóa đơn điện",
+        "Công ty chuyển khoản trả lương nhân viên"
+      ]
+    },
+    "Transfer": {
+      "desc": "Hành vi pháp lý chuyển giao quyền sở hữu hoặc quyền sử dụng tài sản từ chủ thể này sang chủ thể khác qua hợp đồng hoặc quyết định pháp luật.",
+      "examples": [
+        "Chuyển nhượng quyền sử dụng đất",
+        "Bán cổ phần công ty"
+      ]
+    },
+    "Buy": {
+      "desc": "Hành động mua tài sản hoặc dịch vụ bằng trao đổi giá trị tài chính, tạo hợp đồng mua bán theo Bộ luật Dân sự với nghĩa vụ thanh toán.",
+      "examples": [
+        "Cá nhân mua xe máy tại cửa hàng",
+        "Doanh nghiệp mua bản quyền phần mềm"
+      ]
+    },
+    "Sell": {
+      "desc": "Hành động chuyển giao tài sản để nhận giá trị tài chính, hình thành giao dịch thương mại hợp pháp với nguồn gốc tài sản minh bạch.",
+      "examples": [
+        "Chủ shop bán áo qua sàn thương mại điện tử",
+        "Ngân hàng bán nợ xấu cho công ty mua bán nợ"
+      ]
+    },
+    "Demolish": {
+      "desc": "Hành động phá bỏ công trình xây dựng hiện có theo quyết định hoặc thẩm quyền pháp lý.",
+      "examples": [
+        "Phá dỡ nhà cũ vi phạm quy hoạch",
+        "Tháo dỡ công trình tạm không phép"
+      ]
+    },
+    "Sign": {
+      "desc": "Hành động ký tên hoặc ký số để xác nhận nội dung văn bản, thể hiện ý chí pháp lý của chủ thể.",
+      "examples": [
+        "Ký hợp đồng mua bán",
+        "Ký số chứng thư điện tử"
+      ]
+    },
+    "Verify": {
+      "desc": "Kiểm tra tính đúng đắn và trung thực của thông tin hoặc tài liệu theo quy định pháp luật.",
+      "examples": [
+        "Xác minh giấy tờ tùy thân",
+        "Xác minh chữ ký trên văn bản"
+      ]
+    },
+    "Authenticate": {
+      "desc": "Chứng minh định danh của chủ thể thông qua thông tin hoặc phương thức được pháp luật công nhận.",
+      "examples": [
+        "Xác thực qua CCCD",
+        "Xác thực sinh trắc học khi làm thủ tục"
+      ]
+    },
+    "Notarize": {
+      "desc": "Hành vi công chứng viên chứng nhận tính xác thực, hợp pháp của hợp đồng, giao dịch.",
+      "examples": [
+        "Công chứng di chúc",
+        "Công chứng hợp đồng chuyển nhượng quyền sử dụng đất"
+      ]
+    },
+    "Store": {
+      "desc": "Hành vi lưu giữ dữ liệu, tài liệu pháp lý trong hệ thống nhằm bảo quản và quản lý lâu dài.",
+      "examples": [
+        "Lưu trữ hồ sơ khách hàng trong cơ sở dữ liệu",
+        "Lưu hợp đồng điện tử trên máy chủ"
+      ]
+    },
+    "Collect": {
+      "desc": "Việc thu thập thông tin, chứng cứ từ cá nhân hoặc tổ chức phục vụ mục đích pháp lý hoặc quản lý.",
+      "examples": [
+        "Thu thập dữ liệu cá nhân khi mở tài khoản ngân hàng",
+        "Thu thập bằng chứng qua giám định tư pháp"
+      ]
+    },
+    "Publish": {
+      "desc": "Hành động công bố công khai văn bản hoặc thông tin pháp lý ra trước cộng đồng theo quy định.",
+      "examples": [
+        "Đăng tải nghị định trên cổng thông tin chính phủ",
+        "Công bố báo cáo tài chính thường niên"
+      ]
+    },
+    "Modify": {
+      "desc": "Sửa đổi nội dung văn bản hoặc dữ liệu đã tồn tại để điều chỉnh quyền, nghĩa vụ hoặc thông tin.",
+      "examples": [
+        "Sửa đổi điều khoản hợp đồng kinh tế",
+        "Cập nhật thông tin đăng ký doanh nghiệp"
+      ]
+    },
+    "Delete": {
+      "desc": "Xóa bỏ dữ liệu hoặc văn bản pháp lý khỏi hệ thống, chấm dứt giá trị lưu trữ hoặc hiệu lực.",
+      "examples": [
+        "Xóa hồ sơ người dùng theo yêu cầu thu hồi sự đồng ý",
+        "Thu hồi văn bản hành chính đã ban hành"
+      ]
+    },
+    "Access": {
+      "desc": "Quyền tiếp cận hoặc vào một tài sản, địa điểm hoặc hệ thống nhất định.",
+      "examples": [
+        "Mở cửa nhà đang thuê",
+        "Đăng nhập hệ thống nội bộ công ty"
+      ]
+    },
+    "Use": {
+      "desc": "Hành vi khai thác công dụng của tài sản cho mục đích sử dụng.",
+      "examples": [
+        "Lái xe cá nhân đi lại",
+        "Dùng máy tính công ty soạn thảo văn bản"
+      ]
+    },
+    "Possess": {
+      "desc": "Việc chiếm giữ tài sản trên thực tế với ý định làm chủ nó.",
+      "examples": [
+        "Cầm giữ điện thoại nhặt được",
+        "Giữ xe của bạn tạm thời"
+      ]
+    },
+    "Own": {
+      "desc": "Quyền sở hữu hợp pháp đối với tài sản, bao gồm chiếm hữu, sử dụng và định đoạt.",
+      "examples": [
+        "Có sổ đỏ nhà đất",
+        "Đứng tên đăng ký xe máy"
+      ]
+    },
+    "Transport": {
+      "desc": "Việc di chuyển hàng hóa hoặc người từ nơi này sang nơi khác bằng phương tiện.",
+      "examples": [
+        "Chở hàng qua biên giới",
+        "Lái taxi chở khách thuê"
+      ]
+    },
+    "Import": {
+      "desc": "Việc đưa hàng hóa, dịch vụ hoặc tài sản từ nước ngoài vào lãnh thổ Việt Nam theo quy định pháp luật hải quan. Hoạt động chịu sự kiểm soát của cơ quan hải quan và các nghĩa vụ thuế, kiểm dịch.",
+      "examples": [
+        "Doanh nghiệp nhập khẩu 100 tấn thép từ Trung Quốc về cảng Hải Phòng",
+        "Cá nhân khai báo hải quan khi mang laptop từ Mỹ về Việt Nam"
+      ]
+    },
+    "Export": {
+      "desc": "Việc đưa hàng hóa, dịch vụ hoặc tài sản từ lãnh thổ Việt Nam ra nước ngoài theo quy định pháp luật hải quan. Cần hoàn tất thủ tục xuất khẩu và tuân thủ quy định quản lý ngoại thương.",
+      "examples": [
+        "Công ty xuất khẩu 500 tấn gạo sang thị trường Philippines",
+        "Xưởng thủ công mỹ nghệ xuất 200 hộp tranh gỗ sang Nhật Bản"
+      ]
+    },
+    "Statement": {
+      "desc": "Tuyên bố pháp lý chung thể hiện thông tin hoặc ý chí của cơ quan nhà nước trong văn bản quy phạm.",
+      "examples": [
+        "Nhà nước bảo hộ quyền sở hữu hợp pháp của công dân",
+        "Công dân có quyền bình đẳng trước pháp luật"
+      ]
+    },
+    "DefinitionStatement": {
+      "desc": "Quy định giải thích rõ nghĩa của thuật ngữ pháp lý được sử dụng trong văn bản.",
+      "examples": [
+        "Tài sản công là tài sản thuộc sở hữu toàn dân do Nhà nước đại diện quản lý",
+        "Người lao động là người từ đủ 15 tuổi làm việc có trả công"
+      ]
+    },
+    "ObligationStatement": {
+      "desc": "Quy định bắt buộc chủ thể phải thực hiện hoặc không được thực hiện một hành vi nhất định.",
+      "examples": [
+        "Tổ chức phải nộp tờ khai thuế trước ngày 31 tháng 3",
+        "Cá nhân không được tự ý chiếm đoạt tài sản người khác"
+      ]
+    },
+    "ExceptionStatement": {
+      "desc": "Quy định loại trừ hoặc miễn trừ áp dụng nguyên tắc chung trong trường hợp cụ thể.",
+      "examples": [
+        "Quy định này không áp dụng với lực lượng vũ trang trong tình trạng chiến tranh",
+        "Miễn thuế nhập khẩu với hàng viện trợ nhân đạo"
+      ]
+    },
+    "ConditionStatement": {
+      "desc": "Quy định sự kiện hoặc trạng thái cần có để một quan hệ pháp luật phát sinh hoặc chấm dứt.",
+      "examples": [
+        "Hợp đồng chỉ có hiệu lực khi các bên ký tên xác nhận",
+        "Chế độ hưu trí được hưởng khi người lao động đủ 60 tuổi"
+      ]
+    },
+    "PenaltyStatement": {
+      "desc": "Tuyên bố pháp lý ghi nhận việc áp dụng hình phạt hoặc chế tài đối với chủ thể vi phạm nghĩa vụ. Xác định rõ loại, mức và căn cứ pháp lý của hình phạt được thi hành.",
+      "examples": [
+        "Quyết định xử phạt vi phạm hành chính 15 triệu đồng đối với cá nhân không đeo khẩu trang",
+        "Bản án tuyên phạt tù 7 năm đối với bị cáo về tội tham ô tài sản"
+      ]
+    },
+    "ReferenceStatement": {
+      "desc": "Tuyên bố pháp lý trích dẫn hoặc tham chiếu đến văn bản, điều khoản khác làm căn cứ pháp lý. Giúp xác định nguồn gốc, hiệu lực và phạm vi áp dụng của quy định được viện dẫn.",
+      "examples": [
+        "Khoản 2 Điều 26 Luật Doanh nghiệp 2020 được viện dẫn để xác định quyền của cổ đông",
+        "Công văn số 456/BTC ngày 01/03/2023 của Bộ Tài chính được trích dẫn trong tờ trình thuế"
+      ]
+    },
+    "LegalEvent": {
+      "desc": "Sự kiện làm phát sinh, thay đổi hoặc chấm dứt quyền và nghĩa vụ pháp lý của chủ thể theo quy định pháp luật.",
+      "examples": [
+        "Ký kết hợp đồng lao động",
+        "Tuyên bố phá sản doanh nghiệp"
+      ]
+    },
+    "NaturalEvent": {
+      "desc": "Hiện tượng tự nhiên không do ý chí con người tạo ra nhưng theo luật có thể làm phát sinh hậu quả pháp lý như tình trạng bất khả kháng.",
+      "examples": [
+        "Động đất làm sập công trình",
+        "Lũ lụt phá hủy hàng hóa trong kho"
+      ]
+    },
+    "AdministrativeEvent": {
+      "desc": "Hành vi hành chính tạo ra thay đổi tình trạng pháp lý của tổ chức, cá nhân trước cơ quan nhà nước có thẩm quyền.",
+      "examples": [
+        "Cấp giấy khai sinh tại UBND xã",
+        "Quyết định xử phạt vi phạm hành chính"
+      ]
+    },
+    "CivilEvent": {
+      "desc": "Sự kiện dân sự làm phát sinh, thay đổi hoặc chấm dứt quyền và nghĩa vụ dân sự giữa các chủ thể theo Bộ luật Dân sự.",
+      "examples": [
+        "Lập di chúc thừa kế",
+        "Đăng ký kết hôn tại cơ quan có thẩm quyền"
+      ]
+    },
+    "CommercialEvent": {
+      "desc": "Hoạt động kinh doanh có mục đích sinh lợi của thương nhân phát sinh quyền và nghĩa vụ trong quan hệ thương mại.",
+      "examples": [
+        "Ký hợp đồng mua bán hàng hóa quốc tế",
+        "Tổ chức đấu giá tài sản doanh nghiệp"
+      ]
+    },
+    "TaxEvent": {
+      "desc": "Sự kiện pháp lý liên quan đến nghĩa vụ thuế, khai báo hoặc quyết toán thuế với cơ quan nhà nước. Bao gồm thay đổi đối tượng nộp thuế, miễn giảm hoặc thanh tra thuế.",
+      "examples": [
+        "Doanh nghiệp nộp tờ khai thuế giá trị gia tăng quý 2",
+        "Cơ quan thuế ra quyết định truy thu thuế thu nhập doanh nghiệp"
+      ]
+    },
+    "ConstructionEvent": {
+      "desc": "Sự kiện pháp lý phát sinh trong quá trình xây dựng như cấp phép, khởi công, nghiệm thu hoặc điều chỉnh công trình. Ràng buộc trách nhiệm chủ đầu tư và nhà thầu theo pháp luật xây dựng.",
+      "examples": [
+        "UBND cấp giấy phép xây dựng nhà ở riêng lẻ",
+        "Ban quản lý dự án nghiệm thu hoàn thành phần móng"
+      ]
+    },
+    "JudicialEvent": {
+      "desc": "Sự kiện tố tụng do cơ quan tư pháp tiến hành để xác minh, xét xử hoặc thi hành án theo quy định pháp luật.",
+      "examples": [
+        "Mở phiên tòa xét xử sơ thẩm",
+        "Cưỡng chế thi hành án dân sự"
+      ]
+    },
+    "InvestigationEvent": {
+      "desc": "Sự kiện điều tra hình sự hoặc hành chính do cơ quan có thẩm quyền tiến hành để thu thập chứng cứ. Bao gồm khởi tố vụ án, lệnh khám xét hoặc triệu tập người làm chứng.",
+      "examples": [
+        "Cơ quan công an ra quyết định khởi tố bị can",
+        "Kiểm toán nhà nước tiến hành điều tra sai phạm tài chính"
+      ]
+    },
+    "InspectionEvent": {
+      "desc": "Sự kiện kiểm tra chuyên ngành của cơ quan quản lý nhà nước đối với hoạt động sản xuất kinh doanh. Bao gồm lập biên bản vi phạm hoặc kết luận thanh tra định kỳ.",
+      "examples": [
+        "Đoàn thanh tra lao động kiểm tra an toàn tại nhà máy",
+        "Cục an toàn thực phẩm lập biên bản vi phạm vệ sinh"
+      ]
+    },
+    "ViolationEvent": {
+      "desc": "Sự kiện vi phạm pháp luật hoặc quy định, ghi nhận hành vi trái luật của chủ thể. Thường kèm biên bản hoặc quyết định xử phạt theo thủ tục pháp lý.",
+      "examples": [
+        "Lập biên bản vi phạm giao thông",
+        "Xử phạt hành chính do trốn thuế"
+      ]
+    },
+    "PaymentEvent": {
+      "desc": "Sự kiện thanh toán thực hiện nghĩa vụ tài chính hoặc chi trả giá trị hợp đồng theo pháp luật. Giải trừ nghĩa vụ nợ khi hoàn tất.",
+      "examples": [
+        "Nộp thuế qua kho bạc nhà nước",
+        "Thanh toán tiền mua nhà theo hợp đồng"
+      ]
+    },
+    "TransferEvent": {
+      "desc": "Sự kiện chuyển giao quyền sở hữu hoặc quyền sử dụng tài sản hợp pháp giữa các bên. Cần thỏa mãn hình thức và điều kiện hiệu lực luật định.",
+      "examples": [
+        "Chuyển nhượng đất có công chứng",
+        "Tặng cho xe máy đăng ký sang tên"
+      ]
+    },
+    "RegistrationEvent": {
+      "desc": "Sự kiện đăng ký với cơ quan nhà nước để xác lập tư cách pháp lý hoặc quyền tài sản. Là điều kiện bắt buộc để phát sinh hiệu lực với bên thứ ba.",
+      "examples": [
+        "Đăng ký thành lập doanh nghiệp",
+        "Đăng ký quyền tác giả tác phẩm"
+      ]
+    },
+    "Procedure": {
+      "desc": "Thủ tục hành chính hoặc tố tụng do pháp luật quy định để giải quyết công việc cụ thể một cách có thứ tự và minh bạch.",
+      "examples": [
+        "Thủ tục cấp giấy phép xây dựng",
+        "Thủ tục đăng ký kết hôn tại xã"
+      ]
+    },
+    "Workflow": {
+      "desc": "Luồng công việc nội bộ mô tả trình tự hoạt động giữa các bộ phận để vận hành một quy trình pháp lý hoặc quản lý.",
+      "examples": [
+        "Luồng tiếp nhận hồ sơ qua phòng ban một cửa",
+        "Luồng phê duyệt hóa đơn mua sắm nội bộ"
+      ]
+    },
+    "Step": {
+      "desc": "Bước thực hiện là đơn vị hành động có ý nghĩa quản lý độc lập trong quy trình, thường được quy định rõ thời hạn và nội dung.",
+      "examples": [
+        "Bước nộp hồ sơ và nhận biên nhận",
+        "Bước xác minh nguồn gốc tài sản"
+      ]
+    },
+    "Task": {
+      "desc": "Nhiệm vụ là công việc chi tiết do cá nhân hoặc đơn vị đảm nhiệm để hoàn thành một bước quy trình đã định.",
+      "examples": [
+        "Kiểm tra tính hợp lệ của giấy tờ tùy thân",
+        "Nhập dữ liệu vào hệ thống đăng ký quốc gia"
+      ]
+    },
+    "Approval": {
+      "desc": "Phê duyệt là hành vi pháp lý của người có thẩm quyền xác nhận tính hợp pháp và cho phép tiến hành bước tiếp theo.",
+      "examples": [
+        "Ký duyệt của giám đốc chi nhánh",
+        "Quyết định chấp thuận của Chủ tịch UBND cấp huyện"
+      ]
+    },
+    "Verification": {
+      "desc": "Hoạt động kiểm tra và xác nhận tính xác thực, hợp lệ của thông tin, tài liệu hoặc đối tượng theo quy định pháp luật.",
+      "examples": [
+        "Xác minh chứng minh nhân dân khi mở tài khoản ngân hàng",
+        "Kiểm tra con dấu trên hợp đồng công chứng"
+      ]
+    },
+    "Review": {
+      "desc": "Quá trình xem xét, đánh giá nội dung, tính hợp pháp và sự phù hợp của hồ sơ hoặc đề xuất trước khi phê duyệt.",
+      "examples": [
+        "Thẩm định hồ sơ xin cấp phép xây dựng",
+        "Rà soát hợp đồng bởi phòng pháp chế"
+      ]
+    },
+    "Submission": {
+      "desc": "Việc nộp hồ sơ, tài liệu hoặc đơn yêu cầu đến cơ quan có thẩm quyền để bắt đầu một thủ tục hành chính hoặc pháp lý.",
+      "examples": [
+        "Nộp tờ khai thuế thu nhập cá nhân",
+        "Gửi đơn đăng ký kinh doanh qua cổng dịch vụ công"
+      ]
+    },
+    "Processing": {
+      "desc": "Các bước xử lý, tiếp nhận và thực hiện nghiệp vụ tiếp theo sau khi hồ sơ đã được nộp và đang trong quá trình giải quyết.",
+      "examples": [
+        "Cơ quan thuế tính toán số thuế phải nộp",
+        "Phòng tài nguyên cập nhật thông tin thửa đất"
+      ]
+    },
+    "Notification": {
+      "desc": "Văn bản hoặc hành động thông báo chính thức của cơ quan có thẩm quyền hoặc đương sự để truyền đạt thông tin về một bước trong thủ tục pháp lý.",
+      "examples": [
+        "Thông báo thụ lý vụ án dân sự",
+        "Thông báo niêm yết công khai quyết định thu hồi đất"
+      ]
+    },
+    "Execution": {
+      "desc": "Hành vi ký kết hoặc thực thi văn bản pháp lý làm phát sinh quyền và nghĩa vụ hợp pháp giữa các bên.",
+      "examples": [
+        "Ký hợp đồng lao động",
+        "Công chứng di chúc"
+      ]
+    },
+    "Completion": {
+      "desc": "Sự kiện thủ tục pháp lý kết thúc sau khi các điều kiện luật định được thỏa mãn và cơ quan có thẩm quyền xác nhận.",
+      "examples": [
+        "Cấp giấy chứng nhận đăng ký kết hôn sau khi hoàn tất thủ tục",
+        "Ra quyết định công nhận thuận tình ly hôn"
+      ]
+    },
+    "Cancellation": {
+      "desc": "Hành động chấm dứt hiệu lực hoặc dừng một thủ tục pháp lý đang diễn ra theo yêu cầu hoặc quyết định của cơ quan có thẩm quyền.",
+      "examples": [
+        "Rút đơn khởi kiện trước khi xét xử",
+        "Hủy bỏ giấy phép xây dựng do cấp sai thẩm quyền"
+      ]
+    },
+    "Date": {
+      "desc": "Mốc thời gian xác định ngày, tháng, năm theo lịch, làm căn cứ phát sinh hoặc chấm dứt quyền nghĩa vụ pháp lý.",
+      "examples": [
+        "Ngày ký hợp đồng 15/03/2024",
+        "Ngày nộp tờ khai thuế 31/12/2023"
+      ]
+    },
+    "Time": {
+      "desc": "Thời điểm trong ngày xác định giờ giao dịch, họp hoặc cut-off hạn trong ngày.",
+      "examples": [
+        "Giờ mở cửa sàn chứng khoán 9:00",
+        "Thời điểm cut-off chuyển tiền 16:30"
+      ]
+    },
+    "Deadline": {
+      "desc": "Thời hạn do pháp luật hoặc thỏa thuận ấn định, hết thời điểm đó quyền hoặc nghĩa vụ chấm dứt hoặc phát sinh chế tài.",
+      "examples": [
+        "Hạn nộp phạt vi phạm giao thông 10/04/2025",
+        "Thời hạn kháng cáo 15 ngày từ ngày tuyên án"
+      ]
+    },
+    "Duration": {
+      "desc": "Khoảng thời gian liên tục đo bằng ngày, tháng, năm mà một trạng thái pháp lý hoặc hợp đồng duy trì.",
+      "examples": [
+        "Thời hạn thuê nhà 12 tháng",
+        "Thời hiệu truy tố 10 năm"
+      ]
+    },
+    "EffectivePeriod": {
+      "desc": "Khoảng thời gian văn bản pháp luật hoặc thỏa thuận có hiệu lực thi hành, xác định rõ ngày bắt đầu và ngày kết thúc.",
+      "examples": [
+        "Hiệu lực hợp đồng bảo hiểm từ 01/01/2024 đến 31/12/2024",
+        "Áp dụng Nghị định mới từ 01/07/2025 đến 30/06/2027"
+      ]
+    },
+    "ValidityPeriod": {
+      "desc": "Khoảng thời gian được xác định trong văn bản mà tại đó quyền và nghĩa vụ pháp lý có giá trị thi hành.",
+      "examples": [
+        "Thời hạn bảo hành 24 tháng theo luật bảo vệ người tiêu dùng",
+        "Giấy phép xây dựng có hiệu lực 12 tháng"
+      ]
+    },
+    "GracePeriod": {
+      "desc": "Khoảng thời gian ân hạn sau khi đến hạn nghĩa vụ mà không bị áp dụng chế tài hoặc phạt. Cho phép bên có nghĩa vụ hoàn thành mà không bị coi là vi phạm.",
+      "examples": [
+        "15 ngày ân hạn sau ngày đáo hạn hợp đồng bảo hiểm",
+        "Thời gian ân hạn nộp thuế không bị tính phạt chậm nộp"
+      ]
+    },
+    "WaitingPeriod": {
+      "desc": "Khoảng thời gian chờ bắt buộc trước khi một quyền lợi có hiệu lực hoặc trước khi được thực hiện một hành động pháp lý. Nhằm loại trừ rủi ro hoặc đảm bảo điều kiện tiên quyết.",
+      "examples": [
+        "Thời gian chờ 30 ngày trước khi bảo hiểm sức khỏe chi trả quyền lợi",
+        "Thời gian chờ theo luật định trước khi đăng ký kết hôn lại"
+      ]
+    },
+    "BusinessDay": {
+      "desc": "Ngày làm việc theo quy định pháp luật hoặc thỏa thuận, loại trừ ngày nghỉ cuối tuần và ngày lễ. Dùng để tính thời hạn thực hiện nghĩa vụ pháp lý chính xác.",
+      "examples": [
+        "Ngân hàng cam kết xử lý trong 3 ngày làm việc",
+        "Thời hạn khiếu nại là 10 ngày làm việc kể từ khi nhận thông báo"
+      ]
+    },
+    "WorkingHour": {
+      "desc": "Khung giờ được pháp luật hoặc nội quy lao động cho phép thực hiện công việc hoặc giao dịch hành chính. Giới hạn số giờ làm việc để bảo vệ sức khỏe người lao động.",
+      "examples": [
+        "Cơ quan hành chính làm việc từ 8h00 đến 17h00 hàng ngày",
+        "Giới hạn tối đa 8 giờ làm việc mỗi ngày theo Bộ luật Lao động"
+      ]
+    },
+    "FiscalYear": {
+      "desc": "Kỳ kế toán năm do pháp luật quy định làm căn cứ xác định nghĩa vụ thuế và báo cáo tài chính của tổ chức.",
+      "examples": [
+        "Năm tài chính theo dương lịch của doanh nghiệp nhà nước",
+        "Năm ngân sách từ 01/04 đến 31/03 của đơn vị sự nghiệp"
+      ]
+    },
+    "TaxPeriod": {
+      "desc": "Kỳ tính thuế là khoảng thời gian được quy định để xác định nghĩa vụ thuế phải nộp, bao gồm theo tháng, quý, năm hoặc từng lần phát sinh.",
+      "examples": [
+        "Quý 2 năm 2024 (01/04-30/06)",
+        "Kỳ tính thuế theo lần phát sinh khi chuyển nhượng bất động sản"
+      ]
+    },
+    "Constraint": {
+      "desc": "Ràng buộc pháp lý là giới hạn hoặc điều kiện do luật định hoặc thỏa thuận áp đặt lên quyền và nghĩa vụ của chủ thể.",
+      "examples": [
+        "Điều khoản hạn chế chuyển nhượng cổ phần",
+        "Quy định về thời hạn bảo hành sản phẩm"
+      ]
+    },
+    "AgeConstraint": {
+      "desc": "Ràng buộc về độ tuổi tối thiểu hoặc tối đa để cá nhân được phép thực hiện hành vi pháp lý nhất định.",
+      "examples": [
+        "Pháp luật quy định đủ 18 tuổi mới được kết hôn",
+        "Người dưới 16 tuổi không được ký hợp đồng lao động toàn thời gian"
+      ]
+    },
+    "AreaConstraint": {
+      "desc": "Ràng buộc về phạm vi lãnh thổ hoặc khu vực địa lý áp dụng đối với hoạt động hoặc đối tượng pháp lý.",
+      "examples": [
+        "Quy hoạch chỉ cho phép xây dựng nhà ở tại khu vực đất ở",
+        "Hạn chế kinh doanh tạm thời tại vùng dịch"
+      ]
+    },
+    "MoneyConstraint": {
+      "desc": "Ràng buộc về hạn mức, giới hạn số tiền hoặc giá trị tài chính trong giao dịch hoặc nghĩa vụ pháp lý.",
+      "examples": [
+        "Giới hạn chuyển tiền mặt mỗi ngày qua ngân hàng",
+        "Mức trần giá bán hàng hóa thiết yếu trong bình ổn giá"
+      ]
+    },
+    "TaxConstraint": {
+      "desc": "Ràng buộc về nghĩa vụ thuế, mức thuế suất, hoặc các khoản khấu trừ bắt buộc theo quy định thuế.",
+      "examples": [
+        "Thuế giá trị gia tăng 10% áp dụng cho hàng hóa tiêu dùng",
+        "Miễn thuế thu nhập cho hộ kinh doanh dưới ngưỡng doanh thu"
+      ]
+    },
+    "PercentageConstraint": {
+      "desc": "Ràng buộc giới hạn tỷ lệ phần trăm theo quy định pháp luật hoặc hợp đồng, vi phạm có thể dẫn đến vô hiệu. Thường áp dụng trong sở hữu, ký quỹ hoặc phân chia lợi nhuận.",
+      "examples": [
+        "Tỷ lệ sở hữu nước ngoài tối đa 50% trong ngân hàng thương mại",
+        "Mức đặt cọc không quá 30% giá trị bất động sản"
+      ]
+    },
+    "DistanceConstraint": {
+      "desc": "Ràng buộc khoảng cách vật lý tối thiểu hoặc tối đa giữa các công trình theo quy chuẩn quy hoạch. Không tuân thủ bị xử phạt hoặc buộc tháo dỡ.",
+      "examples": [
+        "Công trình phải cách trạm biến áp ít nhất 15 mét",
+        "Quán bar cách trường học tối thiểu 200 mét"
+      ]
+    },
+    "TimeConstraint": {
+      "desc": "Ràng buộc về thời hạn mà chủ thể phải thực hiện hoặc hoàn thành nghĩa vụ pháp lý.",
+      "examples": [
+        "Nộp tờ khai thuế trong vòng 90 ngày kể từ ngày kết thúc năm tài chính",
+        "Thời hạn hợp đồng lao động xác định thời hạn tối đa 36 tháng"
+      ]
+    },
+    "DocumentConstraint": {
+      "desc": "Ràng buộc yêu cầu văn bản pháp lý làm điều kiện hiệu lực hoặc thủ tục. Thiếu tài liệu quy định hồ sơ bị vô hiệu hoặc từ chối.",
+      "examples": [
+        "Di chúc miệng phải lập biên bản có người làm chứng",
+        "Đăng ký kết hôn cần giấy xác nhận tình trạng hôn nhân"
+      ]
+    },
+    "QualificationConstraint": {
+      "desc": "Ràng buộc về năng lực chuyên môn hoặc điều kiện chủ thể theo luật định. Thiếu tư cách pháp lý bị cấm tham gia hoạt động.",
+      "examples": [
+        "Kiểm toán viên phải có chứng chỉ hành nghề do Bộ Tài chính cấp",
+        "Chỉ luật sư được quyền bào chữa tại tòa án hình sự"
+      ]
+    },
+    "LegalReference": {
+      "desc": "Tham chiếu đến văn bản quy phạm pháp luật hoặc nguyên tắc pháp lý làm căn cứ giải quyết vụ việc.",
+      "examples": [
+        "Bộ luật Dân sự 2015",
+        "Hiến pháp 2013"
+      ]
+    },
+    "DocumentReference": {
+      "desc": "Tham chiếu đến tài liệu cụ thể như văn bản hành chính, hợp đồng được trích dẫn trong hồ sơ.",
+      "examples": [
+        "Quyết định số 123/QĐ-UBND",
+        "Hợp đồng tín dụng ngày 01/01/2024"
+      ]
+    },
+    "ArticleReference": {
+      "desc": "Tham chiếu đến một điều cụ thể trong văn bản pháp luật hoặc tài liệu quy định nội dung điều chỉnh.",
+      "examples": [
+        "Điều 27 Bộ luật Hình sự",
+        "Điều 4 Thông tư 02/2023/TT-BTP"
+      ]
+    },
+    "ClauseReference": {
+      "desc": "Tham chiếu đến khoản thuộc điều luật hoặc điều khoản hợp đồng phân định chi tiết quyền nghĩa vụ.",
+      "examples": [
+        "Khoản 2 Điều 15 Luật Doanh nghiệp",
+        "Khoản 3 điều khoản bảo mật"
+      ]
+    },
+    "PointReference": {
+      "desc": "Tham chiếu đến điểm (a, b, c...) trong khoản hoặc mục xác định nội dung liệt kê cụ thể.",
+      "examples": [
+        "Điểm a Khoản 1 Điều 3",
+        "Điểm c Mục 2 Phụ lục hợp đồng"
+      ]
+    },
+    "CaseReference": {
+      "desc": "Tài liệu tham chiếu đến một vụ án cụ thể đã được hồ sơ hóa hoặc xét xử, dùng để đối chiếu tình tiết pháp lý.",
+      "examples": [
+        "Vụ án tranh chấp hợp đồng số 12/2020/KDTM",
+        "Hồ sơ vụ án hình sự Nguyễn Văn A"
+      ]
+    },
+    "JudgmentReference": {
+      "desc": "Trích dẫn bản án hoặc quyết định của tòa án đã có hiệu lực pháp luật, làm căn cứ pháp lý cho việc giải quyết vụ việc.",
+      "examples": [
+        "Bản án dân sự phúc thẩm số 45/2021/DS-PT",
+        "Quyết định giám đốc thẩm số 03/2022/KDTM-GĐT"
+      ]
+    },
+    "StandardReference": {
+      "desc": "Tham chiếu đến tiêu chuẩn kỹ thuật hoặc quy chuẩn pháp lý bắt buộc áp dụng trong đánh giá sự tuân thủ.",
+      "examples": [
+        "TCVN 7451:2004 về chất lượng nước sinh hoạt",
+        "Quy chuẩn kỹ thuật quốc gia QCVN 01:2021/BYT"
+      ]
+    },
+    "Synonym": {
+      "desc": "Từ hoặc cụm từ có cùng nghĩa pháp lý với thuật ngữ gốc trong văn bản quy phạm. Thường dùng thay thế nhau mà không làm thay đổi bản chất quan hệ pháp luật.",
+      "examples": [
+        "hợp đồng lao động và giao kèo làm công",
+        "người bán và bên cung cấp"
+      ]
+    },
+    "Abbreviation": {
+      "desc": "Hình thức viết tắt của một thuật ngữ pháp lý dài nhằm thuận tiện tra cứu. Phải được định nghĩa rõ ràng trong văn bản để tránh ambiguity.",
+      "examples": [
+        "BLDS (Bộ luật Dân sự)",
+        "TCPH (Tòa án nhân dân tối cao)"
+      ]
+    },
+    "Alias": {
+      "desc": "Tên gọi khác được pháp luật công nhận cho cùng một chủ thể hoặc thực thể. Không làm thay đổi tư cách pháp lý của chủ thể đó.",
+      "examples": [
+        "Công ty CP XYZ còn có tên giao dịch XYZ Corp",
+        "Nguyễn Văn A còn được gọi là A Bình"
+      ]
+    },
+    "EquivalentConcept": {
+      "desc": "Khái niệm trong hệ thống pháp luật khác có nội hàm tương đương về mặt chức năng pháp lý. Dùng trong đối chiếu luật quốc tế hoặc liên ngành.",
+      "examples": [
+        "doanh nghiệp tư nhân (VN) tương đương sole proprietorship (US)",
+        "thừa kế theo di chúc tương đương testamentary succession"
+      ]
+    },
+    "BroaderConcept": {
+      "desc": "Khái niệm pháp lý bao quát hơn, chứa đựng khái niệm đang xét như một thành phần loại phụ. Giúp xác định thứ bậc điều chỉnh trong ontology.",
+      "examples": [
+        "tài sản là broader concept của bất động sản",
+        "giao dịch dân sự là broader concept của hợp đồng"
+      ]
+    },
+    "NarrowerConcept": {
+      "desc": "Khái niệm cụ thể hơn được bao hàm bởi khái niệm rộng hơn trong hệ thống phân loại pháp lý.",
+      "examples": [
+        "Tội trộm cắp tài sản là khái niệm hẹp của Tội xâm phạm sở hữu",
+        "Hợp đồng mua bán là khái niệm hẹp của Hợp đồng dân sự"
+      ]
+    },
+    "ParentConcept": {
+      "desc": "Khái niệm bao quát hơn chứa đựng các khái niệm cụ thể hơn trong cấu trúc ontology pháp luật.",
+      "examples": [
+        "Quyền sở hữu là khái niệm cha của Quyền sử dụng đất",
+        "Văn bản quy phạm pháp luật là khái niệm cha của Nghị định"
+      ]
+    },
+    "ChildConcept": {
+      "desc": "Khái niệm con trực tiếp kế thừa thuộc tính từ khái niệm cha trong mô hình thực thể pháp lý.",
+      "examples": [
+        "Luật Doanh nghiệp là con của Văn bản luật",
+        "Giấy phép xây dựng là con của Giấy phép hành chính"
+      ]
+    },
+    "Domain": {
+      "desc": "Lĩnh vực pháp lý chuyên biệt bao quát một nhóm thực thể có cùng bối cảnh điều chỉnh.",
+      "examples": [
+        "Lĩnh vực Hình sự",
+        "Lĩnh vực Đất đai"
+      ]
+    },
+    "Category": {
+      "desc": "Nhóm phân loại các thực thể pháp lý theo tiêu chí nhất định để thuận tiện quản lý và tra cứu.",
+      "examples": [
+        "Nhóm văn bản hành chính",
+        "Nhóm quyền nhân thân"
+      ]
+    },
+    "InferenceRule": {
+      "desc": "Quy tắc suy diễn là quy định pháp lý cho phép rút ra kết luận pháp lý từ sự kiện đã biết thông qua lập luận logic. Quy tắc xác định điều kiện tiên quyết và hệ quả pháp lý tương ứng.",
+      "examples": [
+        "Suy đoán vô tội cho đến khi có bản án có hiệu lực",
+        "Suy diễn nghĩa vụ bồi thường từ hành vi gây thiệt hại"
+      ]
+    },
+    "DerivedFact": {
+      "desc": "Sự kiện suy dẫn là tình tiết pháp lý được xác lập gián tiếp qua áp dụng quy tắc suy diễn thay vì chứng cứ trực tiếp. Sự kiện này có giá trị pháp lý trong giải quyết vụ việc.",
+      "examples": [
+        "Tình trạng phá sản xác định từ báo cáo tài chính",
+        "Thời điểm chuyển giao rủi ro từ điều khoản vận chuyển"
+      ]
+    },
+    "Conflict": {
+      "desc": "Xung đột là mâu thuẫn giữa các quy định hoặc kết luận pháp lý cùng chi phối một vụ việc. Xung đột được giải quyết bằng nguyên tắc ưu tiên hoặc thẩm quyền giải thích.",
+      "examples": [
+        "Mâu thuẫn điều khoản hợp đồng với luật bắt buộc",
+        "Xung đột hai bản án cùng hiệu lực về một tranh chấp"
+      ]
+    },
+    "Priority": {
+      "desc": "Độ ưu tiên là thứ tự áp dụng văn bản hoặc chứng cứ khi nhiều quy định cùng chi phối tình huống. Thứ tự thường do hiến pháp, luật hoặc thẩm quyền xác lập.",
+      "examples": [
+        "Hiến pháp cao nhất hệ thống pháp luật",
+        "Văn bản mới ưu tiên văn bản cũ cùng cấp"
+      ]
+    },
+    "Override": {
+      "desc": "Quy tắc loại trừ là cơ chế vô hiệu hóa áp dụng quy định thấp hơn bởi quy định có hiệu lực cao hơn. Cơ chế bảo đảm thống nhất pháp luật.",
+      "examples": [
+        "Luật chuyên ngành thay thế luật chung",
+        "Thỏa thuận miễn trách nhiệm hợp pháp thay quy định mặc định"
+      ]
+    },
+    "Dependency": {
+      "desc": "Sự phụ thuộc pháp lý là mối quan hệ mà hiệu lực hoặc thực hiện của một quy định, hành vi phải dựa trên điều kiện hoặc văn bản khác.",
+      "examples": [
+        "Nghị định thi hành Luật phụ thuộc vào ngày Luật có hiệu lực",
+        "Giấy phép kinh doanh có điều kiện phụ thuộc vào giấy chứng nhận vệ sinh an toàn thực phẩm"
+      ]
+    },
+    "Requirement": {
+      "desc": "Yêu cầu pháp lý là điều kiện bắt buộc phải thỏa mãn theo quy định của pháp luật để một chủ thể được thực hiện quyền hoặc miễn trách nhiệm.",
+      "examples": [
+        "Doanh nghiệp phải có vốn điều lệ tối thiểu 10 tỷ để thành lập ngân hàng",
+        "Người lao động phải đủ 15 tuổi để ký hợp đồng lao động"
+      ]
+    },
+    "Trigger": {
+      "desc": "Sự kiện kích hoạt là hành vi hoặc thời điểm làm phát sinh, thay đổi hoặc chấm dứt quan hệ pháp luật được quy định sẵn.",
+      "examples": [
+        "Ngày ký hợp đồng làm phát sinh nghĩa vụ giao hàng",
+        "Phát hiện vi phạm kích hoạt thủ tục xử phạt hành chính"
+      ]
+    },
+    "Cause": {
+      "desc": "Nguyên nhân pháp lý là hành vi hoặc sự kiện được pháp luật xác định là nguồn gốc trực tiếp dẫn đến hậu quả pháp lý.",
+      "examples": [
+        "Lỗi cố ý gây thiệt hại tài sản là căn cứ buộc bồi thường",
+        "Ký kết hợp đồng trái pháp luật dẫn đến vô hiệu"
+      ]
+    },
+    "Effect": {
+      "desc": "Hậu quả pháp lý là kết quả về quyền và nghĩa vụ phát sinh từ một sự kiện hoặc hành vi được pháp luật điều chỉnh.",
+      "examples": [
+        "Hợp đồng vô hiệu dẫn đến nghĩa vụ hoàn trả tài sản",
+        "Quyết định xử phạt tạo nghĩa vụ nộp phạt trong 10 ngày"
+      ]
+    },
+    "License": {
+      "desc": "Văn bản do cơ quan nhà nước có thẩm quyền cấp, cho phép cá nhân hoặc tổ chức được thực hiện hoạt động hoặc sử dụng tài sản theo quy định pháp luật.",
+      "examples": [
+        "Giấy phép kinh doanh",
+        "Giấy phép xây dựng",
+        "Giấy phép lái xe"
+      ]
+    },
+    "Certificate": {
+      "desc": "Văn bản xác nhận cá nhân đã đạt trình độ, kỹ năng hoặc điều kiện pháp lý nhất định do cơ quan có thẩm quyền cấp.",
+      "examples": [
+        "Chứng chỉ hành nghề luật sư",
+        "Chứng chỉ kế toán viên",
+        "Bằng tốt nghiệp đại học"
+      ]
+    },
+    "Constitution": {
+      "desc": "Văn bản quy phạm pháp luật cơ bản có hiệu lực pháp lý cao nhất, quy định chế độ chính trị, quyền con người, quyền công dân. Chỉ Quốc hội mới có thẩm quyền ban hành và sửa đổi.",
+      "examples": [
+        "Hiến pháp năm 2013",
+        "Hiến pháp năm 1992"
+      ]
+    },
+    "Treaty": {
+      "desc": "Thỏa thuận quốc tế được ký kết giữa các quốc gia hoặc chủ thể luật quốc tế, tạo ràng buộc pháp lý theo luật quốc tế.",
+      "examples": [
+        "Hiệp ước Paris 2015 về biến đổi khí hậu",
+        "Hiệp ước không phổ biến vũ khí hạt nhân (NPT)"
+      ]
+    },
+    "Convention": {
+      "desc": "Điều ước quốc tế đa phương do tổ chức quốc tế soạn thảo, thiết lập chuẩn mực pháp lý chung cho nhiều quốc gia thành viên.",
+      "examples": [
+        "Công ước Vienna về luật điều ước 1969",
+        "Công ước Liên Hợp Quốc về quyền trẻ em"
+      ]
+    },
+    "Agreement": {
+      "desc": "Thỏa thuận pháp lý giữa hai hoặc nhiều bên về quyền và nghĩa vụ cụ thể, có thể ở cấp song phương, đa phương hoặc thương mại.",
+      "examples": [
+        "Hiệp định thương mại tự do Việt Nam-EU (EVFTA)",
+        "Hợp đồng nguyên tắc hợp tác kinh doanh"
+      ]
+    },
+    "TechnicalStandard": {
+      "desc": "Văn bản quy chuẩn kỹ thuật do cơ quan có thẩm quyền ban hành, quy định yêu cầu kỹ thuật bắt buộc hoặc tự nguyện để đảm bảo an toàn và tương thích.",
+      "examples": [
+        "TCVN ISO 9001:2015 về hệ thống quản lý chất lượng",
+        "QCVN 3:2019/BKHCN về an toàn đồ chơi trẻ em"
+      ]
+    },
+    "Property": {
+      "desc": "Vật hoặc quyền tài sản thuộc sở hữu hợp pháp của cá nhân, tổ chức, bao gồm động sản và bất động sản.",
+      "examples": [
+        "Xe máy cá nhân",
+        "Bản quyền phần mềm"
+      ]
+    },
+    "Land": {
+      "desc": "Bề mặt trái đất được Nhà nước giao quyền sử dụng hoặc công nhận, là bất động sản đặc biệt theo Luật Đất đai.",
+      "examples": [
+        "Thửa đất thổ cư",
+        "Đất trồng lúa"
+      ]
+    },
+    "Money": {
+      "desc": "Phương tiện thanh toán hợp pháp do Nhà nước phát hành hoặc công nhận để đo lường giá trị hàng hóa.",
+      "examples": [
+        "Tiền Việt Nam đồng",
+        "Séc ngân hàng"
+      ]
+    },
+    "Asset": {
+      "desc": "Tài sản có giá trị kinh tế thuộc quyền sở hữu của chủ thể, có khả năng sinh lợi hoặc sử dụng.",
+      "examples": [
+        "Cổ phiếu doanh nghiệp",
+        "Máy móc xưởng sản xuất"
+      ]
+    },
+    "Tax": {
+      "desc": "Khoản thu bắt buộc nộp ngân sách nhà nước theo luật định, không hoàn trả trực tiếp cho người nộp.",
+      "examples": [
+        "Thuế thu nhập cá nhân",
+        "Thuế VAT"
+      ]
+    },
+    "Vehicle": {
+      "desc": "Phương tiện giao thông cơ giới hoặc thô sơ dùng để chuyên chở người, hàng hóa trên đường bộ, đường thủy hoặc đường hàng không theo quy định pháp luật.",
+      "examples": [
+        "Ô tô cá nhân",
+        "Xe máy",
+        "Tàu thủy"
+      ]
+    },
+    "Building": {
+      "desc": "Công trình xây dựng có mái, tường, cột và nền được thiết kế để con người ở hoặc hoạt động, được cấp phép xây dựng theo luật định.",
+      "examples": [
+        "Nhà ở riêng lẻ",
+        "Chung cư",
+        "Trụ sở công ty"
+      ]
+    },
+    "Permit": {
+      "desc": "Giấy phép cụ thể cho phép thực hiện một hành vi hoặc sự kiện nhất định trong thời hạn và điều kiện giới hạn.",
+      "examples": [
+        "Giấy phép mang súng",
+        "Giấy phép tổ chức sự kiện",
+        "Giấy phép xả thải"
+      ]
+    },
+    "PersonalData": {
+      "desc": "Theo Nghị định 13/2023/NĐ-CP, là dữ liệu về thông tin định danh hoặc thông tin nhận dạng từ đó xác định được một cá nhân cụ thể. Việc xử lý phải có sự đồng ý của chủ thể dữ liệu trừ trường hợp luật quy định khác.",
+      "examples": [
+        "Họ tên đầy đủ",
+        "Số căn cước công dân",
+        "Địa chỉ email cá nhân"
+      ]
+    },
+    "SensitiveData": {
+      "desc": "Là dữ liệu cá nhân gắn với bí mật đời tư mà nếu bị xâm phạm sẽ ảnh hưởng trực tiếp đến quyền và lợi ích hợp pháp của cá nhân theo quy định pháp luật bảo vệ dữ liệu. Cần sự đồng ý rõ ràng bằng văn bản để xử lý.",
+      "examples": [
+        "Thông tin về tôn giáo hoặc tín ngưỡng",
+        "Dữ liệu sinh trắc học như vân tay",
+        "Hồ sơ bệnh án chi tiết"
+      ]
+    },
+    "PublicData": {
+      "desc": "Là thông tin được cơ quan nhà nước công khai theo luật hoặc chủ thể dữ liệu đồng ý phát tán rộng rãi không hạn chế quyền tiếp cận. Việc thu thập và sử dụng không vi phạm bí mật riêng tư.",
+      "examples": [
+        "Thông tin đăng ký doanh nghiệp trên cổng quốc gia",
+        "Quyết định xử phạt hành chính đã công khai",
+        "Danh sách đại biểu hội đồng nhân dân"
+      ]
+    },
+    "Information": {
+      "desc": "Khái niệm bao quát chỉ dữ liệu đã được xử lý thành nội dung có ý nghĩa pháp lý hoặc tri thức, có thể không gắn với cá nhân. Được điều chỉnh bởi Luật Tiếp cận thông tin 2016.",
+      "examples": [
+        "Báo cáo tình hình kinh tế vĩ mô quý",
+        "Văn bản quy phạm pháp luật đã có hiệu lực",
+        "Thông cáo báo chí chính thức của bộ"
+      ]
+    },
+    "LegalStatus": {
+      "desc": "Tình trạng pháp lý của chủ thể trước pháp luật, xác định quyền và nghĩa vụ cơ bản được công nhận.",
+      "examples": [
+        "Công dân Việt Nam",
+        "Tổ chức có tư cách pháp nhân"
+      ]
+    },
+    "LegalCapacity": {
+      "desc": "Năng lực pháp luật là khả năng chủ thể được có quyền và gánh vác nghĩa vụ pháp lý do pháp luật quy định.",
+      "examples": [
+        "Người đủ 18 tuổi có năng lực pháp luật đầy đủ",
+        "Pháp nhân có năng lực pháp luật theo mục đích hoạt động"
+      ]
+    },
+    "CivilCapacity": {
+      "desc": "Năng lực hành vi dân sự là khả năng cá nhân bằng hành vi của mình xác lập, thực hiện quyền và nghĩa vụ dân sự.",
+      "examples": [
+        "Người thành niên có năng lực hành vi dân sự đầy đủ",
+        "Người chưa thành niên có năng lực hành vi một phần"
+      ]
+    },
+    "AdministrativeViolation": {
+      "desc": "Hành vi vi phạm hành chính là hành vi có lỗi vi phạm quy định quản lý nhà nước mà không cấu thành tội phạm.",
+      "examples": [
+        "Vượt đèn đỏ",
+        "Bán hàng rong trái phép"
+      ]
+    },
+    "Crime": {
+      "desc": "Tội phạm là hành vi nguy hiểm cho xã hội, vi phạm pháp luật hình sự và bị truy cứu trách nhiệm hình sự.",
+      "examples": [
+        "Trộm cắp tài sản",
+        "Giết người"
+      ]
+    },
+    "Register": {
+      "desc": "Hành vi pháp lý nhằm ghi nhận thông tin vào sổ hoặc hệ thống chính thức của cơ quan nhà nước để xác lập tư cách pháp lý, tạo cơ sở cho quyền và nghĩa vụ của chủ thể.",
+      "examples": [
+        "Đăng ký kinh doanh hộ cá thể tại UBND xã",
+        "Đăng ký quyền sở hữu xe ô tô tại cơ quan công an"
+      ]
+    },
+    "Declare": {
+      "desc": "Hành vi khai báo thông tin sự kiện, tình trạng hoặc số liệu cho cơ quan có thẩm quyền theo quy định pháp luật phục vụ quản lý nhà nước.",
+      "examples": [
+        "Kê khai thuế thu nhập cá nhân hàng năm",
+        "Khai báo tạm trú cho người nước ngoài"
+      ]
+    },
+    "Submit": {
+      "desc": "Việc nộp hồ sơ, tài liệu hoặc đơn yêu cầu đến cơ quan có thẩm quyền để đề nghị giải quyết công việc theo thủ tục hành chính.",
+      "examples": [
+        "Nộp hồ sơ xin cấp giấy phép xây dựng",
+        "Nộp đơn đăng ký nhãn hiệu qua hệ thống trực tuyến"
+      ]
+    },
+    "Approve": {
+      "desc": "Quyết định chấp thuận của cơ quan hoặc người có thẩm quyền đối với yêu cầu hoặc hồ sơ, làm phát sinh hiệu lực pháp lý cho hoạt động được đề nghị.",
+      "examples": [
+        "Cơ quan thuế duyệt hoàn thuế giá trị gia tăng",
+        "Sở Xây dựng phê duyệt bản vẽ thiết kế kỹ thuật"
+      ]
+    },
+    "Reject": {
+      "desc": "Quyết định từ chối chấp thuận yêu cầu hoặc hồ sơ do không đáp ứng điều kiện pháp lý, văn bản từ chối phải nêu rõ lý do và căn cứ.",
+      "examples": [
+        "Từ chối cấp visa do hồ sơ không đầy đủ",
+        "Bác đơn xin phá dỡ công trình cũ vì sai quy hoạch"
+      ]
+    },
+    "Lease": {
+      "desc": "Hợp đồng cho thuê tài sản để nhận tiền, bên thuê được quyền sử dụng trong thời hạn nhất định theo quy định pháp luật dân sự.",
+      "examples": [
+        "Thuê nhà ở căn hộ chung cư",
+        "Thuê xe ô tô tự lái"
+      ]
+    },
+    "Mortgage": {
+      "desc": "Thế chấp tài sản bảo đảm nghĩa vụ trả nợ, tài sản không chuyển giao cho bên nhận thế chấp theo Bộ luật Dân sự.",
+      "examples": [
+        "Thế chấp quyền sử dụng đất tại ngân hàng",
+        "Thế chấp nhà ở để vay vốn"
+      ]
+    },
+    "Donate": {
+      "desc": "Tặng cho tài sản không bồi hoàn, chuyển quyền sở hữu miễn phí cho bên nhận theo thỏa thuận hợp pháp.",
+      "examples": [
+        "Tặng cho quyền sử dụng đất giữa anh em",
+        "Tặng cho xe máy cũ cho con"
+      ]
+    },
+    "Build": {
+      "desc": "Xây dựng công trình hoặc nhà ở trên đất, tạo ra tài sản gắn liền với đất theo giấy phép xây dựng.",
+      "examples": [
+        "Xây dựng nhà ở riêng lẻ",
+        "Xây kho xưởng sản xuất"
+      ]
+    },
+    "Destroy": {
+      "desc": "Làm phá hủy hoặc hư hại tài sản làm mất giá trị sử dụng, có thể phát sinh trách nhiệm bồi thường hoặc hình sự.",
+      "examples": [
+        "Đập phá công trình xây dựng trái phép",
+        "Thiêu hủy hàng hóa giả mạo"
+      ]
+    },
+    "Note": {
+      "desc": "Ghi chú ngắn ghi lại thông tin cần nhớ hoặc chi tiết phụ trợ. Dùng để lưu ý cá nhân hoặc chú thích nhanh.",
+      "examples": [
+        "Ghi chú cuộc họp sáng nay",
+        "Nhắc mua sữa vào chiều"
+      ]
+    }
+  },
+  "_relationshipDescriptions": {
+    "HAS_PART": {
+      "desc": "Quan hệ chỉ ra một văn bản luật hoặc thực thể pháp lý chứa đựng một phần cấu thành hoặc bộ phận cụ thể bên trong nó.",
+      "examples": [
+        "Bộ luật Dân sự 2015 (Văn bản luật) HAS_PART Phần thứ nhất: Những quy định chung (Phần)"
+      ]
+    },
+    "HAS_CHAPTER": {
+      "desc": "Quan hệ chỉ ra một văn bản luật hoặc phần của nó chứa đựng một chương quy định các nội dung cụ thể.",
+      "examples": [
+        "Luật Doanh nghiệp 2020 (Văn bản luật) HAS_CHAPTER Chương I: Những quy định chung (Chương)"
+      ]
+    },
+    "HAS_SECTION": {
+      "desc": "Quan hệ chỉ ra một chương trong văn bản luật chứa đựng một điều quy định chi tiết về một vấn đề pháp lý.",
+      "examples": [
+        "Chương X Bộ luật Hình sự (Chương) HAS_SECTION Điều 100: Tội trốn thuế (Điều)"
+      ]
+    },
+    "HAS_SUBSECTION": {
+      "desc": "Quan hệ chỉ ra một điều luật chứa đựng một khoản quy định chi tiết hoặc điểm nhỏ bên trong điều đó.",
+      "examples": [
+        "Điều 3 Luật Đất đai 2013 (Điều) HAS_SUBSECTION Khoản 1: Giải thích từ ngữ (Khoản)"
+      ]
+    },
+    "HAS_ARTICLE": {
+      "desc": "Quan hệ giữa văn bản luật và các điều được ban hành trong đó. Node nguồn là LawDocument, node đích là Article.",
+      "examples": [
+        "Luật Doanh nghiệp 2020 (LawDocument) có Điều 111 (Article) về quyền của cổ đông.",
+        "Bộ luật Dân sự 2015 (LawDocument) chứa Điều 275 (Article) quy định về quyền hưởng dụng."
+      ]
+    },
+    "HAS_CLAUSE": {
+      "desc": "Quan hệ giữa một điều luật và các khoản cấu thành điều đó. Node nguồn là Article, node đích là Clause.",
+      "examples": [
+        "Điều 13 (Article) có Khoản 2 (Clause) định nghĩa quyền nhân thân.",
+        "Điều 64 (Article) tại Khoản 1 (Clause) quy định về tài sản chung."
+      ]
+    },
+    "HAS_POINT": {
+      "desc": "Quan hệ giữa một khoản và các điểm chia nhỏ nội dung khoản đó. Node nguồn là Clause, node đích là Point.",
+      "examples": [
+        "Khoản 1 (Clause) bao gồm Điểm a (Point) về loại hợp đồng.",
+        "Khoản 3 (Clause) có Điểm b (Point) liệt kê trường hợp miễn trách nhiệm."
+      ]
+    },
+    "HAS_PARAGRAPH": {
+      "desc": "Quan hệ giữa khoản hoặc điều và các đoạn văn phân tách nội dung trong đó. Node nguồn là Clause hoặc Article, node đích là Paragraph.",
+      "examples": [
+        "Khoản 2 (Clause) chứa Đoạn thứ nhất (Paragraph) nêu nguyên tắc áp dụng.",
+        "Điều 5 (Article) có Đoạn cuối (Paragraph) quy định hiệu lực chuyển tiếp."
+      ]
+    },
+    "HAS_SENTENCE": {
+      "desc": "Quan hệ chỉ định một đơn vị văn bản (như điều, khoản) chứa đựng một câu luật hoặc quy định cụ thể. Thể hiện cấu trúc nội dung chi tiết của văn bản pháp luật.",
+      "examples": [
+        "Điều 1 (Điều) HAS_SENTENCE (Câu) 'Nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam là Nhà nước pháp quyền xã hội chủ nghĩa của Nhân dân, do Nhân dân, vì Nhân dân.'",
+        "Khoản 1 (Khoản) HAS_SENTENCE (Câu) 'Tổ chức, cá nhân có quyền lập hợp đồng dân sự theo thỏa thuận.'"
+      ]
+    },
+    "PART_OF": {
+      "desc": "Quan hệ không gian thể hiện đơn vị hành chính hoặc khu vực là bộ phận cấu thành của đơn vị lớn hơn. Xác định cấp bậc địa giới hành chính theo luật định.",
+      "examples": [
+        "Quận C (Node: AdministrativeArea) part_of TP. Hà Nội (Node: AdministrativeArea)",
+        "Thửa đất D (Node: Parcel) part_of Lô đất E (Node: Parcel)"
+      ]
+    },
+    "NEXT": {
+      "desc": "Quan hệ tuần tự thể hiện đơn vị pháp lý này đứng ngay sau đơn vị pháp lý khác trong văn bản. Dùng để duy trì trình tự đọc và áp dụng luật.",
+      "examples": [
+        "Điều 10 (Điều) NEXT (Điều) Điều 11 Luật Đất đai năm 2013 quy định về quyền và nghĩa vụ của người sử dụng đất.",
+        "Khoản 1 (Khoản) NEXT (Khoản) Khoản 2 Điều 15 Bộ luật Dân sự năm 2015."
+      ]
+    },
+    "PREVIOUS": {
+      "desc": "Quan hệ tuần tự thể hiện đơn vị pháp lý này đứng ngay trước đơn vị pháp lý khác trong văn bản. Hỗ trợ việc truy xuất ngược trình tự quy định.",
+      "examples": [
+        "Điều 5 (Điều) PREVIOUS (Điều) Điều 4 Luật Doanh nghiệp năm 2020 quy định về quyền của doanh nghiệp.",
+        "Điểm b (Điểm) PREVIOUS (Điểm) Điểm c Khoản 3 Điều 8 Luật Thuế thu nhập cá nhân."
+      ]
+    },
+    "IMPLEMENTS": {
+      "desc": "Quan hệ chỉ việc văn bản cấp dưới quy định chi tiết, hướng dẫn thi hành văn bản cấp trên trong hệ thống pháp luật.",
+      "examples": [
+        "Nghị định 30/2020 (Decree) IMPLEMENTS Luật Căn cước 2023 (Law)",
+        "Thông tư 02/2023 (Circular) IMPLEMENTS Nghị định 10/2022 (Decree)"
+      ]
+    },
+    "DETAILS": {
+      "desc": "Quan hệ chỉ rằng văn bản nguồn cung cấp giải thích hoặc thông tin chi tiết rõ hơn cho nội dung của văn bản đích. Nguồn làm rõ điều khoản đích.",
+      "examples": [
+        "Công văn 2010/BTC-TCT (LegalDocument) DETAILS Nghị định 126/2020/NĐ-CP (LegalDocument)",
+        "Phụ lục II ban hành kèm (LegalDocument) DETAILS Thông tư 01/2019/TT-BTP (LegalDocument)"
+      ]
+    },
+    "GUIDES": {
+      "desc": "Văn bản nguồn hướng dẫn chi tiết cách thi hành văn bản đích. Thường do cơ quan cấp dưới ban hành để thực hiện văn bản cấp trên.",
+      "examples": [
+        "Circular (Thông tư) 01/2020/TT-BTP GUIDES Decree (Nghị định) 23/2015/NĐ-CP về cấp bản sao từ sổ gốc."
+      ]
+    },
+    "INTERPRETS": {
+      "desc": "Văn bản nguồn giải thích nội dung, phạm vi áp dụng của văn bản đích. Giúp xóa bỏ sự mập mờ trong quy định pháp luật.",
+      "examples": [
+        "Official Letter (Công văn) 123/TCT-CS INTERPRETS Law (Luật) Thuế GTGT về đối tượng không chịu thuế."
+      ]
+    },
+    "REFERS_TO": {
+      "desc": "Quan hệ chỉ một văn bản, điều khoản hoặc hợp đồng luật đề cập đến một thực thể pháp lý khác.",
+      "examples": [
+        "Điều 12 Luật Thuế (Node: Norm) refers_to 'Cơ quan thuế' (Node: Organization)",
+        "Hợp đồng tín dụng (Node: Contract) refers_to 'Lãi suất' (Node: Term)"
+      ]
+    },
+    "CITES": {
+      "desc": "Văn bản nguồn trích dẫn trực tiếp văn bản đích làm căn cứ pháp lý ban hành.",
+      "examples": [
+        "Nghị định 123/2020/NĐ-CP (Document) trích dẫn Luật Quản lý thuế 2019 (Document)",
+        "Quyết định 45/QĐ-TTg (Document) căn cứ Nghị định 30/2020/NĐ-CP (Document)"
+      ]
+    },
+    "AMENDS": {
+      "desc": "Quan hệ chỉ việc một văn bản pháp luật sửa đổi, bổ sung nội dung của một văn bản pháp luật khác đã ban hành.",
+      "examples": [
+        "Luật sửa đổi bổ sung một số điều của Luật Giáo dục 2019 (Law) AMENDS Luật Giáo dục 2005 (Law)"
+      ]
+    },
+    "REPEALS": {
+      "desc": "Quan hệ chỉ việc một văn bản pháp luật bãi bỏ toàn bộ hoặc một phần hiệu lực pháp lý của văn bản khác.",
+      "examples": [
+        "Luật Ban hành văn bản quy phạm pháp luật 2015 (Law) REPEALS Luật Ban hành văn bản quy phạm pháp luật 2008 (Law)"
+      ]
+    },
+    "REPLACES": {
+      "desc": "Quan hệ chỉ văn bản pháp lý thay thế hoàn toàn văn bản khác đã tồn tại, làm cho văn bản cũ chấm dứt hiệu lực.",
+      "examples": [
+        "Nghị định 01/2021/NĐ-CP (node Nghị định) thay thế Nghị định 02/2015/NĐ-CP (node Nghị định).",
+        "Thông tư 10/2022/TT-BTC (node Thông tư) thay thế Thông tư 05/2018/TT-BTC (node Thông tư)."
+      ]
+    },
+    "SUPERSEDES": {
+      "desc": "Quan hệ chỉ văn bản mới thay thế hoàn toàn văn bản cũ. Node nguồn và đích đều là Document.",
+      "examples": [
+        "Luật Doanh nghiệp 2020 (Document) thay thế Luật Doanh nghiệp 2014 (Document)."
+      ]
+    },
+    "DERIVED_FROM": {
+      "desc": "Quan hệ chỉ rằng văn bản nguồn được ban hành dựa trên căn cứ pháp lý trực tiếp từ văn bản đích. Nguồn thường là văn bản hướng dẫn.",
+      "examples": [
+        "Thông tư 03/2020/TT-BYT (LegalDocument) DERIVED_FROM Luật Khám bệnh, chữa bệnh 2011 (LegalDocument)",
+        "Quyết định 123/QĐ-TTg (LegalDocument) DERIVED_FROM Nghị định 30/2020/NĐ-CP (LegalDocument)"
+      ]
+    },
+    "RELATED_DOCUMENT": {
+      "desc": "Quan hệ chỉ văn bản có liên quan về nội dung hoặc chủ đề nhưng không thay thế hay kế thừa trực tiếp.",
+      "examples": [
+        "Luật Doanh nghiệp 2020 (node Luật) liên quan đến Luật Đầu tư 2020 (node Luật).",
+        "Quyết định 10/2021/QĐ-UBND (node Quyết định) tham chiếu Công văn 123/BTC-TCT (node Công văn)."
+      ]
+    },
+    "HAS_NORM": {
+      "desc": "Quan hệ chỉ việc một thực thể pháp lý tham chiếu hoặc chứa đựng một quy phạm pháp luật cụ thể.",
+      "examples": [
+        "Điều 12 Luật Đất đai HAS_NORM Quy phạm về cấp giấy chứng nhận",
+        "Hợp đồng tín dụng HAS_NORM Quy phạm về lãi suất"
+      ]
+    },
+    "HAS_SUBJECT": {
+      "desc": "Quan hệ xác định chủ thể (cá nhân/tổ chức) chịu sự điều chỉnh hoặc có quyền nghĩa vụ từ quy phạm.",
+      "examples": [
+        "Quy phạm bảo hiểm y tế HAS_SUBJECT Người lao động",
+        "Quy phạm đăng ký kinh doanh HAS_SUBJECT Hộ kinh doanh"
+      ]
+    },
+    "HAS_OBJECT": {
+      "desc": "Quan hệ chỉ ra đối tượng (tài sản, hành vi, trạng thái) là mục tiêu tác động của quy phạm pháp luật.",
+      "examples": [
+        "Quy phạm bảo vệ môi trường HAS_OBJECT Nguồn nước mặt",
+        "Quy phạm sở hữu trí tuệ HAS_OBJECT Tác phẩm sáng tạo"
+      ]
+    },
+    "HAS_ACTION": {
+      "desc": "Quan hệ mô tả hành vi được cho phép, bị cấm hoặc bắt buộc thực hiện theo quy phạm pháp luật.",
+      "examples": [
+        "Quy phạm giao thông đường bộ HAS_ACTION Dừng xe trước vạch kẻ",
+        "Quy phạm thuế thu nhập HAS_ACTION Kê khai hàng năm"
+      ]
+    },
+    "HAS_CONDITION": {
+      "desc": "Quan hệ chỉ điều kiện cần thiết để một quy phạm pháp luật phát sinh hiệu lực hoặc được áp dụng đối với đối tượng.",
+      "examples": [
+        "Điều 64 Luật Đất đai (LegalProvision) HAS_CONDITION Giấy chứng nhận quyền sử dụng đất (Condition)",
+        "Quyền khởi kiện (Right) HAS_CONDITION Thời hiệu 03 năm (Condition)"
+      ]
+    },
+    "HAS_EXCEPTION": {
+      "desc": "Quan hệ chỉ trường hợp loại trừ không áp dụng quy phạm pháp luật trong hoàn cảnh cụ thể dù thỏa mãn điều kiện chung.",
+      "examples": [
+        "Nghĩa vụ tham gia nghĩa vụ quân sự (Obligation) HAS_EXCEPTION Người đang học đại học (Exception)",
+        "Lệnh cấm xuất cảnh (Prohibition) HAS_EXCEPTION Trường hợp khẩn cấp y tế (Exception)"
+      ]
+    },
+    "HAS_DEADLINE": {
+      "desc": "Quan hệ chỉ mốc thời gian hoặc khoảng thời gian tối đa mà chủ thể phải thực hiện hoặc hoàn tất hành vi pháp lý.",
+      "examples": [
+        "Thủ tục cấp giấy phép xây dựng (Procedure) HAS_DEADLINE 20 ngày làm việc (Deadline)",
+        "Nghĩa vụ nộp thuế thu nhập (Obligation) HAS_DEADLINE Ngày 31 tháng 3 hàng năm (Deadline)"
+      ]
+    },
+    "HAS_AUTHORITY": {
+      "desc": "Quan hệ chỉ cơ quan, tổ chức hoặc cá nhân được pháp luật giao thẩm quyền ban hành, thi hành hoặc giám sát quy phạm.",
+      "examples": [
+        "Quyết định xử phạt vi phạm hành chính (Sanction) HAS_AUTHORITY Chủ tịch UBND cấp huyện (Authority)",
+        "Công nhận kết quả đấu thầu (AdministrativeAct) HAS_AUTHORITY Bộ Kế hoạch và Đầu tư (Authority)"
+      ]
+    },
+    "HAS_CONSEQUENCE": {
+      "desc": "Quan hệ chỉ ra hệ quả pháp lý hoặc chế tài phát sinh từ một quy phạm. Node nguồn là Quy phạm, node đích là Hệ quả pháp lý hoặc Chế tài.",
+      "examples": [
+        "Điều 8 Luật Hình sự (node: Quy phạm) HAS_CONSEQUENCE (node: Chế tài) Khoản 2 Điều 12 (phạt tù 2 năm)",
+        "Quy định hợp đồng vô hiệu (node: Quy phạm) HAS_CONSEQUENCE (node: Hệ quả) Nghĩa vụ hoàn trả tài sản (bên nhận)"
+      ]
+    },
+    "HAS_SCOPE": {
+      "desc": "Quan hệ xác định phạm vi điều chỉnh, đối tượng chịu tác động hoặc giới hạn không gian/thời gian của một quy phạm.",
+      "examples": [
+        "Luật Bảo vệ môi trường 2020 (Node: Văn bản luật) có phạm vi điều chỉnh bao gồm Hoạt động bảo vệ môi trường (Node: Lĩnh vực).",
+        "Thông tư 08/2022 (Node: Thông tư) quy định phạm vi áp dụng trong Lĩnh vực giao thông vận tải (Node: Lĩnh vực)."
+      ]
+    },
+    "HAS_PRIORITY": {
+      "desc": "Quan hệ thể hiện thứ tự ưu tiên hiệu lực giữa các quy phạm khi có xung đột. Node nguồn là Quy phạm có hiệu lực cao hơn, node đích là Quy phạm bị chi phối.",
+      "examples": [
+        "Hiến pháp 2013 (node: Quy phạm) HAS_PRIORITY (node: Quy phạm) Luật Đất đai 2013",
+        "Điều ước quốc tế (node: Quy phạm) HAS_PRIORITY (node: Quy phạm) Quy định nội địa mâu thuẫn"
+      ]
+    },
+    "HAS_REFERENCE": {
+      "desc": "Quan hệ tham chiếu hoặc trích dẫn tới văn bản, điều khoản khác để làm rõ nội dung. Node nguồn là Quy phạm đang xét, node đích là Văn bản hoặc Điều khoản được dẫn.",
+      "examples": [
+        "Điều 10 Thông tư 04 (node: Quy phạm) HAS_REFERENCE (node: Điều khoản) Điều 5 Nghị định 15",
+        "Khoản 3 Điều 20 (node: Quy phạm) HAS_REFERENCE (node: Văn bản) Công văn 1234/BTC-TCT"
+      ]
+    },
+    "HAS_FORMULA": {
+      "desc": "Quan hệ chỉ định công thức toán học hoặc phương pháp tính được dùng để cụ thể hóa một quy định pháp lý. Thể hiện sự ràng buộc về mặt tính toán giữa văn bản quy phạm và biểu thức tính.",
+      "examples": [
+        "(Node: Điều 7 Luật Thuế TNCN) HAS_FORMULA (Node: Công thức tính thuế lũy tiến từng phần)",
+        "(Node: Nghị định 65/2023) HAS_FORMULA (Node: Phương thức xác định giá trái phiếu doanh nghiệp)"
+      ]
+    },
+    "HAS_REQUIREMENT": {
+      "desc": "Quan hệ thể hiện điều kiện bắt buộc, nghĩa vụ hoặc tiêu chuẩn hành động mà chủ thể phải tuân thủ theo quy định. Là cầu nối giữa quy phạm và nghĩa vụ cụ thể.",
+      "examples": [
+        "(Node: Luật Doanh nghiệp) HAS_REQUIREMENT (Node: Nghĩa vụ công bố thông tin định kỳ)",
+        "(Node: Thông tư 80/2021) HAS_REQUIREMENT (Node: Yêu cầu nộp hồ sơ quyết toán thuế)"
+      ]
+    },
+    "HAS_ELIGIBILITY": {
+      "desc": "Quan hệ xác định đối tượng, chủ thể hoặc điều kiện tiên quyết để được hưởng quyền lợi hoặc tham gia cơ chế pháp lý. Giới hạn phạm vi áp dụng của quy định với thực thể.",
+      "examples": [
+        "(Node: Chế độ bảo hiểm thất nghiệp) HAS_ELIGIBILITY (Node: Người lao động đã đóng bảo hiểm trên 12 tháng)",
+        "(Node: Quy định cấp hộ chiếu phổ thông) HAS_ELIGIBILITY (Node: Công dân Việt Nam đủ 14 tuổi)"
+      ]
+    },
+    "HAS_VALIDITY": {
+      "desc": "Quan hệ xác định khoảng thời gian, địa điểm hoặc phạm vi mà quy định pháp lý còn hiệu lực thi hành. Đảm bảo tính xác thực về mặt thời gian và không gian áp dụng.",
+      "examples": [
+        "(Node: Luật Đất đai 2024) HAS_VALIDITY (Node: Có hiệu lực thi hành từ ngày 01/01/2025)",
+        "(Node: Nghị quyết 43/2022) HAS_VALIDITY (Node: Áp dụng tại địa bàn cả nước đến hết 31/12/2023)"
+      ]
+    },
+    "HAS_TERMINATION": {
+      "desc": "Quan hệ chỉ việc văn bản pháp luật bị chấm dứt hiệu lực. Node nguồn là văn bản luật, node đích là văn bản hoặc sự kiện thay thế.",
+      "examples": [
+        "Luật Đất đai 2013 (Văn bản) HAS_TERMINATION bởi Luật Đất đai 2024 (Văn bản) vào ngày 1/1/2025.",
+        "Nghị định 116/2017 (Văn bản) HAS_TERMINATION hiệu lực do Thông tư 22/2023 (Văn bản) bãi bỏ."
+      ]
+    },
+    "HAS_STATEMENT": {
+      "desc": "Quan hệ giữa văn bản hoặc điều khoản luật với tuyên bố pháp lý cụ thể mà nó chứa đựng. Node nguồn là văn bản luật, node đích là tuyên bố.",
+      "examples": [
+        "(Luật Doanh nghiệp 2020) -[HAS_STATEMENT]-> (Điều 111 về quyền của cổ đông)",
+        "(Nghị định 30/2020) -[HAS_STATEMENT]-> (Quy định về văn thư lưu trữ)"
+      ]
+    },
+    "HAS_RIGHT": {
+      "desc": "Quan hệ xác định chủ thể được pháp luật công nhận một quyền lợi cụ thể. Node nguồn là chủ thể pháp lý, node đích là quyền được hưởng.",
+      "examples": [
+        "Công dân (Chủ thể) HAS_RIGHT quyền tự do ngôn luận theo Hiến pháp 2013.",
+        "Người lao động (Chủ thể) HAS_RIGHT nhận lương đúng hạn từ người sử dụng lao động."
+      ]
+    },
+    "HAS_OBLIGATION": {
+      "desc": "Quan hệ buộc chủ thể pháp lý phải thực hiện nghĩa vụ nhất định. Node nguồn là chủ thể, node đích là nghĩa vụ phải thi hành.",
+      "examples": [
+        "Người nộp thuế (Chủ thể) HAS_OBLIGATION kê khai thuế thu nhập cá nhân hàng năm.",
+        "Bên mua (Chủ thể) HAS_OBLIGATION thanh toán tiền theo hợp đồng mua bán."
+      ]
+    },
+    "HAS_PERMISSION": {
+      "desc": "Quan hệ biểu thị chủ thể pháp lý được cơ quan có thẩm quyền cho phép thực hiện hành vi hoặc sở hữu quyền nhất định.",
+      "examples": [
+        "Điều 23 Luật Doanh nghiệp: Cá nhân (node nguồn: Person) HAS_PERMISSION Giấy chứng nhận đăng ký doanh nghiệp (node đích: Permit).",
+        "Điều 10 Luật Cư trú: Công dân (node nguồn: Person) HAS_PERMISSION Hộ chiếu (node đích: TravelDocument)."
+      ]
+    },
+    "HAS_PROHIBITION": {
+      "desc": "Quan hệ chỉ việc pháp luật cấm chủ thể thực hiện hành vi nhất định dưới chế tài xử phạt.",
+      "examples": [
+        "Điều 8 Luật Phòng chống ma túy: Công dân (node nguồn: Person) HAS_PROHIBITION Sử dụng trái phép chất ma túy (node đích: IllegalAct).",
+        "Điều 17 Luật Bảo vệ môi trường: Doanh nghiệp (node nguồn: Organization) HAS_PROHIBITION Xả thải vượt chuẩn (node đích: EnvironmentalViolation)."
+      ]
+    },
+    "HAS_DEFINITION": {
+      "desc": "Quan hệ liên kết thuật ngữ pháp lý với nội dung định nghĩa chính thức trong văn bản quy phạm pháp luật.",
+      "examples": [
+        "Điều 3 Luật Hôn nhân: Cơ quan đăng ký (node nguồn: StateAgency) HAS_DEFINITION Kết hôn (node đích: LegalTerm).",
+        "Khoản 1 Điều 4 Luật Đầu tư: Nhà đầu tư (node nguồn: Investor) HAS_DEFINITION Tổ chức kinh tế (node đích: LegalTerm)."
+      ]
+    },
+    "GENERATES": {
+      "desc": "Quan hệ mô tả một bước xử lý, quyết định hoặc tác vụ tạo ra một văn bản, hồ sơ hoặc bản ghi dữ liệu mới trong hệ thống. Thể hiện đầu ra hợp pháp của nút nguồn.",
+      "examples": [
+        "Quyết định (Decision) 'Phê duyệt dự án' sinh ra Văn bản (Document) 'Giấy chứng nhận đầu tư'.",
+        "Tiến trình (Process) 'Đóng dấu công chứng' tạo ra Hồ sơ (Record) 'Văn bản đã chứng thực'."
+      ]
+    },
+    "STATEMENT_OF": {
+      "desc": "Quan hệ giữa một tuyên bố pháp lý và thực thể hoặc đối tượng mà tuyên bố đó đề cập đến. Node nguồn là tuyên bố, node đích là thực thể được nói tới.",
+      "examples": [
+        "(Thông báo thu hồi đất) -[STATEMENT_OF]-> (Hộ gia đình ông Nguyễn Văn A)",
+        "(Tuyên bố vô hiệu hợp đồng) -[STATEMENT_OF]-> (Hợp đồng mua bán số 12/2023)"
+      ]
+    },
+    "INSTANCE_OF": {
+      "desc": "Quan hệ chỉ định một thực thể cụ thể thuộc về một loại khái niệm pháp lý nhất định.",
+      "examples": [
+        "Công ty TNHH Bách Khoa (Node: Tổ chức) là INSTANCE_OF Doanh nghiệp tư nhân (Node: Khái niệm pháp lý).",
+        "Văn bản số 123/BTP (Node: Văn bản) là INSTANCE_OF Công văn hành chính (Node: Khái niệm pháp lý)."
+      ]
+    },
+    "SUBCLASS_OF": {
+      "desc": "Quan hệ phân cấp chỉ một khái niệm pháp lý là lớp con của một khái niệm pháp lý bao quát hơn.",
+      "examples": [
+        "Quyền tác giả (Node: Quyền) là SUBCLASS_OF Quyền sở hữu trí tuệ (Node: Nhóm quyền).",
+        "Tội lừa đảo chiếm đoạt tài sản (Node: Tội danh) là SUBCLASS_OF Tội phạm chiếm đoạt tài sản (Node: Nhóm tội danh)."
+      ]
+    },
+    "RELATED_TO": {
+      "desc": "Quan hệ liên kết chung giữa các thực thể pháp lý có sự tham chiếu hoặc tương tác không thuộc phân cấp hay thành phần.",
+      "examples": [
+        "Người lao động (Node: Chủ thể) RELATED_TO Người sử dụng lao động (Node: Chủ thể) qua hợp đồng.",
+        "Bộ luật Dân sự (Node: Văn bản) RELATED_TO Luật Thương mại (Node: Văn bản) về giao dịch thương mại."
+      ]
+    },
+    "SAME_AS": {
+      "desc": "Quan hệ chỉ hai thực thể pháp lý là đồng nhất, cùng một chủ thể duy nhất trên phương diện pháp luật.",
+      "examples": [
+        "Node Công ty TNHH X (nguồn) SAME_AS Node Công ty X (đích) theo giấy phép đổi tên",
+        "Node Mã số thuế 123 (nguồn) SAME_AS Node Hồ sơ thuế 123 (đích) trong cơ sở dữ liệu quốc gia"
+      ]
+    },
+    "ALIAS_OF": {
+      "desc": "Tên gọi khác được pháp luật hoặc văn bản quy phạm chấp nhận dùng thay thế cho tên gọi chính thức.",
+      "examples": [
+        "Node Bộ Công an (nguồn) ALIAS_OF Node Cơ quan Công an (đích) trong luật tổ chức",
+        "Node Tòa tối cao (nguồn) ALIAS_OF Node Tòa án nhân dân tối cao (đích) tại văn bản tắt"
+      ]
+    },
+    "SYNONYM_OF": {
+      "desc": "Thuật ngữ pháp lý có nghĩa tương đương và có thể thay thế trong ngữ cảnh quy định cụ thể.",
+      "examples": [
+        "Node Hợp đồng lao động (nguồn) SYNONYM_OF Node Giao kèo thuê mướn (đích) trong văn bản cũ",
+        "Node Di sản (nguồn) SYNONYM_OF Node Tài sản để lại (đích) theo luật dân sự"
+      ]
+    },
+    "ABBREVIATION_OF": {
+      "desc": "Dạng viết tắt được định nghĩa trong văn bản pháp luật tương ứng với tên gọi đầy đủ.",
+      "examples": [
+        "Node UBND (nguồn) ABBREVIATION_OF Node Ủy ban nhân dân (đích) theo luật tổ chức",
+        "Node VAT (nguồn) ABBREVIATION_OF Node Thuế giá trị gia tăng (đích) trong luật thuế"
+      ]
+    },
+    "GENERALIZES": {
+      "desc": "Quan hệ chỉ node nguồn khái quát hóa, bao hàm node đích trong cấu trúc pháp lý.",
+      "examples": [
+        "Văn bản luật (nguồn) GENERALIZES nghị định (đích) quy định chi tiết thi hành.",
+        "Quy định chung (nguồn) GENERALIZES điều khoản cụ thể (đích) về quyền sở hữu."
+      ]
+    },
+    "SPECIALIZES": {
+      "desc": "Quan hệ chỉ node nguồn là trường hợp chuyên biệt, cụ thể hóa từ node đích chung.",
+      "examples": [
+        "Tội cướp tài sản (nguồn) SPECIALIZES tội xâm phạm sở hữu (đích) theo luật hình sự.",
+        "Hợp đồng tặng cho (nguồn) SPECIALIZES hợp đồng dân sự (đích) tại Bộ luật Dân sự."
+      ]
+    },
+    "IS_A": {
+      "desc": "Quan hệ chỉ node nguồn thuộc phân loại pháp lý của node đích một cách đúng đắn.",
+      "examples": [
+        "Thẻ căn cước (nguồn) IS_A giấy tờ tùy thân (đích) được pháp luật công nhận.",
+        "Doanh nghiệp tư nhân (nguồn) IS_A chủ thể kinh doanh (đích) theo luật định."
+      ]
+    },
+    "HAS_ROLE": {
+      "desc": "Quan hệ chỉ node nguồn nắm giữ chức năng hoặc vị thế pháp lý đối với node đích.",
+      "examples": [
+        "Người bảo hộ (nguồn) HAS_ROLE đại diện pháp luật (đích) cho người chưa thành niên.",
+        "Tòa án (nguồn) HAS_ROLE cơ quan xét xử (đích) trong vụ án dân sự."
+      ]
+    },
+    "REPRESENTS": {
+      "desc": "Quan hệ chỉ việc node nguồn đại diện pháp lý hoặc chức năng cho node đích. Node nguồn là đại diện, node đích là thực thể được đại diện.",
+      "examples": [
+        "Công ty luật A (Organization) REPRESENTS khách hàng B (Person) trong tranh tụng.",
+        "Luật sư X (Person) REPRESENTS công ty Y (Organization) tại cơ quan nhà nước."
+      ]
+    },
+    "WORKS_FOR": {
+      "desc": "Quan hệ lao động where node nguồn là người lao động có hợp đồng với node đích là người sử dụng lao động. Phát sinh quyền nghĩa vụ theo Bộ luật Lao động.",
+      "examples": [
+        "Nguyễn Văn A (Person) WORKS_FOR công ty TNHH B (Organization).",
+        "Giám đốc X (Person) WORKS_FOR tập đoàn Y (Organization)."
+      ]
+    },
+    "OWNS": {
+      "desc": "Quan hệ sở hữu hợp pháp where node nguồn nắm quyền đối với node đích là tài sản hoặc cổ phần. Xác lập chủ quyền theo luật dân sự.",
+      "examples": [
+        "Trần Văn C (Person) OWNS bất động sản B (Property).",
+        "Công ty X (Organization) OWNS 51% cổ phần công ty Y (Organization)."
+      ]
+    },
+    "USES": {
+      "desc": "Quan hệ khai thác tài sản dịch vụ where node nguồn sử dụng node đích không chuyển quyền sở hữu. Thể hiện mục đích sử dụng hợp pháp.",
+      "examples": [
+        "Doanh nghiệp A (Organization) USES phần mềm kế toán B (Software) kê khai thuế.",
+        "Cá nhân X (Person) USES dịch vụ ngân hàng Y (Service) thanh toán."
+      ]
+    },
+    "MEMBER_OF": {
+      "desc": "Quan hệ chỉ việc một thực thể là thành viên của một tổ chức hoặc nhóm lớn hơn theo quy định pháp luật.",
+      "examples": [
+        "Công ty TNHH X (LegalEntity) MEMBER_OF Phòng Thương mại Y (ChamberOfCommerce)",
+        "Luật sư A (Person) MEMBER_OF Đoàn Luật sư TP.HCM (BarAssociation)"
+      ]
+    },
+    "BELONGS_TO": {
+      "desc": "Quan hệ biểu thị quyền sở hữu hoặc sự thuộc quyền quản lý hành chính của một thực thể đối với thực thể khác.",
+      "examples": [
+        "Chi nhánh B (Branch) BELONGS_TO Công ty mẹ C (ParentCompany)",
+        "Thửa đất số 01 (LandPlot) BELONGS_TO UBND Quận D (DistrictAuthority)"
+      ]
+    },
+    "SUPERVISES": {
+      "desc": "Quan hệ whereby chủ thể quản lý (Source) theo dõi, hướng dẫn và kiểm soát hoạt động của chủ thể thuộc quyền (Target) nhằm đảm bảo tuân thủ pháp luật.",
+      "examples": [
+        "Thanh tra Bộ Tài chính (Organization) SUPERVISES Cục Thuế tỉnh (Organization) trong công tác quản lý thuế.",
+        "Sở Giáo dục (Organization) SUPERVISES Trường THPT Lê Quý Đôn (Organization) về chương trình đào tạo."
+      ]
+    },
+    "MANAGES": {
+      "desc": "Quan hệ quản lý điều hành trực tiếp nguồn lực, dự án hoặc nhân sự thuộc thẩm quyền của chủ thể.",
+      "examples": [
+        "Giám đốc G (Person) MANAGES Phòng Kinh doanh H (Department)",
+        "UBND Tỉnh I (ProvinceAuthority) MANAGES Dự án đường J (InfrastructureProject)"
+      ]
+    },
+    "REFERENCES_ARTICLE": {
+      "desc": "Quan hệ chỉ việc một điều luật tham chiếu đến một điều luật khác trong cùng hoặc khác văn bản pháp luật để làm rõ hoặc bổ sung quy định.",
+      "examples": [
+        "Điều 12 (node nguồn: Article) tham chiếu Điều 5 (node đích: Article) về định nghĩa hành vi vi phạm",
+        "Điều 20 (node nguồn: Article) dẫn chiếu Điều 8 (node đích: Article) của Luật cùng tên để xác định thẩm quyền"
+      ]
+    },
+    "REFERENCES_CLAUSE": {
+      "desc": "Quan hệ chỉ việc một khoản trong điều luật tham chiếu đến một khoản khác để quy định điều kiện, ngoại lệ hoặc thủ tục.",
+      "examples": [
+        "Khoản 2 Điều 10 (node nguồn: Clause) tham chiếu Khoản 1 Điều 10 (node đích: Clause) về thời hạn nộp hồ sơ",
+        "Khoản 3 Điều 15 (node nguồn: Clause) dẫn đến Khoản 4 Điều 15 (node đích: Clause) khi xác định mức phạt"
+      ]
+    },
+    "REFERENCES_POINT": {
+      "desc": "Quan hệ chỉ việc một điểm trong khoản tham chiếu đến một điểm khác để liệt kê, loại trừ hoặc giải thích trường hợp cụ thể.",
+      "examples": [
+        "Điểm a Khoản 1 Điều 3 (node nguồn: Point) tham chiếu Điểm b Khoản 2 Điều 3 (node đích: Point) về đối tượng áp dụng",
+        "Điểm c Điều 7 (node nguồn: Point) dẫn chiếu Điểm a Điều 7 (node đích: Point) về mức thuế suất"
+      ]
+    },
+    "REFERENCES_APPENDIX": {
+      "desc": "Quan hệ chỉ việc điều luật hoặc khoản tham chiếu đến phụ lục chứa bảng biểu, danh mục hoặc biểu mẫu chi tiết kèm theo văn bản.",
+      "examples": [
+        "Điều 25 (node nguồn: Article) tham chiếu Phụ lục I (node đích: Appendix) về danh mục hàng hóa cấm",
+        "Khoản 1 Điều 30 (node nguồn: Clause) dẫn chiếu Phụ lục III (node đích: Appendix) về biểu mẫu đăng ký"
+      ]
+    },
+    "POINTS_TO": {
+      "desc": "Quan hệ chỉ hướng từ node nguồn đến node đích cụ thể, biểu thị sự tham chiếu trực tiếp hoặc điều hướng trong văn bản luật.",
+      "examples": [
+        "Điều 5 (node Điều luật) POINTS_TO Điều 10 (node Điều luật) để quy định chi tiết về xử phạt.",
+        "Phụ lục A (node Phụ lục) POINTS_TO Mục 3 (node Mục) trong cùng văn bản."
+      ]
+    },
+    "HAS_REFERENCE_NODE": {
+      "desc": "Quan hệ biểu thị node nguồn chứa hoặc sở hữu một node tham chiếu phụ trợ phục vụ tra cứu hoặc giải thích thuật ngữ.",
+      "examples": [
+        "Khoản 2 (node Khoản) HAS_REFERENCE_NODE Ghi chú 1 (node Ghi chú) giải thích thuật ngữ chuyên môn.",
+        "Văn bản số 12/2023 (node Văn bản) HAS_REFERENCE_NODE Tài liệu hướng dẫn (node Tài liệu) đính kèm."
+      ]
+    },
+    "STARTS": {
+      "desc": "Quan hệ chỉ định quy trình hoặc giai đoạn bắt đầu bằng một bước công việc cụ thể, xác định điểm khởi đầu hợp pháp của luồng thực hiện.",
+      "examples": [
+        "Quy trình xét duyệt hồ sơ (Workflow) STARTS Bước tiếp nhận đơn (Task)",
+        "Dự án xây dựng (Project) STARTS Giai đoạn khảo sát (Phase)"
+      ]
+    },
+    "ENDS": {
+      "desc": "Quan hệ xác định bước công việc hoặc giai đoạn kết thúc một quy trình, tạo điểm dừng có hiệu lực pháp lý cho luồng thực hiện.",
+      "examples": [
+        "Quy trình thanh lý hợp đồng (Workflow) ENDS Bước ký biên bản bàn giao (Task)",
+        "Dự án nghiên cứu (Project) ENDS Giai đoạn nghiệm thu (Phase)"
+      ]
+    },
+    "NEXT_STEP": {
+      "desc": "Quan hệ tuần tự chỉ bước công việc tiếp theo phải được thực hiện sau khi bước hiện tại hoàn tất theo trình tự quy định.",
+      "examples": [
+        "Bước thẩm định (Task) NEXT_STEP Bước phê duyệt (Task)",
+        "Giai đoạn lập kế hoạch (Phase) NEXT_STEP Giai đoạn thực thi (Phase)"
+      ]
+    },
+    "PREVIOUS_STEP": {
+      "desc": "Quan hệ tuần tự chỉ bước công việc liền trước đã hoàn tất trước khi bước hiện tại được bắt đầu theo trình tự quy định.",
+      "examples": [
+        "Bước cấp giấy phép (Task) PREVIOUS_STEP Bước kiểm tra điều kiện (Task)",
+        "Giai đoạn báo cáo (Phase) PREVIOUS_STEP Giai đoạn thu thập dữ liệu (Phase)"
+      ]
+    },
+    "BELONGS_TO_PROCEDURE": {
+      "desc": "Quan hệ chỉ định một nhiệm vụ hoặc bước công việc trực thuộc một quy trình thủ tục hành chính cụ thể. Thể hiện phân nhóm luồng công việc trong tổng thể quy trình pháp lý.",
+      "examples": [
+        "Bước (Task) 'Tiếp nhận hồ sơ' thuộc về Quy trình (Procedure) 'Cấp giấy phép xây dựng'.",
+        "Hoạt động (Activity) 'Thẩm định' thuộc Quy trình (Procedure) 'Đăng ký doanh nghiệp'."
+      ]
+    },
+    "REQUIRES": {
+      "desc": "Quan hệ thể hiện một bước công việc hoặc hồ sơ đòi hỏi sự tồn tại, hoàn thành hoặc cung cấp của một điều kiện, tài liệu khác trước khi tiến hành. Đảm bảo tính tiên quyết trong luồng xử lý hành chính.",
+      "examples": [
+        "Tác vụ (Task) 'Cấp sổ đỏ' yêu cầu Văn bản (Document) 'Đơn xin giao đất'.",
+        "Bước (Step) 'Nộp thuế' đòi hỏi Dữ liệu (Data) 'Mã số thuế đã cấp'."
+      ]
+    },
+    "VALIDATES": {
+      "desc": "Quan hệ chỉ việc một cơ quan, bước kiểm tra hoặc tác nhân thực hiện xác minh tính hợp lệ, hợp pháp của hồ sơ, thông tin. Là chốt chặn chất lượng trước khi phê duyệt chính thức.",
+      "examples": [
+        "Cơ quan (Authority) 'Sở Tư pháp' kiểm duyệt Văn bản (Document) 'Hợp đồng ủy quyền'.",
+        "Bước (Step) 'Đối chiếu thông tin' xác thực Dữ liệu (Data) 'Thông tin cư trú của công dân'."
+      ]
+    },
+    "HAS_STATE": {
+      "desc": "Quan hệ chỉ định rằng một thực thể quy trình sở hữu một trạng thái xác định trong vòng đời của nó theo quy định pháp luật.",
+      "examples": [
+        "Hồ sơ đăng ký kinh doanh (node: BusinessRegistration) HAS_STATE Đang chờ thẩm định (node: State_PendingReview)",
+        "Hợp đồng lao động (node: LaborContract) HAS_STATE Có hiệu lực (node: State_Active)"
+      ]
+    },
+    "TRANSITIONS_TO": {
+      "desc": "Quan hệ biểu thị sự chuyển đổi trạng thái hoặc bước thực hiện từ node nguồn sang node đích theo trình tự quy định pháp lý.",
+      "examples": [
+        "Bước tiếp nhận hồ sơ (node: Step_Receive) TRANSITIONS_TO Bước thẩm định (node: Step_Verify)",
+        "Trạng thái nháp (node: State_Draft) TRANSITIONS_TO Trạng thái đã nộp (node: State_Submitted)"
+      ]
+    },
+    "PARALLEL_WITH": {
+      "desc": "Quan hệ xác định hai bước quy trình có thể thực hiện đồng thời mà không vi phạm điều kiện tiên quyết pháp lý.",
+      "examples": [
+        "Bước kiểm tra thuế (node: Step_TaxCheck) PARALLEL_WITH Bước kiểm tra bảo hiểm (node: Step_InsuranceCheck)",
+        "Thủ tục cấp phép môi trường (node: Permit_Environment) PARALLEL_WITH Thủ tục cấp phép xây dựng (node: Permit_Construction)"
+      ]
+    },
+    "OPTIONAL_STEP": {
+      "desc": "Quan hệ chỉ ra bước quy trình không bắt buộc nhưng được phép thực hiện để bảo vệ quyền lợi mà không vô hiệu quy trình chính.",
+      "examples": [
+        "Quy trình đăng ký (node: Process_Register) OPTIONAL_STEP Yêu cầu tư vấn pháp lý (node: Step_LegalConsult)",
+        "Thủ tục hải quan (node: Process_Customs) OPTIONAL_STEP Khai báo bổ sung tự nguyện (node: Step_VoluntaryDisclosure)"
+      ]
+    },
+    "MANDATORY_STEP": {
+      "desc": "Quan hệ chỉ định bước xử lý bắt buộc phải thực hiện từ node nguồn đến node đích trong quy trình pháp lý. Bỏ qua bước này làm quy trình vô hiệu.",
+      "examples": [
+        "Điều 10: Hồ sơ đăng ký (Node: Application) phải trải qua thẩm định (Node: Review) là bước bắt buộc.",
+        "Khoản 3 Điều 20: Quyết định xử phạt (Node: PenaltyDecision) bắt buộc phải thông báo cho đối tượng (Node: Violator)."
+      ]
+    },
+    "REPEAT_STEP": {
+      "desc": "Quan hệ chỉ định bước lặp lại từ node nguồn đến node đích cho đến khi đạt điều kiện nhất định trong quy trình. Áp dụng cho chu trình lặp hành chính.",
+      "examples": [
+        "Điều 15: Hồ sơ không hợp lệ (Node: InvalidDoc) phải quay lại bổ sung (Node: Supplement) và lặp kiểm tra (Node: Check) đến khi hợp lệ.",
+        "Quy trình thanh tra: Thanh tra viên (Node: Inspector) lặp bước lấy mẫu (Node: Sampling) mỗi chu kỳ (Node: MonitoringCycle)."
+      ]
+    },
+    "AUTHORIZES": {
+      "desc": "Quan hệ whereby cơ quan nhà nước hoặc cấp có thẩm quyền (Source) cấp phép, trao quyền pháp lý cho cá nhân hoặc tổ chức (Target) được thực hiện hành vi nhất định.",
+      "examples": [
+        "Bộ Công an (Organization) AUTHORIZES Công ty TNHH Bảo vệ Minh Anh (Organization) được kinh doanh dịch vụ bảo vệ.",
+        "UBND tỉnh (Organization) AUTHORIZES ông Nguyễn Văn B (Person) khai thác khoáng sản tại mỏ cát sông Cầu."
+      ]
+    },
+    "INSPECTS": {
+      "desc": "Quan hệ whereby cơ quan chức năng (Source) tiến hành kiểm tra trực tiếp hiện trạng, hồ sơ, quy trình của đối tượng (Target) theo nhiệm vụ được giao.",
+      "examples": [
+        "Cục An toàn thực phẩm (Organization) INSPECTS Nhà hàng Hương Việt (Organization) về điều kiện vệ sinh.",
+        "Đội Quản lý thị trường số 1 (Organization) INSPECTS hộ kinh doanh ông Trần Văn C (Person) về nguồn gốc hàng hóa."
+      ]
+    },
+    "AUDITS": {
+      "desc": "Quan hệ whereby cơ quan kiểm toán độc lập (Source) xác minh và đánh giá tính trung thực, hợp pháp của báo cáo tài chính hoặc hoạt động của đối tượng (Target).",
+      "examples": [
+        "Kiểm toán Nhà nước (Organization) AUDITS Tập đoàn Điện lực Việt Nam (Organization) cho niên độ 2023.",
+        "Ủy ban Kiểm tra Trung ương (Organization) AUDITS Đảng ủy xã (Organization) về sử dụng ngân sách nội bộ."
+      ]
+    },
+    "MONITORS": {
+      "desc": "Quan hệ khi một cơ quan hoặc thực thể có thẩm quyền theo dõi, kiểm tra hoạt động của thực thể khác nhằm đảm bảo tuân thủ pháp luật.",
+      "examples": [
+        "Cơ quan Thanh tra Chính phủ (Node: Cơ quan Nhà nước) MONITORS hoạt động của UBND tỉnh (Node: Cơ quan Nhà nước).",
+        "Bộ Y tế (Node: Cơ quan Quản lý) MONITORS việc tuân thủ quy chuẩn của bệnh viện tư (Node: Cơ sở Y tế)."
+      ]
+    },
+    "REGULATES": {
+      "desc": "Quan hệ khi cơ quan nhà nước thiết lập quy định pháp lý chi phối quyền, nghĩa vụ hoặc hoạt động của thực thể khác.",
+      "examples": [
+        "Ngân hàng Nhà nước (Node: Cơ quan Quản lý) REGULATES hoạt động tín dụng của ngân hàng thương mại (Node: Tổ chức Tín dụng).",
+        "Bộ Giao thông Vận tải (Node: Cơ quan Nhà nước) REGULATES điều kiện kinh doanh vận tải của hợp tác xã (Node: Doanh nghiệp)."
+      ]
+    },
+    "ENFORCES": {
+      "desc": "Quan hệ khi cơ quan có thẩm quyền thi hành biện pháp cưỡng chế hoặc xử lý vi phạm pháp luật đối với thực thể khác.",
+      "examples": [
+        "Cục Hải quan (Node: Cơ quan Nhà nước) ENFORCES quyết định xử phạt đối với doanh nghiệp xuất nhập khẩu (Node: Doanh nghiệp).",
+        "Công an tỉnh (Node: Cơ quan Thi hành Luật) ENFORCES lệnh tạm giữ với người vi phạm (Node: Cá nhân)."
+      ]
+    },
+    "ISSUES": {
+      "desc": "Quan hệ khi cơ quan hoặc tổ chức có thẩm quyền ban hành văn bản, giấy phép, quyết định pháp lý cho thực thể khác.",
+      "examples": [
+        "Bộ Tư pháp (Node: Cơ quan Nhà nước) ISSUES giấy phép hành nghề luật sư cho cá nhân (Node: Cá nhân).",
+        "UBND huyện (Node: Cơ quan Nhà nước) ISSUES giấy chứng nhận quyền sử dụng đất cho hộ gia đình (Node: Hộ Gia Đình)."
+      ]
+    },
+    "REVOKES": {
+      "desc": "Quan hệ chỉ việc chủ thể có thẩm quyền (node nguồn) thu hồi, hủy bỏ hiệu lực giấy phép, quyết định hoặc quyền hạn đã cấp cho chủ thể khác (node đích).",
+      "examples": [
+        "Bộ Công an (node nguồn: Cơ quan nhà nước) thu hồi Giấy phép kinh doanh (node đích: Giấy phép).",
+        "Thủ tướng (node nguồn: Chức danh) bãi nhiệm Quyết định bổ nhiệm (node đích: Quyết định)."
+      ]
+    },
+    "CERTIFIES": {
+      "desc": "Quan hệ chỉ việc cơ quan hoặc tổ chức có thẩm quyền (node nguồn) xác nhận, chứng nhận tính hợp pháp hoặc tiêu chuẩn của đối tượng, hồ sơ, cá nhân (node đích).",
+      "examples": [
+        "Bộ Y tế (node nguồn: Cơ quan nhà nước) chứng nhận Cơ sở đạt chuẩn vệ sinh (node đích: Cơ sở sản xuất).",
+        "Sở Tư pháp (node nguồn: Cơ quan nhà nước) cấp Giấy chứng nhận kết hôn (node đích: Cá nhân)."
+      ]
+    },
+    "VIOLATES": {
+      "desc": "Quan hệ chỉ việc một hành vi hoặc chủ thể vi phạm một quy định pháp luật hoặc điều khoản cụ thể.",
+      "examples": [
+        "Cá nhân (nguồn) VIOLATES Điều 8 Luật Giao thông đường bộ (đích) khi đi ngược chiều.",
+        "Doanh nghiệp (nguồn) VIOLATES Nghị định 15/2020/NĐ-CP (đích) về an toàn thực phẩm."
+      ]
+    },
+    "PENALIZED_BY": {
+      "desc": "Quan hệ chỉ việc một chủ thể phải chịu chế tài hoặc hình phạt do một quy định hoặc quyết định pháp lý ấn định.",
+      "examples": [
+        "Người điều khiển xe (nguồn) PENALIZED_BY Quyết định xử phạt số 123/QĐ-XPHC (đích) của cơ quan chức năng.",
+        "Công ty X (nguồn) PENALIZED_BY Điều 23 Luật Cạnh tranh (đích) do hành vi gian lận."
+      ]
+    },
+    "FINED_BY": {
+      "desc": "Quan hệ chỉ việc một chủ thể bị áp dụng hình phạt tiền theo một quy định hoặc quyết định xử phạt cụ thể.",
+      "examples": [
+        "Chủ xe ô tô (nguồn) FINED_BY Điều 5 Nghị định 100/2019/NĐ-CP (đích) với mức 4 triệu đồng.",
+        "Hộ kinh doanh (nguồn) FINED_BY Quyết định số 45/QĐ-XPVPHC (đích) vì bán hàng giả."
+      ]
+    },
+    "IMPRISONED_BY": {
+      "desc": "Quan hệ chỉ việc một chủ thể bị tước quyền tự do và chịu hình phạt tù theo bản án hoặc điều luật hình sự.",
+      "examples": [
+        "Bị cáo A (nguồn) IMPRISONED_BY Bản án số 10/2023/HS-ST (đích) với mức án 5 năm tù.",
+        "Người phạm tội ma túy (nguồn) IMPRISONED_BY Điều 249 Bộ luật Hình sự (đích)."
+      ]
+    },
+    "SUSPENDED_BY": {
+      "desc": "Quan hệ chỉ định thực thể (giấy phép, quyền) bị tạm đình chỉ hiệu lực bởi cơ quan có thẩm quyền. Thể hiện trạng thái mất hiệu lực tạm thời do vi phạm pháp luật.",
+      "examples": [
+        "Giấy phép kinh doanh (License) SUSPENDED_BY Cục Thuế (TaxAuthority) do trốn thuế.",
+        "Chức vụ (Position) SUSPENDED_BY Hội đồng quản trị (Board) trong thời gian điều tra."
+      ]
+    },
+    "CONFISCATED_BY": {
+      "desc": "Quan hệ chỉ định tài sản bị tịch thu sung quỹ nhà nước hoặc chuyển giao quyền sở hữu cưỡng chế bởi cơ quan chức năng. Hành động này chuyển quyền chiếm hữu hợp pháp.",
+      "examples": [
+        "Xe ô tô (Vehicle) CONFISCATED_BY Công an (Police) do vi phạm giao thông nghiêm trọng.",
+        "Hàng lậu (Goods) CONFISCATED_BY Hải quan (Customs) theo lệnh tịch thu."
+      ]
+    },
+    "COMPENSATED_BY": {
+      "desc": "Quan hệ chỉ định bên bị thiệt hại nhận bồi thường tài chính hoặc khôi phục lợi ích bởi bên gây thiệt hại hoặc bên bảo hiểm. Phản ánh nghĩa vụ khắc phục hậu quả pháp lý.",
+      "examples": [
+        "Người lao động (Employee) COMPENSATED_BY Công ty (Employer) theo quyết định hòa giải lao động.",
+        "Bên mua (Buyer) COMPENSATED_BY Nhà bảo hiểm (Insurer) do hàng hóa hư hỏng."
+      ]
+    },
+    "RESTORED_BY": {
+      "desc": "Quan hệ chỉ việc một văn bản hoặc điều khoản từng bị bãi bỏ được đưa trở lại hiệu lực bởi văn bản khác. Node nguồn là văn bản được khôi phục, node đích là văn bản khôi phục.",
+      "examples": [
+        "Luật Tổ chức Tòa án nhân dân 1960 (node: Law) được khôi phục một phần bởi Nghị quyết 51/2001/QH10 (node: Resolution)",
+        "Điều 5 Thông tư 05/2015/TT-BTC (node: Article) được khôi phục bởi Thông tư 08/2021/TT-BTC (node: Circular)"
+      ]
+    },
+    "BEFORE": {
+      "desc": "Quan hệ thời gian chỉ sự kiện pháp lý nguồn xảy ra trước sự kiện đích. Dùng xác định thứ tự ưu tiên hoặc điều kiện tiên quyết trong thời gian.",
+      "examples": [
+        "Quyết định hành chính (node nguồn) ban hành BEFORE Đơn khiếu nại (node đích) được tiếp nhận.",
+        "Hợp đồng lao động (node nguồn) ký kết BEFORE Ngày bắt đầu làm việc (node đích)."
+      ]
+    },
+    "AFTER": {
+      "desc": "Quan hệ thời gian chỉ sự kiện pháp lý nguồn xảy ra sau sự kiện đích. Thường dùng cho thời hiệu khởi kiện hoặc hiệu lực hồi tố.",
+      "examples": [
+        "Đơn khởi kiện (node nguồn) nộp AFTER Sự kiện vi phạm (node đích) phát sinh.",
+        "Thông báo chấm dứt (node nguồn) phát hành AFTER Thời hạn báo trước (node đích) kết thúc."
+      ]
+    },
+    "WITHIN": {
+      "desc": "Quan hệ thời gian buộc một hành vi pháp lý phải thực hiện trong khoảng thời hạn nhất định kể từ thời điểm tham chiếu. Đảm bảo tuân thủ thời hiệu hoặc thời hạn luật định.",
+      "examples": [
+        "(Node: Nộp tờ khai thuế) trong vòng 10 ngày kể từ (Node: Phát sinh nghĩa vụ thuế)",
+        "(Node: Khiếu nại) trong 30 ngày từ (Node: Nhận quyết định xử phạt)"
+      ]
+    },
+    "UNTIL": {
+      "desc": "Quan hệ thời gian xác định một trạng thái pháp lý hoặc nghĩa vụ duy trì hiệu lực tới một thời điểm cụ thể. Giới hạn thời hạn tồn tại của quyền hoặc giấy phép.",
+      "examples": [
+        "(Node: Giấy phép xây dựng tạm) có hiệu lực cho tới (Node: Ngày 01/01/2026)",
+        "(Node: Lệnh cấm xuất cảnh) áp dụng until (Node: Thi hành xong bản án)"
+      ]
+    },
+    "SINCE": {
+      "desc": "Quan hệ chỉ thời điểm một thực thể pháp lý bắt đầu tồn tại hoặc phát sinh trạng thái pháp lý. Thường gắn với ngày thành lập hoặc ngày hiệu lực sớm nhất.",
+      "examples": [
+        "(Thực thể: Công ty ABC) SINCE (Thời điểm: Ngày 15/03/2010) - ngày đăng ký kinh doanh",
+        "(Văn bản: Quyết định xử phạt) SINCE (Thời điểm: Ngày 01/06/2023) - ngày ra quyết định có hiệu lực"
+      ]
+    },
+    "DURING": {
+      "desc": "Quan hệ thời gian chỉ sự kiện nguồn diễn ra trong khoảng thời gian của sự kiện đích. Thể hiện tính liên tục hoặc phạm vi hiệu lực.",
+      "examples": [
+        "Giấy phép kinh doanh (node nguồn) có hiệu lực DURING Kỳ báo cáo thuế (node đích).",
+        "Hành vi phạm tội (node nguồn) thực hiện DURING Thời gian tình trạng khẩn cấp (node đích)."
+      ]
+    },
+    "VALID_FROM": {
+      "desc": "Thời điểm văn bản hoặc quy định bắt đầu có hiệu lực pháp luật. Mọi hệ quả pháp lý chỉ phát sinh sau mốc này.",
+      "examples": [
+        "(Văn bản: Nghị định 123) VALID_FROM (Thời điểm: Ngày 01/01/2024)",
+        "(Giấy tờ: Giấy phép xây dựng) VALID_FROM (Thời điểm: Ngày cấp phép)"
+      ]
+    },
+    "VALID_TO": {
+      "desc": "Thời điểm văn bản hoặc quyền hạn chấm dứt hiệu lực pháp lý. Sau mốc này thực thể không còn giá trị ràng buộc.",
+      "examples": [
+        "(Hợp đồng: Hợp đồng bảo hiểm) VALID_TO (Thời điểm: Ngày 31/12/2025)",
+        "(Chứng chỉ: Chứng chỉ hành nghề) VALID_TO (Thời điểm: Ngày hết hạn)"
+      ]
+    },
+    "EFFECTIVE_FROM": {
+      "desc": "Quan hệ chỉ thời điểm văn bản hoặc quy định bắt đầu có hiệu lực pháp lý. Node nguồn là văn bản/điều luật, node đích là mốc thời gian cụ thể.",
+      "examples": [
+        "Luật Đất đai 2024 (Văn bản luật) có hiệu lực từ ngày 01/01/2025 (Ngày hiệu lực)."
+      ]
+    },
+    "EXPIRES_ON": {
+      "desc": "Quan hệ chỉ thời điểm văn bản hoặc quy định chấm dứt hiệu lực pháp lý. Node nguồn là văn bản/điều luật, node đích là mốc thời gian cụ thể.",
+      "examples": [
+        "Nghị định 12/2020 (Văn bản luật) hết hiệu lực vào ngày 30/06/2023 (Ngày hết hiệu lực)."
+      ]
+    },
+    "HAS_AMOUNT": {
+      "desc": "Quan hệ chỉ số tiền, số lượng vật chất hoặc định mức được quy định gắn với thực thể pháp lý.",
+      "examples": [
+        "Điều 23: Mức phạt tối thiểu 5.000.000 VND (QUY_DINH_PHAT -> HAS_AMOUNT -> SO_TIEN)",
+        "Nghĩa vụ bồi thường 2 tháng lương (NGHIA_VU -> HAS_AMOUNT -> SO_TIEN)"
+      ]
+    },
+    "HAS_RATE": {
+      "desc": "Quan hệ xác định tỷ lệ phần trăm hoặc hệ số áp dụng cho một nghĩa vụ hoặc đối tượng theo quy định pháp luật.",
+      "examples": [
+        "[Hợp đồng tín dụng] HAS_RATE [Lãi suất 12%/năm] - lãi suất vay không quá 12% mỗi năm.",
+        "[Luật thuế] HAS_RATE [Thuế suất 10%] - thuế giá trị gia tăng hàng hóa thông thường là 10%."
+      ]
+    },
+    "HAS_LIMIT": {
+      "desc": "Quan hệ quy định giới hạn tối đa hoặc tối thiểu được phép của một quyền, nghĩa vụ hoặc hoạt động.",
+      "examples": [
+        "[Giấy phép môi trường] HAS_LIMIT [Lưu lượng 1000 m3/ngày] - xả thải tối đa 1000 mét khối mỗi ngày.",
+        "[Biển báo giao thông] HAS_LIMIT [Tốc độ 80 km/h] - tốc độ tối đa cho phép ngoài đô thị."
+      ]
+    },
+    "HAS_THRESHOLD": {
+      "desc": "Quan hệ chỉ ngưỡng giới hạn số lượng hoặc giá trị mà tại đó hệ quả pháp lý phát sinh.",
+      "examples": [
+        "Doanh thu trên 1 tỷ phải nộp thuế (NGUONG -> HAS_THRESHOLD -> GIA_TRI)",
+        "Tài sản từ 500 triệu bị kê biên (TAI_SAN -> HAS_THRESHOLD -> GIA_TRI)"
+      ]
+    },
+    "HAS_DURATION": {
+      "desc": "Quan hệ xác định khoảng thời gian hoặc thời hạn hiệu lực của nghĩa vụ hoặc quyền pháp lý.",
+      "examples": [
+        "Điều 10: Thời hạn hợp đồng 24 tháng (HOP_DONG -> HAS_DURATION -> THOI_GIAN)",
+        "Thời hiệu khởi kiện 3 năm (QUYEN -> HAS_DURATION -> THOI_HIEU)"
+      ]
+    },
+    "HAS_AREA": {
+      "desc": "Quan hệ biểu thị diện tích đất hoặc tài sản bất động sản được đề cập trong văn bản pháp luật hoặc giao dịch.",
+      "examples": [
+        "Thửa đất số 123 (Node: LandPlot) HAS_AREA 500 mét vuông (Node: Area)",
+        "Khu bảo tồn thiên nhiên (Node: Reserve) HAS_AREA 1200 hecta (Node: Area)"
+      ]
+    },
+    "HAS_WEIGHT": {
+      "desc": "Quan hệ thể hiện khối lượng hàng hóa, tang vật hoặc tài sản vật chất liên quan đến quy định hoặc tranh chấp pháp lý.",
+      "examples": [
+        "Lô hàng bị tịch thu (Node: SeizedGoods) HAS_WEIGHT 2 tấn (Node: Weight)",
+        "Mẫu vật cần giám định (Node: Evidence) HAS_WEIGHT 50 gram (Node: Weight)"
+      ]
+    },
+    "HAS_DISTANCE": {
+      "desc": "Quan hệ chỉ khoảng cách địa lý giữa các địa điểm liên quan đến quy hoạch, hành chính hoặc ranh giới pháp lý.",
+      "examples": [
+        "Công trình xây dựng (Node: Construction) HAS_DISTANCE 200 mét đến sông (Node: River)",
+        "Khu dân cư (Node: ResidentialZone) HAS_DISTANCE 5 km đến sân bay (Node: Airport)"
+      ]
+    },
+    "HAS_PERCENTAGE": {
+      "desc": "Quan hệ biểu thị tỷ lệ phần trăm của giá trị được áp dụng trong quy định pháp luật.",
+      "examples": [
+        "Điều 5: Thuế suất 10% trên doanh thu (QUY_DINH_THUE -> HAS_PERCENTAGE -> TY_LE)",
+        "Cổ đông sở hữu 51% vốn (CO_DONG -> HAS_PERCENTAGE -> VON_DIEU_LE)"
+      ]
+    },
+    "USES_VARIABLE": {
+      "desc": "Quan hệ chỉ định công thức pháp lý sử dụng một biến số cụ thể làm đầu vào. Biến số được định nghĩa trong văn bản luật làm cơ sở tính toán.",
+      "examples": [
+        "Formula(TínhThuếTNCN) USES_VARIABLE Variable(ThuNhậpChịuThuế)",
+        "Formula(TínhTiềnTrợCấp) USES_VARIABLE Variable(SốNămĐóngBảoHiểm)"
+      ]
+    },
+    "CALCULATES": {
+      "desc": "Quan hệ thể hiện công thức thực hiện tính toán để xác định một giá trị pháp lý cụ thể. Giá trị thường là số tiền, tỷ lệ hoặc thời hạn.",
+      "examples": [
+        "Formula(TínhLãiSuấtChậmNộp) CALCULATES Amount(SốTiềnLãi)",
+        "Formula(TínhThờiHạnBảoHành) CALCULATES Duration(ThángBảoHành)"
+      ]
+    },
+    "OUTPUT": {
+      "desc": "Quan hệ liên kết bước tính toán với kết quả đầu ra được luật quy định. Kết quả có thể làm căn cứ cho quyết định hành chính.",
+      "examples": [
+        "Calculation(BướcTínhPhạtChậmNộp) OUTPUT Penalty(KhoảnPhạtViPhạm)",
+        "Formula(TínhTrợCấpThấtNghiệp) OUTPUT Benefit(SốTiềnTrợCấp)"
+      ]
+    },
+    "HAS_EXPRESSION": {
+      "desc": "Quan hệ giữa điều luật và biểu thức toán học hoặc logic được quy định trong đó. Biểu thức mã hóa quy tắc tính toán một cách chính xác.",
+      "examples": [
+        "Article(Điều56LuậtBảoHiểm) HAS_EXPRESSION Expression(mức_hưởng = 60% * mức_bình_quân)",
+        "LegalRule(QuyTắcTínhThuế) HAS_EXPRESSION Expression(thuế = thu_nhập * 0.1)"
+      ]
+    },
+    "BASED_ON_FORMULA": {
+      "desc": "Quan hệ chỉ định một thực thể pháp lý hoặc quy định được xác định, tính toán hoặc thiết lập dựa trên một công thức toán học hoặc phương pháp tính cụ thể đã được quy định.",
+      "examples": [
+        "Điều 7 Nghị định 123/2020: Mức phạt tiền (Node: Sanction) được tính BASED_ON_FORMULA Công thức phạt theo tỷ lệ doanh thu (Node: Formula).",
+        "Khoản 2 Điều 10 Thông tư 80/2021: Thuế suất áp dụng (Node: TaxRate) BASED_ON_FORMULA Công thức tính thuế lũy tiến từ thu nhập (Node: Formula)."
+      ]
+    },
+    "HAS_ALIAS": {
+      "desc": "Quan hệ biểu thị thực thể pháp lý được tham chiếu bằng tên gọi khác, bao gồm tên viết tắt hoặc số hiệu thay thế. Đảm bảo nhất quán khi truy xuất định danh trong hệ thống văn bản quy phạm.",
+      "examples": [
+        "Văn bản luật (node nguồn: LegalDocument) HAS_ALIAS Luật số 59/2020/QH14 (node đích: DocumentAlias)",
+        "Cơ quan quản lý (node nguồn: Authority) HAS_ALIAS Bộ Tư pháp (node đích: AliasName)"
+      ]
+    },
+    "IMPLIES": {
+      "desc": "Quan hệ suy dẫn pháp lý: quy định nguồn bao hàm hoặc dẫn đến hệ quả bắt buộc tại quy định đích.",
+      "examples": [
+        "Điều 21 Luật Hôn nhân (node: Điều luật) IMPLIES Điều 8 Luật Trẻ em (node: Điều luật) về nghĩa vụ bảo vệ trẻ.",
+        "Hợp đồng vô hiệu (node: Trạng thái pháp lý) IMPLIES Không phát sinh quyền nghĩa vụ (node: Hệ quả pháp lý)."
+      ]
+    },
+    "CONTRADICTS": {
+      "desc": "Quan hệ chỉ hai quy định hoặc nghĩa vụ pháp lý mâu thuẫn nhau không thể đồng thời áp dụng.",
+      "examples": [
+        "Điều 10 Luật A (Node: Norm) contradicts Điều 20 Luật B (Node: Norm)",
+        "Nghĩa vụ bảo mật (Node: Obligation) contradicts Quyền tiết lộ thông tin (Node: Right)"
+      ]
+    },
+    "OVERRIDES": {
+      "desc": "Quan hệ thay thế ưu tiên: văn bản luật cao hơn hoặc mới hơn làm mất hiệu lực áp dụng của văn bản thấp hơn hoặc cũ hơn.",
+      "examples": [
+        "Luật Đất đai 2024 (node: Văn bản luật) OVERRIDES Luật Đất đai 2013 (node: Văn bản luật) tại Điều 20.",
+        "Nghị quyết Quốc hội (node: Văn bản luật) OVERRIDES Thông tư Bộ (node: Văn bản dưới luật) cùng chủ đề."
+      ]
+    },
+    "DERIVES": {
+      "desc": "Quan hệ xuất phát: quy định đích được hình thành, chiết xuất hoặc cụ thể hóa trực tiếp từ quy định nguồn.",
+      "examples": [
+        "Hiến pháp 2013 (node: Văn bản luật) DERIVES Luật Tổ chức Quốc hội (node: Văn bản luật) về quyền lập pháp.",
+        "Điều 30 Bộ luật Dân sự (node: Điều luật) DERIVES Nghị định 21 (node: Văn bản dưới luật) về bảo đảm nghĩa vụ."
+      ]
+    },
+    "DEPENDS_ON": {
+      "desc": "Quan hệ pháp lý chỉ rằng hiệu lực hoặc tồn tại của quy định nguồn phụ thuộc vào quy định đích.",
+      "examples": [
+        "Điều 10 (Điều khoản) DEPENDS_ON Điều 9 (Điều khoản) về điều kiện cấp phép.",
+        "Thông tư 05 (Thông tư) DEPENDS_ON Nghị định 20 (Nghị định) để có căn cứ thi hành."
+      ]
+    },
+    "BLOCKS": {
+      "desc": "Quan hệ chỉ rằng quy định nguồn ngăn cản hoặc đình chỉ hiệu lực của quy định đích.",
+      "examples": [
+        "Luật Đất đai 2024 (Luật) BLOCKS Quyết định cũ (Quyết định) về thu hồi đất trái thẩm quyền.",
+        "Án lệ 12 (Án lệ) BLOCKS Việc áp dụng Điều 123 (Điều khoản) trong trường hợp tương tự."
+      ]
+    },
+    "ENABLES": {
+      "desc": "Quan hệ chỉ rằng quy định nguồn tạo cơ sở pháp lý hoặc điều kiện cần để quy định đích được thực thi.",
+      "examples": [
+        "Luật Doanh nghiệp (Luật) ENABLES Cổng đăng ký quốc gia (Hệ thống) hoạt động cấp mã số thuế.",
+        "Nghị quyết 30 (Nghị quyết) ENABLES Chính phủ (Cơ quan) ban hành gói hỗ trợ covid."
+      ]
+    },
+    "ACTIVATES": {
+      "desc": "Quan hệ chỉ rằng quy định nguồn kích hoạt hoặc làm phát sinh hiệu lực của quy định đích tại thời điểm cụ thể.",
+      "examples": [
+        "Nghị định 01 (Nghị định) ACTIVATES Điều 5 (Điều khoản) về xử phạt giao thông từ 01/07.",
+        "Quyết định công bố (Quyết định) ACTIVATES Hiệp định thương mại (Hiệp định) có hiệu lực với thành viên."
+      ]
+    },
+    "DEACTIVATES": {
+      "desc": "Quan hệ chỉ định một quy định làm mất hiệu lực quy định khác. Node nguồn là văn bản/điều khoản bãi bỏ, node đích là văn bản/điều khoản bị bãi bỏ.",
+      "examples": [
+        "Nghị định 2023/DEACTIVATES/Nghị định 2010 (node nguồn: Nghị định, node đích: Nghị định)",
+        "Điều 5 Thông tư 15/DEACTIVATES/Điều 3 Thông tư 09 (node nguồn: Điều khoản, node đích: Điều khoản)"
+      ]
+    },
+    "PRECONDITION_OF": {
+      "desc": "Quan hệ chỉ điều kiện tiên quyết phải thỏa mãn trước khi hành động pháp lý hoặc quyền được thực hiện. Node nguồn là điều kiện, node đích là hành động hoặc quyền.",
+      "examples": [
+        "Chứng chỉ hành nghề/PRECONDITION_OF/Giấy phép xây dựng (node nguồn: Giấy tờ, node đích: Giấy phép)",
+        "Đủ 18 tuổi/PRECONDITION_OF/Quyền bầu cử (node nguồn: Tình trạng pháp lý, node đích: Quyền)"
+      ]
+    },
+    "POSTCONDITION_OF": {
+      "desc": "Quan hệ chỉ trạng thái hoặc nghĩa vụ phát sinh sau khi hành động pháp lý hoàn tất. Node nguồn là trạng thái/nghĩa vụ, node đích là hành động pháp lý.",
+      "examples": [
+        "Nghĩa vụ nộp thuế/POSTCONDITION_OF/Đăng ký kinh doanh (node nguồn: Nghĩa vụ, node đích: Thủ tục)",
+        "Quyền sở hữu tài sản/POSTCONDITION_OF/Hợp đồng mua bán (node nguồn: Quyền, node đích: Hợp đồng)"
+      ]
+    },
+    "ALTERNATIVE_TO": {
+      "desc": "Quan hệ chỉ phương án thay thế có giá trị pháp lý tương đương cho quy định hoặc biện pháp. Node nguồn và node đích cùng loại, là các lựa chọn khác nhau.",
+      "examples": [
+        "Hòa giải tại trung tâm/ALTERNATIVE_TO/Khởi kiện tòa án (node nguồn: Biện pháp, node đích: Biện pháp)",
+        "Thuế khoán/ALTERNATIVE_TO/Thuế kê khai (node nguồn: Phương thức thuế, node đích: Phương thức thuế)"
+      ]
+    },
+    "EXCLUSIVE_WITH": {
+      "desc": "Quan hệ loại trừ lẫn nhau giữa hai khái niệm hoặc trạng thái pháp lý, khi một bên tồn tại thì bên kia bị vô hiệu hoặc không thể áp dụng đồng thời.",
+      "examples": [
+        "(Node: Tình_Trạng_Độc_Thân) EXCLUSIVE_WITH (Node: Tình_Trạng_Kết_Hôn) theo quy định Luật Hôn nhân và Gia đình.",
+        "(Node: Quyền_Sở_Hữu_Độc_Quyền) EXCLUSIVE_WITH (Node: Quyền_Sử_Dụng_Tự_Do_Công_Cộng) đối với cùng một đối tượng trong thời hạn bảo hộ."
+      ]
+    },
+    "REFERENCES": {
+      "desc": "Quan hệ thể hiện văn bản dẫn chiếu văn bản khác. Node nguồn và đích đều là Document.",
+      "examples": [
+        "Luật Đất đai 2024 (Document) tham chiếu Luật Nhà ở 2023 (Document)."
+      ]
+    },
+    "REPLACED_BY": {
+      "desc": "Quan hệ chỉ văn bản quy phạm pháp luật cũ ngừng áp dụng vì có văn bản mới thay thế toàn bộ nội dung. Node nguồn là văn bản cũ, node đích là văn bản thay thế.",
+      "examples": [
+        "Luật Đất đai 2003 (node: Law) được thay thế bởi Luật Đất đai 2013 (node: Law)",
+        "Thông tư 10/2018/TT-BTNMT (node: Circular) được thay thế bởi Thông tư 20/2022/TT-BTNMT (node: Circular)"
+      ]
+    },
+    "ABOLISHED_BY": {
+      "desc": "Quan hệ chỉ một cơ quan, tổ chức hoặc quy định cụ thể bị xóa bỏ bởi một văn bản pháp lý khác. Node nguồn là thực thể bị xóa bỏ, node đích là văn bản xóa bỏ.",
+      "examples": [
+        "Ủy ban Dân số Gia đình và Trẻ em (node: Agency) bị xóa bỏ bởi Nghị định 22/2003/NĐ-CP (node: Decree)",
+        "Quy định về thuế môn bài cũ (node: Regulation) bị bãi bỏ bởi Luật Quản lý thuế 2019 (node: Law)"
+      ]
+    },
+    "INTRODUCED_BY": {
+      "desc": "Quan hệ chỉ văn bản quy phạm pháp luật (node nguồn) được giới thiệu, đưa vào chương trình hoặc hệ thống pháp luật bởi một văn bản khác (node đích). Thường thấy ở nghị quyết của cơ quan quyền lực nhà nước giới thiệu dự thảo để thông qua.",
+      "examples": [
+        "Hiến pháp năm 2013 (Văn bản) INTRODUCED_BY Nghị quyết số 72/2013/QH13 (Văn bản) của Quốc hội.",
+        "Luật Ban hành văn bản quy phạm pháp luật 2015 (Văn bản) INTRODUCED_BY Nghị quyết số 51/2013/QH13 (Văn bản) của Quốc hội."
+      ]
+    },
+    "MODIFIED_BY": {
+      "desc": "Quan hệ chỉ văn bản quy phạm pháp luật (node nguồn) bị sửa đổi, bổ sung nội dung bởi một văn bản khác (node đích). Văn bản đích chứa điều khoản thay thế hoặc cập nhật văn bản nguồn.",
+      "examples": [
+        "Bộ luật Hình sự 2015 (Văn bản) MODIFIED_BY Luật số 12/2017/QH14 (Văn bản) sửa đổi bổ sung một số điều.",
+        "Luật Đất đai 2013 (Văn bản) MODIFIED_BY Luật số 35/2018/QH14 (Văn bản) sửa đổi bổ sung."
+      ]
+    },
+    "APPLIES_TO": {
+      "desc": "Quan hệ chỉ định văn bản pháp luật hoặc quy định áp dụng cho một đối tượng, lĩnh vực hoặc địa bàn cụ thể.",
+      "examples": [
+        "Bộ luật Dân sự 2015 (Node: Văn bản luật) áp dụng cho Giao dịch dân sự (Node: Hành vi pháp lý) trên lãnh thổ Việt Nam.",
+        "Nghị định 15/2020 (Node: Nghị định) áp dụng cho Hoạt động xuất bản (Node: Lĩnh vực quản lý)."
+      ]
+    },
+    "NOT_APPLIES_TO": {
+      "desc": "Quan hệ xác định văn bản pháp luật hoặc quy định loại trừ việc áp dụng đối với một đối tượng, thực thể cụ thể nào đó.",
+      "examples": [
+        "Luật Cán bộ công chức (Node: Văn bản luật) NOT_APPLIES_TO Người lao động hợp đồng (Node: Cá nhân)",
+        "Nghị định 115 (Node: Nghị định) NOT_APPLIES_TO Doanh nghiệp nhà nước (Node: Tổ chức)"
+      ]
+    },
+    "HAS_SCOPE_OF": {
+      "desc": "Quan hệ biểu thị điều khoản hoặc văn bản sở hữu một phạm vi điều chỉnh, đối tượng tác động xác định.",
+      "examples": [
+        "Điều 3 Luật Đất đai (Node: Điều luật) HAS_SCOPE_OF Quyền sử dụng đất (Node: Quyền pháp lý)",
+        "Chương II (Node: Chương) HAS_SCOPE_OF Thuế thu nhập cá nhân (Node: Lĩnh vực)"
+      ]
+    },
+    "REGULATES_SCOPE": {
+      "desc": "Quan hệ thể hiện cơ quan hoặc văn bản cấp trên quy định chi tiết, thiết lập ranh giới phạm vi cho thực thể cấp dưới.",
+      "examples": [
+        "Quốc hội (Node: Cơ quan nhà nước) REGULATES_SCOPE Phạm vi hoạt động ngân hàng (Node: Lĩnh vực)",
+        "Bộ Tài chính (Node: Cơ quan) REGULATES_SCOPE Giá dịch vụ công (Node: Phạm vi điều chỉnh)"
+      ]
+    },
+    "DEFINES": {
+      "desc": "Quan hệ ngữ nghĩa chỉ việc văn bản quy phạm định nghĩa khái niệm pháp lý, từ node VănBảnQuyPhạm đến node ThuậtNgữPhápLý.",
+      "examples": [
+        "Bộ luật Dân sự 2015 định nghĩa 'Hợp đồng' tại Điều 385 (VănBảnQuyPhạm → ThuậtNgữPhápLý)",
+        "Luật Doanh nghiệp 2020 giải thích 'Cổ đông' tại Điều 4 (VănBảnQuyPhạm → ThuậtNgữPhápLý)"
+      ]
+    },
+    "HAS_TERM": {
+      "desc": "Quan hệ giữa một điều luật và thuật ngữ chuyên môn được giải thích ý nghĩa trong phạm vi điều đó. Node nguồn là điều/khoản, node đích là thuật ngữ pháp lý.",
+      "examples": [
+        "Điều 4 Luật Đất đai 2013 (Article) HAS_TERM Giấy chứng nhận quyền sử dụng đất (Term)",
+        "Khoản 1 Điều 3 Luật Hôn nhân (Clause) HAS_TERM Vợ chồng (Term)"
+      ]
+    },
+    "HAS_BODY": {
+      "desc": "Quan hệ liên kết một điều luật với nội dung quy định cụ thể chứa các quy phạm. Node nguồn là điều luật, node đích là khối văn bản quy định.",
+      "examples": [
+        "Điều 3 Luật Hôn nhân (Article) HAS_BODY Quy định về kết hôn (BodyText)",
+        "Điều 10 Bộ luật Hình sự (Article) HAS_BODY Nội dung tội phạm (BodyText)"
+      ]
+    },
+    "DEFINED_IN": {
+      "desc": "Quan hệ ngược chỉ định khái niệm pháp lý được quy định tại văn bản hoặc điều khoản cụ thể. Node nguồn là khái niệm, node đích là văn bản hoặc điều luật.",
+      "examples": [
+        "Công ty trách nhiệm hữu hạn (LegalConcept) DEFINED_IN Luật Doanh nghiệp 2020 (Law)",
+        "Quyền tác giả (LegalConcept) DEFINED_IN Luật Sở hữu trí tuệ 2005 (Law)"
+      ]
+    },
+    "TRIGGERS": {
+      "desc": "Quan hệ chỉ hành vi hoặc sự kiện này làm phát sinh hoặc kích hoạt một sự kiện pháp lý khác.",
+      "examples": [
+        "Hành vi vượt đèn đỏ (Node: Hành vi) TRIGGERS lập biên bản vi phạm (Node: Sự kiện hành chính).",
+        "Đơn khởi kiện (Node: Văn bản) TRIGGERS phiên hòa giải (Node: Sự kiện tố tụng)."
+      ]
+    },
+    "CAUSES": {
+      "desc": "Quan hệ chỉ sự kiện pháp lý này là nguyên nhân trực tiếp dẫn đến hậu quả hoặc nghĩa vụ pháp lý khác.",
+      "examples": [
+        "Tai nạn do lỗi kỹ thuật (Node: Sự kiện) CAUSES nghĩa vụ bồi thường thiệt hại (Node: Nghĩa vụ pháp lý).",
+        "Hủy kết hôn trái pháp luật (Node: Sự kiện pháp lý) CAUSES trách nhiệm khôi phục quyền lợi (Node: Hậu quả pháp lý)."
+      ]
+    },
+    "INITIATES": {
+      "desc": "Quan hệ chỉ chủ thể hoặc hành động khởi xướng một quy trình, thủ tục hoặc trạng thái pháp lý mới.",
+      "examples": [
+        "Doanh nghiệp (Node: Chủ thể) INITIATES thủ tục đăng ký nhãn hiệu (Node: Quy trình hành chính).",
+        "Viện kiểm sát (Node: Cơ quan nhà nước) INITIATES truy tố hình sự (Node: Sự kiện tố tụng)."
+      ]
+    },
+    "TERMINATES": {
+      "desc": "Quan hệ chỉ sự kiện làm chấm dứt hiệu lực, tồn tại hoặc trạng thái của đối tượng pháp lý khác.",
+      "examples": [
+        "Quyết định tuyên bố phá sản (Node: Văn bản) TERMINATES tư cách pháp nhân (Node: Chủ thể).",
+        "Ngày hết hạn bảo hiểm (Node: Sự kiện) TERMINATES quyền thụ hưởng (Node: Hợp đồng)."
+      ]
+    },
+    "PRECEDES": {
+      "desc": "Quan hệ chỉ sự kiện nguồn xảy ra trước sự kiện đích trong trình tự thời gian pháp lý. Xác định điều kiện tiên quyết hoặc thứ tự ưu tiên giữa các sự kiện.",
+      "examples": [
+        "Sự kiện nguồn (Event) [Ký hợp đồng] PRECEDES sự kiện đích (Event) [Bàn giao hàng hóa].",
+        "Hành động nguồn (Event) [Gửi thông báo] PRECEDES hành động đích (Event) [Áp dụng chế tài]."
+      ]
+    },
+    "FOLLOWS": {
+      "desc": "Quan hệ chỉ sự kiện nguồn xảy ra sau sự kiện đích trong trình tự thời gian pháp lý. Xác định hệ quả hoặc nghĩa vụ phát sinh sau một sự kiện khác.",
+      "examples": [
+        "Sự kiện nguồn (Event) [Khởi kiện] FOLLOWS sự kiện đích (Event) [Vi phạm hợp đồng].",
+        "Phiên tòa nguồn (Event) [Xét xử phúc thẩm] FOLLOWS phiên tòa đích (Event) [Xét xử sơ thẩm]."
+      ]
+    },
+    "CALCULATED_BY": {
+      "desc": "Quan hệ chỉ định thực thể số tiền hoặc chỉ số được xác định qua phương thức tính toán cụ thể. Thể hiện sự phụ thuộc kết quả vào công thức hoặc quy trình xử lý số liệu.",
+      "examples": [
+        "Nghĩa vụ thuế (TaxObligation) CALCULATED_BY công thức tính thuế (CalculationFormula).",
+        "Khoản bồi thường (Compensation) CALCULATED_BY phương pháp định giá thiệt hại (DamageAssessmentMethod)."
+      ]
+    },
+    "BASED_ON_RATE": {
+      "desc": "Quan hệ xác định giá trị pháp lý hình thành dựa trên tỷ lệ, thuế suất hoặc hệ số do cơ quan có thẩm quyền quy định. Đảm bảo minh bạch việc áp dụng tỷ lệ vào nghĩa vụ.",
+      "examples": [
+        "Tiền thuế giá trị gia tăng (VATLiability) BASED_ON_RATE thuế suất 10% (StatutoryTaxRate).",
+        "Phí trễ hạn (LateFee) BASED_ON_RATE lãi suất cơ bản (BaseInterestRate)."
+      ]
+    },
+    "BASED_ON_AMOUNT": {
+      "desc": "Quan hệ thể hiện khoản phải thu hoặc phải trả xác lập dựa trên số tiền gốc hoặc giá trị tài sản cụ thể. Làm rõ căn cứ số học của nghĩa vụ tài chính.",
+      "examples": [
+        "Thuế thu nhập (IncomeTax) BASED_ON_AMOUNT thu nhập chịu thuế (TaxableIncome).",
+        "Phí công chứng (NotarizationFee) BASED_ON_AMOUNT giá trị hợp đồng (ContractValue)."
+      ]
+    },
+    "MULTIPLIED_BY": {
+      "desc": "Quan hệ biểu thị giá trị pháp lý được nhân với hệ số để ra kết quả cuối hoặc điều chỉnh nghĩa vụ. Thường dùng tính phạt tăng nặng hoặc quy đổi đơn vị.",
+      "examples": [
+        "Số tiền phạt chậm nộp (OverduePenalty) MULTIPLIED_BY hệ số điều chỉnh (AdjustmentFactor).",
+        "Tổng thuế tài sản (PropertyTaxTotal) MULTIPLIED_BY tỷ lệ vùng (ZoneMultiplier)."
+      ]
+    },
+    "REDUCED_BY": {
+      "desc": "Quan hệ chỉ việc một giá trị, nghĩa vụ hoặc số tiền bị giảm đi do tác động của yếu tố khấu trừ, miễn giảm hoặc bù trừ theo quy định pháp luật.",
+      "examples": [
+        "Nghĩa vụ thuế (TaxObligation) REDUCED_BY Khoản khấu trừ gia cảnh (PersonalDeduction) theo Điều 9 Luật Thuế thu nhập cá nhân.",
+        "Số tiền phạt chậm nộp (LatePenalty) REDUCED_BY Thời gian đã nộp trước hạn (EarlySettlement) theo Thông tư 166/2013/TT-BTC."
+      ]
+    },
+    "LOCATED_IN": {
+      "desc": "Quan hệ chỉ thực thể pháp lý hoặc vật lý tồn tại trong một đơn vị hành chính hoặc địa điểm cụ thể. Dùng xác định nơi cư trú, đặt trụ sở hoặc vị trí tài sản theo pháp luật.",
+      "examples": [
+        "Công ty TNHH X (Node: Organization) located_in TP. Hồ Chí Minh (Node: AdministrativeArea)",
+        "Ông Nguyễn Văn A (Node: Person) cư trú located_in Phường B (Node: AdministrativeArea)"
+      ]
+    },
+    "HAS_JURISDICTION": {
+      "desc": "Quan hệ chỉ cơ quan nhà nước hoặc tòa án có thẩm quyền xét xử hoặc quản lý trên một vùng lãnh thổ hoặc đối tượng.",
+      "examples": [
+        "Tòa án Tối cao (Cơ quan tư pháp) has_jurisdiction Lãnh thổ Quốc gia (Quốc gia)",
+        "Ủy ban Nhân dân Tỉnh (Cơ quan hành chính) has_jurisdiction Tỉnh Bình Dương (Địa phương)"
+      ]
+    },
+    "UNDER_AUTHORITY_OF": {
+      "desc": "Quan hệ thể hiện tổ chức hoặc cá nhân chịu sự quản lý, giám sát trực tiếp từ cơ quan cấp trên theo pháp luật.",
+      "examples": [
+        "Chi cục Thuế Quận (Cơ quan cấp dưới) under_authority_of Cục Thuế Tỉnh (Cơ quan cấp trên)",
+        "Công an Phường (Đơn vị) under_authority_of Công an Quận (Đơn vị cấp trên)"
+      ]
+    },
+    "APPLIES_IN_REGION": {
+      "desc": "Quan hệ chỉ quy định pháp luật hoặc chính sách có hiệu lực thi hành trên một khu vực địa lý xác định.",
+      "examples": [
+        "Luật Đất đai 2024 (Văn bản luật) applies_in_region Việt Nam (Quốc gia)",
+        "Nghị định 123 (Văn bản dưới luật) applies_in_region Thành phố Hà Nội (Địa phương)"
+      ]
+    },
+    "BELONGS_TO_INDUSTRY": {
+      "desc": "Quan hệ phân loại thực thể kinh tế thuộc về một ngành công nghiệp cụ thể. Node nguồn được xác định là thành phần của ngành tại node đích theo quy định pháp lý.",
+      "examples": [
+        "Công ty TNHH XYZ (Company) thuộc lĩnh vực viễn thông (Industry) theo Giấy chứng nhận đăng ký doanh nghiệp.",
+        "Dự án năng lượng mặt trời (Project) thuộc ngành năng lượng tái tạo (Industry) theo Quyết định phê duyệt chủ trương đầu tư."
+      ]
+    },
+    "REGULATES_INDUSTRY": {
+      "desc": "Quan hệ thể hiện cơ quan có thẩm quyền hoặc văn bản luật thiết lập quy tắc quản lý đối với một ngành công nghiệp. Node nguồn thực thi chức năng kiểm soát node đích.",
+      "examples": [
+        "Ủy ban Chứng khoán Nhà nước (Regulator) quản lý ngành chứng khoán (Industry) theo Luật Chứng khoán 2019.",
+        "Bộ Công Thương (Regulator) ban hành quy định điều kiện kinh doanh cho ngành điện lực (Industry) theo Nghị định 14/2014."
+      ]
+    },
+    "COMPLIES_WITH": {
+      "desc": "Quan hệ chỉ định thực thể phải tuân thủ quy định pháp lý hoặc tiêu chuẩn bắt buộc theo luật định.",
+      "examples": [
+        "Doanh nghiệp viễn thông (nguồn) COMPLIES_WITH Nghị định 49/2017/NĐ-CP (đích).",
+        "Cơ sở sản xuất thực phẩm (nguồn) COMPLIES_WITH Quy chuẩn kỹ thuật an toàn thực phẩm (đích)."
+      ]
+    },
+    "NON_COMPLIANT_WITH": {
+      "desc": "Quan hệ chỉ việc chủ thể không tuân thủ hoặc vi phạm quy định, tiêu chuẩn pháp lý bắt buộc. Node nguồn là bên vi phạm, node đích là quy định bị vi phạm.",
+      "examples": [
+        "Xí nghiệp sản xuất (Facility) không tuân thủ Luật Bảo vệ Môi trường 2020 (Law) về xả thải.",
+        "Cá nhân hành nghề (Individual) vi phạm Quy chuẩn xây dựng (Standard) do thiếu chứng chỉ."
+      ]
+    },
+    "SATISFIES": {
+      "desc": "Quan hệ chỉ việc tài liệu, sản phẩm hoặc hành động thỏa mãn điều kiện, yêu cầu hoặc tiêu chí pháp lý đặt ra. Node nguồn là đối tượng đánh giá, node đích là yêu cầu cần thỏa mãn.",
+      "examples": [
+        "Hồ sơ đấu thầu (BidDocument) thỏa mãn Yêu cầu về năng lực kỹ thuật (Requirement) trong hồ sơ mời thầu.",
+        "Hợp đồng lao động (Contract) thỏa mãn Điều kiện tối thiểu về tiền lương (LegalCriterion) theo Bộ luật Lao động."
+      ]
+    },
+    "FAILS": {
+      "desc": "Quan hệ chỉ việc thực thể, hồ sơ hoặc kết quả kiểm tra không đạt hoặc thất bại trong việc đáp ứng tiêu chuẩn, bài kiểm định pháp lý. Node nguồn là đối tượng kiểm tra, node đích là tiêu chuẩn hoặc bài kiểm tra.",
+      "examples": [
+        "Lô hàng nhập khẩu (ProductBatch) không đạt Kiểm định chất lượng (Certification) của cơ quan hải quan.",
+        "Báo cáo tài chính (FinancialReport) thất bại trong việc đáp ứng Chuẩn mực kế toán (AccountingStandard) bắt buộc."
+      ]
+    },
+    "CREATED_BY": {
+      "desc": "Quan hệ chỉ thực thể đã khởi tạo hoặc ban hành một đối tượng pháp lý. Thể hiện nguồn gốc và thẩm quyền tạo lập.",
+      "examples": [
+        "(Văn bản luật) CREATED_BY (Quốc hội)",
+        "(Hợp đồng) CREATED_BY (Công ty TNHH A)"
+      ]
+    },
+    "UPDATED_BY": {
+      "desc": "Quan hệ chỉ thực thể đã sửa đổi hoặc cập nhật nội dung đối tượng pháp lý hiện hành. Thể hiện dấu vết thay đổi và thẩm quyền cập nhật.",
+      "examples": [
+        "(Nghị định) UPDATED_BY (Chính phủ)",
+        "(Điều khoản) UPDATED_BY (Bộ Tư pháp)"
+      ]
+    },
+    "INVALIDATED_BY": {
+      "desc": "Quan hệ chỉ văn bản hoặc hành động làm mất hiệu lực của đối tượng pháp lý khác. Thể hiện sự chấm dứt hiệu lực hoặc thay thế.",
+      "examples": [
+        "(Luật cũ) INVALIDATED_BY (Luật mới)",
+        "(Giấy phép) INVALIDATED_BY (Quyết định thu hồi)"
+      ]
+    },
+    "SUPPORTED_BY": {
+      "desc": "Quan hệ chỉ rằng một yêu cầu hoặc luận điểm pháp lý được hỗ trợ bởi tài liệu hoặc bằng chứng liên quan.",
+      "examples": [
+        "[Yêu cầu bồi thường] SUPPORTED_BY [Hóa đơn thiệt hại]",
+        "[Tuyên bố quyền sở hữu] SUPPORTED_BY [Hợp đồng mua bán]"
+      ]
+    },
+    "PROVEN_BY": {
+      "desc": "Quan hệ chỉ rằng một sự kiện hoặc cáo buộc pháp lý được chứng minh thỏa mãn tiêu chuẩn chứng cứ theo luật định.",
+      "examples": [
+        "[Tội danh lừa đảo] PROVEN_BY [Biên bản điều tra]",
+        "[Vi phạm hợp đồng] PROVEN_BY [Email thừa nhận sai phạm]"
+      ]
+    },
+    "DOCUMENTED_BY": {
+      "desc": "Quan hệ chỉ rằng một nghĩa vụ, quy trình hoặc quy định được ghi nhận rõ ràng trong văn bản pháp quy hoặc hợp đồng.",
+      "examples": [
+        "[Nghĩa vụ khai thuế] DOCUMENTED_BY [Thông tư 80/2021/TT-BTC]",
+        "[Quy trình tuyển dụng] DOCUMENTED_BY [Nội quy lao động công ty]"
+      ]
+    },
+    "VERIFIED_BY": {
+      "desc": "Quan hệ chỉ rằng một thông tin hoặc chứng nhận được xác minh tính xác thực bởi cơ quan hoặc bên có thẩm quyền.",
+      "examples": [
+        "[Chứng nhận đăng ký doanh nghiệp] VERIFIED_BY [Cơ quan đăng ký kinh doanh]",
+        "[Chữ ký điện tử] VERIFIED_BY [Tổ chức cung cấp dịch vụ tin cậy]"
+      ]
+    },
+    "RESULTS_IN": {
+      "desc": "Quyết định tạo ra hệ quả pháp lý hoặc trạng thái mới. Thể hiện mối quan hệ nhân quả giữa một quyết định và kết quả của nó.",
+      "examples": [
+        "Quyết định hành chính (nguồn) RESULTS_IN Giấy phép kinh doanh (đích)",
+        "Bản án tuyên phạt (nguồn) RESULTS_IN Biện pháp tư pháp (đích)"
+      ]
+    },
+    "BASED_ON": {
+      "desc": "Quyết định được xây dựng dựa trên căn cứ pháp lý hoặc sự kiện đã có. Thể hiện nguồn gốc pháp lý của quyết định.",
+      "examples": [
+        "Quyết định xử phạt (nguồn) BASED_ON Biên bản vi phạm (đích)",
+        "Quyết định cấp đất (nguồn) BASED_ON Văn bản quy hoạch (đích)"
+      ]
+    },
+    "DENIES": {
+      "desc": "Quyết định từ chối hoặc bác bỏ một yêu cầu, quyền lợi hoặc đề xuất. Thể hiện sự phủ nhận bằng văn bản có thẩm quyền.",
+      "examples": [
+        "Quyết định giải quyết khiếu nại (nguồn) DENIES Yêu cầu bồi thường (đích)",
+        "Quyết định thụ lý (nguồn) DENIES Đơn không hợp lệ (đích)"
+      ]
+    },
+    "ANNULS": {
+      "desc": "Quyết định hủy bỏ hiệu lực của một văn bản hoặc quyết định khác. Thể hiện tính vô hiệu hóa về mặt pháp lý.",
+      "examples": [
+        "Quyết định của cấp trên (nguồn) ANNULS Quyết định cấp dưới (đích)",
+        "Bản án phúc thẩm (nguồn) ANNULS Bản án sơ thẩm (đích)"
+      ]
+    },
+    "UPHOLDS": {
+      "desc": "Quan hệ thể hiện việc một quyết định pháp lý xác nhận, giữ nguyên hoặc bảo vệ hiệu lực của một quyết định, phán quyết hoặc quy định khác. Node nguồn là Decision cấp trên hoặc sau, node đích là Decision hoặc Regulation được duy trì.",
+      "examples": [
+        "Tòa án phúc thẩm (Decision) giữ nguyên bản án sơ thẩm (Decision) vì không phát hiện sai sót thủ tục.",
+        "Hội đồng xét xử (Decision) bác kháng cáo và duy trì quyết định xử phạt hành chính (Decision) của cơ quan thuế."
+      ]
+    },
+    "BASED_ON_PRINCIPLE": {
+      "desc": "Quan hệ chỉ việc một quy định hoặc văn bản pháp luật được xây dựng dựa trên một nguyên tắc pháp lý nền tảng. Thể hiện sự kế thừa tư tưởng lập pháp.",
+      "examples": [
+        "Điều 3 Luật Ban hành văn bản quy phạm pháp luật (LegalDocument) dựa trên nguyên tắc pháp chế xã hội chủ nghĩa (Principle)",
+        "Quy định về hợp đồng (Provision) dựa trên nguyên tắc tự do ý chí (Principle)"
+      ]
+    },
+    "SERVES_PURPOSE": {
+      "desc": "Quan hệ chỉ việc một hành vi, biện pháp hoặc quy định pháp lý nhằm phục vụ và thực hiện một nguyên tắc pháp luật. Thể hiện mục tiêu điều chỉnh của quy phạm.",
+      "examples": [
+        "Biện pháp xử phạt vi phạm hành chính (Measure) phục vụ mục đích răn đe và giáo dục (Principle)",
+        "Quy trình tố tụng dân sự (Procedure) phục vụ nguyên tắc tranh tụng (Principle)"
+      ]
+    },
+    "INTERPRETED_AS": {
+      "desc": "Quan hệ chỉ việc một quy định cụ thể được cơ quan có thẩm quyền diễn giải hoặc xem như một nguyên tắc pháp lý. Thể hiện sự khái quát hóa từ quy phạm sang nguyên tắc.",
+      "examples": [
+        "Quy định về quyền bình đẳng trước pháp luật (Provision) được diễn giải là nguyên tắc không phân biệt đối xử (Principle)",
+        "Điều khoản về bảo vệ người tiêu dùng (Clause) được xem là nguyên tắc công bằng (Principle)"
+      ]
+    },
+    "SYNONYM": {
+      "desc": "Quan hệ chỉ hai thuật ngữ pháp lý có cùng nghĩa hoặc được luật cho phép dùng thay thế nhau trong ngữ cảnh.",
+      "examples": [
+        "'Hợp đồng lao động' (Node: Term) synonym 'Giao kèo làm việc' (Node: Term)",
+        "'Người bán' (Node: Term) synonym 'Bên cung ứng' (Node: Term)"
+      ]
+    },
+    "EQUIVALENT_TO": {
+      "desc": "Quan hệ hai node nguồn và đích mang nghĩa tương đương, có thể thay thế lẫn nhau. Dùng đồng nhất thực thể trùng lặp trong đồ thị.",
+      "examples": [
+        "Node A EQUIVALENT_TO Node B",
+        "'Hà Nội' EQUIVALENT_TO 'Hanoi'"
+      ]
+    },
+    "SIMILAR_TO": {
+      "desc": "Quan hệ hai node có đặc điểm hay ngữ nghĩa gần giống nhau. Rõ node nguồn và node đích cùng lớp thực thể.",
+      "examples": [
+        "Node nguồn: Mèo --SIMILAR_TO--> Node đích: Hổ",
+        "Node nguồn: SQL --SIMILAR_TO--> Node đích: Cypher"
+      ]
+    },
+    "BROADER_THAN": {
+      "desc": "Quan hệ chỉ node nguồn bao quát hoặc khái quát hơn node đích. Node đích là thể hiện cụ thể hoặc hẹp hơn của node nguồn.",
+      "examples": [
+        "Động vật là broader than Chó",
+        "Màu sắc là broader than Đỏ"
+      ]
+    },
+    "ABBREVIATION": {
+      "desc": "Quan hệ chỉ node nguồn là dạng viết tắt của node đích. Node nguồn từ viết gọn, node đích từ đầy đủ.",
+      "examples": [
+        "AI là viết tắt của Trí tuệ nhân tạo",
+        "HTTP là viết tắt của Giao thức truyền siêu văn bản"
+      ]
+    },
+    "EXPANDS_TO": {
+      "desc": "Quan hệ chỉ rõ node nguồn mở rộng thành node đích. Nguồn sinh đích hoặc đích là phần chi tiết của nguồn.",
+      "examples": [
+        "Project EXPANDS_TO Task",
+        "API EXPANDS_TO Endpoint"
+      ]
+    },
+    "NARROWER_THAN": {
+      "desc": "Quan hệ chỉ node nguồn là thể hiện cụ thể, hẹp hơn node đích bao quát. Ngược của BROADER_THAN.",
+      "examples": [
+        "Chó là narrower than Động vật"
+      ]
+    }
+  }
+}

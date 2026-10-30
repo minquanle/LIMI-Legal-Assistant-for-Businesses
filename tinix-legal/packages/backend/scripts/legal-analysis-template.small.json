@@ -1,0 +1,1250 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "ontology_version": "2.0",
+  "description": "Legal Knowledge Graph Ontology v2 — Norm-centric. Graph xoay quanh Legal Rule (Norm): một điều luật = micro knowledge graph (Subject-Action-Object-Condition-Exception-Consequence). Dùng cho GraphRAG + Compliance + AI Agent + Legal Reasoning. Validator: scripts/validate-analysis.ts.",
+  "_architecture": {
+    "center": "Norm",
+    "flow": "LegalDocument → Structure(Article/Clause/Point) → Norm → [Subject, Action, Object, Condition, Exception, Consequence] → Entity/Event/Asset/Constraint/Exception/Penalty",
+    "statement": "Mỗi Điều luật gồm nhiều câu. Node Statement giữ ngữ cảnh câu; Norm HAS_STATEMENT Statement; Statement GENERATES Norm. Truy vết ngược đến câu chính xác."
+  },
+  "_ontology": {
+    "layers": [
+      "Document",
+      "Structure",
+      "Norm",
+      "Semantic",
+      "Event",
+      "Procedure",
+      "Temporal",
+      "Constraint",
+      "Reference",
+      "Ontology",
+      "Reasoning",
+      "Provenance"
+    ],
+    "entityTypes": {
+      "Document": [
+        "LegalDocument",
+        "Law",
+        "Resolution",
+        "Decree",
+        "Circular"
+      ],
+      "Structure": [],
+      "Norm": [
+        "Norm",
+        "Obligation",
+        "Permission",
+        "Right",
+        "Prohibition",
+        "Exception",
+        "Condition",
+        "Sanction"
+      ],
+      "Semantic_Subject": [
+        "NaturalPerson",
+        "GovernmentAgency",
+        "Organization",
+        "Competence"
+      ],
+      "Semantic_Object": [
+        "Property"
+      ],
+      "Semantic_Concept": [
+        "Fact"
+      ],
+      "Semantic_Action": [
+        "Action"
+      ],
+      "Statement": [
+        "Statement"
+      ],
+      "Event": [],
+      "Procedure": [],
+      "Temporal": [
+        "Deadline"
+      ],
+      "Constraint": [],
+      "Reference": [
+        "LegalReference"
+      ],
+      "Ontology": [],
+      "Reasoning": []
+    },
+    "relationshipTypes": {
+      "Structure": [
+        "HAS_PART",
+        "HAS_ARTICLE",
+        "HAS_CLAUSE",
+        "HAS_POINT",
+        "PART_OF",
+        "NEXT",
+        "PREVIOUS"
+      ],
+      "Document": [
+        "IMPLEMENTS",
+        "GUIDES",
+        "INTERPRETS",
+        "CITES",
+        "AMENDS",
+        "REPEALS",
+        "REPLACES"
+      ],
+      "Norm": [
+        "HAS_SUBJECT",
+        "HAS_OBJECT",
+        "HAS_ACTION",
+        "HAS_CONDITION",
+        "HAS_EXCEPTION",
+        "HAS_DEADLINE",
+        "HAS_AUTHORITY",
+        "HAS_CONSEQUENCE",
+        "HAS_SCOPE",
+        "HAS_REFERENCE",
+        "HAS_STATEMENT",
+        "HAS_DEFINITION"
+      ],
+      "Statement": [],
+      "Semantic": [],
+      "Reference": [],
+      "Workflow": [],
+      "Authority": [
+        "ISSUES"
+      ],
+      "Penalty": [],
+      "Temporal": [],
+      "Quantitative": [],
+      "Formula": [],
+      "SemanticLink": [],
+      "Reasoning": [],
+      "CrossDocument": [],
+      "Scope": [],
+      "Definition": [],
+      "Event": [],
+      "Calculation": [],
+      "Location": [],
+      "Industry": [],
+      "Compliance": [],
+      "Lifecycle": [
+        "CREATED_BY"
+      ],
+      "Evidence": [],
+      "Decision": [],
+      "Principle": []
+    }
+  },
+  "_governance": {
+    "stable_id": "Mỗi entity/relation có mã định danh ổn định, không đổi khi đổi tên hiển thị. Quy ước: <LAYER>:<TypeName> (VD 'Norm:Obligation', 'Rel:HAS_OBLIGATION'). Lưu vào field stable_id.",
+    "ontology_uri": "IRI chuẩn hóa để map sang LKIF-Core / LegalRuleML / Akoma Ntoso (VD 'lkif:Obligation'). Tùy chọn.",
+    "versioning": "ontology_version tăng theo semver. Node có riêng version (sửa nội dung). Edge status: active|superseded khi bị thay thế bởi văn bản mới.",
+    "naming": "TypeName PascalCase tiếng Anh; relation UPPER_SNAKE; không dấu, không tiếng Việt trong id. name/aliases tiếng Việt.",
+    "extensibility": "Thêm lĩnh vực mới = thêm node type vào đúng layer + relation group tương ứng, KHÔNG đổi schema. Prompt sinh graph đọc _ontology động."
+  },
+  "_nodeSchema": {
+    "id": "PREFIX_NNN (VD NORM_001, SUBJECT_001, STMT_001, REF_001)",
+    "stable_id": "Norm:Obligation",
+    "type": "một giá trị trong _ontology.entityTypes",
+    "layer": "một giá trị trong _ontology.layers",
+    "name": "tên tiếng Việt",
+    "canonical_name": "tên chuẩn hóa để dedup",
+    "normalized_name": "lowercase bỏ dấu để so khớp",
+    "aliases": [
+      "tên gọi khác / viết tắt"
+    ],
+    "description": "mô tả ngắn",
+    "language": "vi",
+    "embedding_id": "id vector, null nếu chưa có",
+    "parent": "id node cha (Structure/Role), null nếu gốc",
+    "status": "active|inactive|deprecated|superseded",
+    "version": "1",
+    "hash": "sha1(canonical_name+type)",
+    "source_ref": {
+      "document": "",
+      "article": "",
+      "clause": "",
+      "point": "",
+      "sentence_index": 0,
+      "page": 0,
+      "paragraph": 0,
+      "character_start": 0,
+      "character_end": 0,
+      "token_start": 0,
+      "token_end": 0
+    },
+    "provenance": {
+      "source": "",
+      "revision": "",
+      "author": "",
+      "extraction_method": "LLM|regex|human",
+      "confidence": 0,
+      "embedding_id": null,
+      "hash": ""
+    },
+    "confidence": "0.0–1.0",
+    "created_by": "LLM|regex|human",
+    "created_time": "ISO8601",
+    "updated_time": "ISO8601",
+    "ontology_version": "2.0",
+    "_reference_extra": "CHỈ type=LegalReference: target_document, target_article, target_clause, target_point",
+    "_statement_extra": "CHỈ type=Statement*: statement_type, text (nguyên văn câu), norm_refs[]"
+  },
+  "_relationshipSchema": {
+    "id": "REL_NNNNNN",
+    "stable_id": "Rel:HAS_OBLIGATION",
+    "source": "node id nguồn",
+    "relation": "một giá trị trong _ontology.relationshipTypes",
+    "target": "node id đích",
+    "attributes": {
+      "condition": "",
+      "priority": "mandatory|optional|prohibited",
+      "effective_from": "YYYY-MM-DD",
+      "weight": "0.0–1.0",
+      "negated": "boolean (VD KHÔNG áp dụng)",
+      "modality": "obligatory|permitted|prohibited|declarative",
+      "certainty": "certain|probable|possible",
+      "reason": "diễn giải ngắn"
+    },
+    "source_ref": {
+      "document": "",
+      "article": "",
+      "clause": "",
+      "point": "",
+      "sentence_index": 0,
+      "page": 0,
+      "paragraph": 0,
+      "character_start": 0,
+      "character_end": 0,
+      "token_start": 0,
+      "token_end": 0
+    },
+    "provenance": {
+      "extraction_method": "LLM|regex|human",
+      "revision": "",
+      "hash": ""
+    },
+    "confidence": "0.0–1.0",
+    "version": "1",
+    "status": "active|superseded",
+    "created_by": "LLM|regex|human"
+  },
+  "document": {
+    "id": "",
+    "documentNumber": "",
+    "title": "",
+    "documentType": "",
+    "promulgationDate": "",
+    "effectiveDate": "",
+    "validityStatus": ""
+  },
+  "nodes": [],
+  "relationships": [],
+  "_example": {
+    "_note": "Norm-centric micro-graph. Điều 95 Khoản 1 Luật Đất đai 2024 → 1 Norm với Subject/Action/Condition/Deadline/Authority + Statement giữ nguyên văn câu + LegalReference node.",
+    "nodes": [
+      {
+        "id": "ART_095",
+        "type": "Article",
+        "layer": "Structure",
+        "name": "Điều 95",
+        "stable_id": "Structure:Article",
+        "canonical_name": "Điều 95",
+        "normalized_name": "dieu 95",
+        "aliases": [],
+        "description": "Đăng ký biến động",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "",
+          "point": "",
+          "sentence_index": 0,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 0,
+          "character_end": 300,
+          "token_start": 0,
+          "token_end": 80
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.99,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.99,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "NORM_001",
+        "type": "Obligation",
+        "layer": "Norm",
+        "name": "Nghĩa vụ đăng ký biến động",
+        "stable_id": "Norm:Obligation",
+        "canonical_name": "Nghĩa vụ đăng ký biến động đất đai",
+        "normalized_name": "nghia vu dang ky bien dong dat dai",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 260,
+          "token_start": 30,
+          "token_end": 70
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.98,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.98,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "STMT_001",
+        "type": "ObligationStatement",
+        "layer": "Norm",
+        "name": "Câu 1 Điều 95",
+        "stable_id": "Statement:ObligationStatement",
+        "canonical_name": "Người sử dụng đất phải đăng ký biến động",
+        "normalized_name": "nguoi su dung dat phai dang ky bien dong",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "statement_type": "obligation",
+        "text": "Người sử dụng đất phải đăng ký biến động quyền sử dụng đất trong thời hạn 30 ngày.",
+        "norm_refs": [
+          "NORM_001"
+        ],
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 200,
+          "token_start": 30,
+          "token_end": 50
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.98,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.98,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "SUBJECT_001",
+        "type": "NaturalPerson",
+        "layer": "Semantic",
+        "name": "Người sử dụng đất",
+        "stable_id": "Semantic:NaturalPerson",
+        "canonical_name": "Người sử dụng đất",
+        "normalized_name": "nguoi su dung dat",
+        "aliases": [
+          "Người SDĐ"
+        ],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 210,
+          "token_start": 30,
+          "token_end": 55
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.99,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.99,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "ACTION_003",
+        "type": "Register",
+        "layer": "Semantic",
+        "name": "Đăng ký biến động",
+        "stable_id": "Semantic:Register",
+        "canonical_name": "Đăng ký biến động",
+        "normalized_name": "dang ky bien dong",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 150,
+          "character_end": 200,
+          "token_start": 40,
+          "token_end": 50
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.97,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.97,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "COND_001",
+        "type": "Condition",
+        "layer": "Norm",
+        "name": "Có biến động quyền sử dụng đất",
+        "stable_id": "Norm:Condition",
+        "canonical_name": "Có biến động quyền sử dụng đất",
+        "normalized_name": "co bien dong quyen su dung dat",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 210,
+          "character_end": 250,
+          "token_start": 55,
+          "token_end": 65
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.95,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.95,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "DEADLINE_001",
+        "type": "Deadline",
+        "layer": "Norm",
+        "name": "30 ngày",
+        "stable_id": "Norm:Deadline",
+        "canonical_name": "30 ngày",
+        "normalized_name": "30 ngay",
+        "aliases": [],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 133",
+          "clause": "",
+          "point": "",
+          "sentence_index": 1,
+          "page": 60,
+          "paragraph": 1,
+          "character_start": 10,
+          "character_end": 40,
+          "token_start": 3,
+          "token_end": 8
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.96,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.96,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "AUTHORITY_001",
+        "type": "GovernmentAgency",
+        "layer": "Semantic",
+        "name": "Văn phòng đăng ký đất đai",
+        "stable_id": "Semantic:GovernmentAgency",
+        "canonical_name": "Văn phòng đăng ký đất đai",
+        "normalized_name": "van phong dang ky dat dai",
+        "aliases": [
+          "VPĐKĐĐ"
+        ],
+        "description": "",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 4,
+          "character_start": 0,
+          "character_end": 40,
+          "token_start": 0,
+          "token_end": 10
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.97,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.97,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      },
+      {
+        "id": "REF_001",
+        "type": "LegalReference",
+        "layer": "Reference",
+        "name": "Điều 133 Luật Đất đai 2024",
+        "stable_id": "Reference:LegalReference",
+        "canonical_name": "Điều 133 Luật Đất đai 2024",
+        "normalized_name": "dieu 133 luat dat dai 2024",
+        "aliases": [],
+        "description": "Tham chiếu thời hạn",
+        "language": "vi",
+        "embedding_id": null,
+        "parent": null,
+        "status": "active",
+        "version": "1",
+        "hash": "",
+        "target_document": "Luật Đất đai 2024",
+        "target_article": "Điều 133",
+        "target_clause": "",
+        "target_point": "",
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 250,
+          "character_end": 290,
+          "token_start": 65,
+          "token_end": 75
+        },
+        "provenance": {
+          "source": "Luật Đất đai 2024",
+          "revision": "",
+          "author": "",
+          "extraction_method": "LLM",
+          "confidence": 0.94,
+          "embedding_id": null,
+          "hash": ""
+        },
+        "confidence": 0.94,
+        "created_by": "LLM",
+        "created_time": "2025-01-01T00:00:00Z",
+        "updated_time": "2025-01-01T00:00:00Z",
+        "ontology_version": "2.0"
+      }
+    ],
+    "relationships": [
+      {
+        "id": "REL_000001",
+        "stable_id": "Rel:HAS_STATEMENT",
+        "source": "NORM_001",
+        "relation": "HAS_STATEMENT",
+        "target": "STMT_001",
+        "attributes": {
+          "priority": "mandatory",
+          "modality": "obligatory",
+          "certainty": "certain",
+          "negated": false,
+          "weight": 0.98
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 260,
+          "token_start": 30,
+          "token_end": 70
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.98,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000002",
+        "stable_id": "Rel:HAS_SUBJECT",
+        "source": "NORM_001",
+        "relation": "HAS_SUBJECT",
+        "target": "SUBJECT_001",
+        "attributes": {
+          "modality": "obligatory",
+          "certainty": "certain"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 120,
+          "character_end": 150,
+          "token_start": 30,
+          "token_end": 40
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.99,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000003",
+        "stable_id": "Rel:HAS_ACTION",
+        "source": "NORM_001",
+        "relation": "HAS_ACTION",
+        "target": "ACTION_003",
+        "attributes": {
+          "modality": "obligatory",
+          "certainty": "certain"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "Điểm a",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 150,
+          "character_end": 200,
+          "token_start": 40,
+          "token_end": 50
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.98,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000004",
+        "stable_id": "Rel:HAS_CONDITION",
+        "source": "NORM_001",
+        "relation": "HAS_CONDITION",
+        "target": "COND_001",
+        "attributes": {
+          "certainty": "certain"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 210,
+          "character_end": 250,
+          "token_start": 55,
+          "token_end": 65
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.95,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000005",
+        "stable_id": "Rel:HAS_DEADLINE",
+        "source": "NORM_001",
+        "relation": "HAS_DEADLINE",
+        "target": "DEADLINE_001",
+        "attributes": {
+          "unit": "ngày",
+          "value": 30,
+          "certainty": "certain"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 133",
+          "clause": "",
+          "point": "",
+          "sentence_index": 1,
+          "page": 60,
+          "paragraph": 1,
+          "character_start": 10,
+          "character_end": 40,
+          "token_start": 3,
+          "token_end": 8
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.96,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000006",
+        "stable_id": "Rel:HAS_AUTHORITY",
+        "source": "NORM_001",
+        "relation": "HAS_AUTHORITY",
+        "target": "AUTHORITY_001",
+        "attributes": {},
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 4,
+          "character_start": 0,
+          "character_end": 40,
+          "token_start": 0,
+          "token_end": 10
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.97,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000007",
+        "stable_id": "Rel:HAS_REFERENCE",
+        "source": "NORM_001",
+        "relation": "HAS_REFERENCE",
+        "target": "REF_001",
+        "attributes": {
+          "reason": "Thời hạn 30 ngày dẫn chiếu Điều 133"
+        },
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "Khoản 1",
+          "point": "",
+          "sentence_index": 1,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 250,
+          "character_end": 290,
+          "token_start": 65,
+          "token_end": 75
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.94,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      },
+      {
+        "id": "REL_000008",
+        "stable_id": "Rel:PART_OF",
+        "source": "ART_095",
+        "relation": "PART_OF",
+        "target": "NORM_001",
+        "attributes": {},
+        "source_ref": {
+          "document": "Luật Đất đai 2024",
+          "article": "Điều 95",
+          "clause": "",
+          "point": "",
+          "sentence_index": 0,
+          "page": 42,
+          "paragraph": 3,
+          "character_start": 0,
+          "character_end": 300,
+          "token_start": 0,
+          "token_end": 80
+        },
+        "provenance": {
+          "extraction_method": "LLM",
+          "revision": "",
+          "hash": ""
+        },
+        "confidence": 0.99,
+        "version": "1",
+        "status": "active",
+        "created_by": "LLM"
+      }
+    ]
+  },
+  "_entityDescriptions": {
+    "LegalDocument": {
+      "desc": "Văn bản do cơ quan có thẩm quyền ban hành hoặc cá nhân lập để ghi nhận sự kiện pháp lý. Làm phát sinh, thay đổi hoặc chấm dứt quyền nghĩa vụ.",
+      "examples": [
+        "Giấy chứng nhận quyền sử dụng đất",
+        "Di chúc hợp pháp"
+      ]
+    },
+    "Law": {
+      "desc": "Văn bản quy phạm pháp luật do cơ quan nhà nước có thẩm quyền ban hành, quy định quy tắc xử sự bắt buộc chung và có hiệu lực pháp lý cao nhất trong hệ thống.",
+      "examples": [
+        "Luật Doanh nghiệp 2020",
+        "Bộ luật Dân sự 2015"
+      ]
+    },
+    "Resolution": {
+      "desc": "Nghị quyết là văn bản do cơ quan nhà nước có thẩm quyền ban hành để quyết định các vấn đề chính sách hoặc quy phạm pháp luật.",
+      "examples": [
+        "Nghị quyết số 43/2022/QH15 về chính sách tài khóa tiền tệ",
+        "Nghị quyết Hội đồng nhân dân tỉnh về quy hoạch đất đai"
+      ]
+    },
+    "Decree": {
+      "desc": "Văn bản quy phạm pháp luật do Chính phủ ban hành để quy định chi tiết thi hành luật, nghị quyết của Quốc hội.",
+      "examples": [
+        "Nghị định 01/2021/NĐ-CP về đăng ký doanh nghiệp",
+        "Nghị định 15/2020/NĐ-CP xử phạt vi phạm hành chính"
+      ]
+    },
+    "Circular": {
+      "desc": "Văn bản quy phạm pháp luật do bộ hoặc cơ quan ngang bộ phát hành để hướng dẫn thi hành luật, nghị định và quy định thủ tục cụ thể.",
+      "examples": [
+        "Thông tư 80/2021/TT-BTC về thuế",
+        "Thông tư 02/2019/TT-VKSTC"
+      ]
+    },
+    "Norm": {
+      "desc": "Quy tắc xử sự bắt buộc chung do nhà nước ban hành và bảo đảm thực hiện, điều chỉnh các quan hệ xã hội.",
+      "examples": [
+        "Bộ luật Dân sự quy định về giao kết hợp đồng",
+        "Luật Giao thông đường bộ quy định giới hạn tốc độ"
+      ]
+    },
+    "Obligation": {
+      "desc": "Nghĩa vụ pháp lý buộc chủ thể phải thực hiện hoặc không thực hiện một hành vi nhất định. Được bảo đảm bằng cưỡng chế nhà nước.",
+      "examples": [
+        "Nghĩa vụ nộp thuế",
+        "Nghĩa vụ cấp dưỡng"
+      ]
+    },
+    "Permission": {
+      "desc": "Sự công nhận của pháp luật cho chủ thể tự do lựa chọn hành động trong phạm vi không bị cấm.",
+      "examples": [
+        "Được phép đăng ký hộ kinh doanh cá thể",
+        "Được quyền lập di chúc"
+      ]
+    },
+    "Right": {
+      "desc": "Khả năng pháp lý được làm hoặc đòi hỏi người khác làm hành vi nhất định, được nhà nước bảo vệ.",
+      "examples": [
+        "Quyền sở hữu đối với bất động sản",
+        "Quyền khởi kiện đòi nợ"
+      ]
+    },
+    "Prohibition": {
+      "desc": "Sự nghiêm cấm bằng pháp luật đối với hành vi cụ thể, vi phạm sẽ bị xử lý chế tài.",
+      "examples": [
+        "Cấm vận chuyển hàng lậu",
+        "Cấm khai thác rừng trái phép"
+      ]
+    },
+    "Exception": {
+      "desc": "Quy định loại trừ việc áp dụng nguyên tắc pháp lý chung đối với một trường hợp cụ thể được xác định rõ.",
+      "examples": [
+        "Miễn trừ trách nhiệm hình sự cho ngoại giao đoàn",
+        "Trường hợp bất khả kháng miễn nghĩa vụ hợp đồng"
+      ]
+    },
+    "Condition": {
+      "desc": "Sự kiện hoặc yêu cầu pháp lý phải xảy ra hoặc được thỏa mãn để làm phát sinh, thay đổi hoặc chấm dứt hiệu lực của quan hệ pháp luật.",
+      "examples": [
+        "Điều kiện tiên quyết để hợp đồng có hiệu lực",
+        "Yêu cầu vốn điều lệ tối thiểu để cấp phép ngân hàng"
+      ]
+    },
+    "NaturalPerson": {
+      "desc": "Cá nhân con người có năng lực pháp luật và năng lực hành vi theo quy định pháp luật. Là chủ thể nguyên thủy của mọi quan hệ pháp luật.",
+      "examples": [
+        "Lê Văn C",
+        "Phạm Thị D"
+      ]
+    },
+    "GovernmentAgency": {
+      "desc": "Cơ quan nhà nước là tổ chức thuộc bộ máy nhà nước, được giao thực hiện quyền lực nhà nước hoặc quản lý hành chính công.",
+      "examples": [
+        "Bộ Tài chính",
+        "UBND tỉnh Đồng Nai"
+      ]
+    },
+    "Organization": {
+      "desc": "Tổ chức là tập hợp người hoặc tài sản có mục đích hoạt động nhất định, có thể chưa có tư cách pháp nhân.",
+      "examples": [
+        "Chi hội Chữ thập đỏ phường",
+        "Ban tổ chức lễ hội"
+      ]
+    },
+    "Statement": {
+      "desc": "Tuyên bố pháp lý chung thể hiện thông tin hoặc ý chí của cơ quan nhà nước trong văn bản quy phạm.",
+      "examples": [
+        "Nhà nước bảo hộ quyền sở hữu hợp pháp của công dân",
+        "Công dân có quyền bình đẳng trước pháp luật"
+      ]
+    },
+    "Deadline": {
+      "desc": "Thời hạn do pháp luật hoặc thỏa thuận ấn định, hết thời điểm đó quyền hoặc nghĩa vụ chấm dứt hoặc phát sinh chế tài.",
+      "examples": [
+        "Hạn nộp phạt vi phạm giao thông 10/04/2025",
+        "Thời hạn kháng cáo 15 ngày từ ngày tuyên án"
+      ]
+    },
+    "LegalReference": {
+      "desc": "Tham chiếu đến văn bản quy phạm pháp luật hoặc nguyên tắc pháp lý làm căn cứ giải quyết vụ việc.",
+      "examples": [
+        "Bộ luật Dân sự 2015",
+        "Hiến pháp 2013"
+      ]
+    },
+    "Property": {
+      "desc": "Vật hoặc quyền tài sản thuộc sở hữu hợp pháp của cá nhân, tổ chức, bao gồm động sản và bất động sản.",
+      "examples": [
+        "Xe máy cá nhân",
+        "Bản quyền phần mềm"
+      ]
+    }
+  },
+  "_relationshipDescriptions": {
+    "HAS_PART": {
+      "desc": "Quan hệ chỉ ra một văn bản luật hoặc thực thể pháp lý chứa đựng một phần cấu thành hoặc bộ phận cụ thể bên trong nó.",
+      "examples": [
+        "Bộ luật Dân sự 2015 (Văn bản luật) HAS_PART Phần thứ nhất: Những quy định chung (Phần)"
+      ]
+    },
+    "HAS_ARTICLE": {
+      "desc": "Quan hệ giữa văn bản luật và các điều được ban hành trong đó. Node nguồn là LawDocument, node đích là Article.",
+      "examples": [
+        "Luật Doanh nghiệp 2020 (LawDocument) có Điều 111 (Article) về quyền của cổ đông.",
+        "Bộ luật Dân sự 2015 (LawDocument) chứa Điều 275 (Article) quy định về quyền hưởng dụng."
+      ]
+    },
+    "HAS_CLAUSE": {
+      "desc": "Quan hệ giữa một điều luật và các khoản cấu thành điều đó. Node nguồn là Article, node đích là Clause.",
+      "examples": [
+        "Điều 13 (Article) có Khoản 2 (Clause) định nghĩa quyền nhân thân.",
+        "Điều 64 (Article) tại Khoản 1 (Clause) quy định về tài sản chung."
+      ]
+    },
+    "HAS_POINT": {
+      "desc": "Quan hệ giữa một khoản và các điểm chia nhỏ nội dung khoản đó. Node nguồn là Clause, node đích là Point.",
+      "examples": [
+        "Khoản 1 (Clause) bao gồm Điểm a (Point) về loại hợp đồng.",
+        "Khoản 3 (Clause) có Điểm b (Point) liệt kê trường hợp miễn trách nhiệm."
+      ]
+    },
+    "PART_OF": {
+      "desc": "Quan hệ không gian thể hiện đơn vị hành chính hoặc khu vực là bộ phận cấu thành của đơn vị lớn hơn. Xác định cấp bậc địa giới hành chính theo luật định.",
+      "examples": [
+        "Quận C (Node: AdministrativeArea) part_of TP. Hà Nội (Node: AdministrativeArea)",
+        "Thửa đất D (Node: Parcel) part_of Lô đất E (Node: Parcel)"
+      ]
+    },
+    "NEXT": {
+      "desc": "Quan hệ tuần tự thể hiện đơn vị pháp lý này đứng ngay sau đơn vị pháp lý khác trong văn bản. Dùng để duy trì trình tự đọc và áp dụng luật.",
+      "examples": [
+        "Điều 10 (Điều) NEXT (Điều) Điều 11 Luật Đất đai năm 2013 quy định về quyền và nghĩa vụ của người sử dụng đất.",
+        "Khoản 1 (Khoản) NEXT (Khoản) Khoản 2 Điều 15 Bộ luật Dân sự năm 2015."
+      ]
+    },
+    "PREVIOUS": {
+      "desc": "Quan hệ tuần tự thể hiện đơn vị pháp lý này đứng ngay trước đơn vị pháp lý khác trong văn bản. Hỗ trợ việc truy xuất ngược trình tự quy định.",
+      "examples": [
+        "Điều 5 (Điều) PREVIOUS (Điều) Điều 4 Luật Doanh nghiệp năm 2020 quy định về quyền của doanh nghiệp.",
+        "Điểm b (Điểm) PREVIOUS (Điểm) Điểm c Khoản 3 Điều 8 Luật Thuế thu nhập cá nhân."
+      ]
+    },
+    "IMPLEMENTS": {
+      "desc": "Quan hệ chỉ việc văn bản cấp dưới quy định chi tiết, hướng dẫn thi hành văn bản cấp trên trong hệ thống pháp luật.",
+      "examples": [
+        "Nghị định 30/2020 (Decree) IMPLEMENTS Luật Căn cước 2023 (Law)",
+        "Thông tư 02/2023 (Circular) IMPLEMENTS Nghị định 10/2022 (Decree)"
+      ]
+    },
+    "GUIDES": {
+      "desc": "Văn bản nguồn hướng dẫn chi tiết cách thi hành văn bản đích. Thường do cơ quan cấp dưới ban hành để thực hiện văn bản cấp trên.",
+      "examples": [
+        "Circular (Thông tư) 01/2020/TT-BTP GUIDES Decree (Nghị định) 23/2015/NĐ-CP về cấp bản sao từ sổ gốc."
+      ]
+    },
+    "INTERPRETS": {
+      "desc": "Văn bản nguồn giải thích nội dung, phạm vi áp dụng của văn bản đích. Giúp xóa bỏ sự mập mờ trong quy định pháp luật.",
+      "examples": [
+        "Official Letter (Công văn) 123/TCT-CS INTERPRETS Law (Luật) Thuế GTGT về đối tượng không chịu thuế."
+      ]
+    },
+    "CITES": {
+      "desc": "Văn bản nguồn trích dẫn trực tiếp văn bản đích làm căn cứ pháp lý ban hành.",
+      "examples": [
+        "Nghị định 123/2020/NĐ-CP (Document) trích dẫn Luật Quản lý thuế 2019 (Document)",
+        "Quyết định 45/QĐ-TTg (Document) căn cứ Nghị định 30/2020/NĐ-CP (Document)"
+      ]
+    },
+    "AMENDS": {
+      "desc": "Quan hệ chỉ việc một văn bản pháp luật sửa đổi, bổ sung nội dung của một văn bản pháp luật khác đã ban hành.",
+      "examples": [
+        "Luật sửa đổi bổ sung một số điều của Luật Giáo dục 2019 (Law) AMENDS Luật Giáo dục 2005 (Law)"
+      ]
+    },
+    "REPEALS": {
+      "desc": "Quan hệ chỉ việc một văn bản pháp luật bãi bỏ toàn bộ hoặc một phần hiệu lực pháp lý của văn bản khác.",
+      "examples": [
+        "Luật Ban hành văn bản quy phạm pháp luật 2015 (Law) REPEALS Luật Ban hành văn bản quy phạm pháp luật 2008 (Law)"
+      ]
+    },
+    "REPLACES": {
+      "desc": "Quan hệ chỉ văn bản pháp lý thay thế hoàn toàn văn bản khác đã tồn tại, làm cho văn bản cũ chấm dứt hiệu lực.",
+      "examples": [
+        "Nghị định 01/2021/NĐ-CP (node Nghị định) thay thế Nghị định 02/2015/NĐ-CP (node Nghị định).",
+        "Thông tư 10/2022/TT-BTC (node Thông tư) thay thế Thông tư 05/2018/TT-BTC (node Thông tư)."
+      ]
+    },
+    "HAS_SUBJECT": {
+      "desc": "Quan hệ xác định chủ thể (cá nhân/tổ chức) chịu sự điều chỉnh hoặc có quyền nghĩa vụ từ quy phạm.",
+      "examples": [
+        "Quy phạm bảo hiểm y tế HAS_SUBJECT Người lao động",
+        "Quy phạm đăng ký kinh doanh HAS_SUBJECT Hộ kinh doanh"
+      ]
+    },
+    "HAS_OBJECT": {
+      "desc": "Quan hệ chỉ ra đối tượng (tài sản, hành vi, trạng thái) là mục tiêu tác động của quy phạm pháp luật.",
+      "examples": [
+        "Quy phạm bảo vệ môi trường HAS_OBJECT Nguồn nước mặt",
+        "Quy phạm sở hữu trí tuệ HAS_OBJECT Tác phẩm sáng tạo"
+      ]
+    },
+    "HAS_ACTION": {
+      "desc": "Quan hệ mô tả hành vi được cho phép, bị cấm hoặc bắt buộc thực hiện theo quy phạm pháp luật.",
+      "examples": [
+        "Quy phạm giao thông đường bộ HAS_ACTION Dừng xe trước vạch kẻ",
+        "Quy phạm thuế thu nhập HAS_ACTION Kê khai hàng năm"
+      ]
+    },
+    "HAS_CONDITION": {
+      "desc": "Quan hệ chỉ điều kiện cần thiết để một quy phạm pháp luật phát sinh hiệu lực hoặc được áp dụng đối với đối tượng.",
+      "examples": [
+        "Điều 64 Luật Đất đai (LegalProvision) HAS_CONDITION Giấy chứng nhận quyền sử dụng đất (Condition)",
+        "Quyền khởi kiện (Right) HAS_CONDITION Thời hiệu 03 năm (Condition)"
+      ]
+    },
+    "HAS_EXCEPTION": {
+      "desc": "Quan hệ chỉ trường hợp loại trừ không áp dụng quy phạm pháp luật trong hoàn cảnh cụ thể dù thỏa mãn điều kiện chung.",
+      "examples": [
+        "Nghĩa vụ tham gia nghĩa vụ quân sự (Obligation) HAS_EXCEPTION Người đang học đại học (Exception)",
+        "Lệnh cấm xuất cảnh (Prohibition) HAS_EXCEPTION Trường hợp khẩn cấp y tế (Exception)"
+      ]
+    },
+    "HAS_DEADLINE": {
+      "desc": "Quan hệ chỉ mốc thời gian hoặc khoảng thời gian tối đa mà chủ thể phải thực hiện hoặc hoàn tất hành vi pháp lý.",
+      "examples": [
+        "Thủ tục cấp giấy phép xây dựng (Procedure) HAS_DEADLINE 20 ngày làm việc (Deadline)",
+        "Nghĩa vụ nộp thuế thu nhập (Obligation) HAS_DEADLINE Ngày 31 tháng 3 hàng năm (Deadline)"
+      ]
+    },
+    "HAS_AUTHORITY": {
+      "desc": "Quan hệ chỉ cơ quan, tổ chức hoặc cá nhân được pháp luật giao thẩm quyền ban hành, thi hành hoặc giám sát quy phạm.",
+      "examples": [
+        "Quyết định xử phạt vi phạm hành chính (Sanction) HAS_AUTHORITY Chủ tịch UBND cấp huyện (Authority)",
+        "Công nhận kết quả đấu thầu (AdministrativeAct) HAS_AUTHORITY Bộ Kế hoạch và Đầu tư (Authority)"
+      ]
+    },
+    "HAS_CONSEQUENCE": {
+      "desc": "Quan hệ chỉ ra hệ quả pháp lý hoặc chế tài phát sinh từ một quy phạm. Node nguồn là Quy phạm, node đích là Hệ quả pháp lý hoặc Chế tài.",
+      "examples": [
+        "Điều 8 Luật Hình sự (node: Quy phạm) HAS_CONSEQUENCE (node: Chế tài) Khoản 2 Điều 12 (phạt tù 2 năm)",
+        "Quy định hợp đồng vô hiệu (node: Quy phạm) HAS_CONSEQUENCE (node: Hệ quả) Nghĩa vụ hoàn trả tài sản (bên nhận)"
+      ]
+    },
+    "HAS_SCOPE": {
+      "desc": "Quan hệ xác định phạm vi điều chỉnh, đối tượng chịu tác động hoặc giới hạn không gian/thời gian của một quy phạm.",
+      "examples": [
+        "Luật Bảo vệ môi trường 2020 (Node: Văn bản luật) có phạm vi điều chỉnh bao gồm Hoạt động bảo vệ môi trường (Node: Lĩnh vực).",
+        "Thông tư 08/2022 (Node: Thông tư) quy định phạm vi áp dụng trong Lĩnh vực giao thông vận tải (Node: Lĩnh vực)."
+      ]
+    },
+    "HAS_REFERENCE": {
+      "desc": "Quan hệ tham chiếu hoặc trích dẫn tới văn bản, điều khoản khác để làm rõ nội dung. Node nguồn là Quy phạm đang xét, node đích là Văn bản hoặc Điều khoản được dẫn.",
+      "examples": [
+        "Điều 10 Thông tư 04 (node: Quy phạm) HAS_REFERENCE (node: Điều khoản) Điều 5 Nghị định 15",
+        "Khoản 3 Điều 20 (node: Quy phạm) HAS_REFERENCE (node: Văn bản) Công văn 1234/BTC-TCT"
+      ]
+    },
+    "HAS_STATEMENT": {
+      "desc": "Quan hệ giữa văn bản hoặc điều khoản luật với tuyên bố pháp lý cụ thể mà nó chứa đựng. Node nguồn là văn bản luật, node đích là tuyên bố.",
+      "examples": [
+        "(Luật Doanh nghiệp 2020) -[HAS_STATEMENT]-> (Điều 111 về quyền của cổ đông)",
+        "(Nghị định 30/2020) -[HAS_STATEMENT]-> (Quy định về văn thư lưu trữ)"
+      ]
+    },
+    "HAS_DEFINITION": {
+      "desc": "Quan hệ liên kết thuật ngữ pháp lý với nội dung định nghĩa chính thức trong văn bản quy phạm pháp luật.",
+      "examples": [
+        "Điều 3 Luật Hôn nhân: Cơ quan đăng ký (node nguồn: StateAgency) HAS_DEFINITION Kết hôn (node đích: LegalTerm).",
+        "Khoản 1 Điều 4 Luật Đầu tư: Nhà đầu tư (node nguồn: Investor) HAS_DEFINITION Tổ chức kinh tế (node đích: LegalTerm)."
+      ]
+    },
+    "ISSUES": {
+      "desc": "Quan hệ khi cơ quan hoặc tổ chức có thẩm quyền ban hành văn bản, giấy phép, quyết định pháp lý cho thực thể khác.",
+      "examples": [
+        "Bộ Tư pháp (Node: Cơ quan Nhà nước) ISSUES giấy phép hành nghề luật sư cho cá nhân (Node: Cá nhân).",
+        "UBND huyện (Node: Cơ quan Nhà nước) ISSUES giấy chứng nhận quyền sử dụng đất cho hộ gia đình (Node: Hộ Gia Đình)."
+      ]
+    },
+    "CREATED_BY": {
+      "desc": "Quan hệ chỉ thực thể đã khởi tạo hoặc ban hành một đối tượng pháp lý. Thể hiện nguồn gốc và thẩm quyền tạo lập.",
+      "examples": [
+        "(Văn bản luật) CREATED_BY (Quốc hội)",
+        "(Hợp đồng) CREATED_BY (Công ty TNHH A)"
+      ]
+    }
+  },
+  "_meta": {
+    "split": true,
+    "entity_count": 25,
+    "relationship_count": 29
+  }
+}

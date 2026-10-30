@@ -1,0 +1,16 @@
+{
+  "name": "Tinix Legal - Hệ thống Tra cứu & Copilot Pháp lý",
+  "short_name": "TinixLegal",
+  "description": "Cổng thông tin điện tử và trợ lý AI tra cứu văn bản quy phạm pháp luật Việt Nam",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1D51",
+  "theme_color": "#0B1D51",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

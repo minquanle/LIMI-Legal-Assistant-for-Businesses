@@ -1,0 +1,57 @@
+.product-panel{width:100%;max-width:960px;margin:20px auto;padding:28px}.product-form{display:grid;gap:16px;margin:24px 0}.product-form label{display:grid;gap:7px}.product-form input,.product-form select,.product-panel>label input{width:100%;box-sizing:border-box;border:1px solid var(--line,#c6e3e1);border-radius:8px;padding:12px;color:#133c57;background:white}.product-form fieldset{border:0;padding:0;display:grid;gap:16px;min-width:0}.product-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--line,#c6e3e1);overflow-wrap:anywhere}.product-facts{display:flex;flex-wrap:wrap;gap:12px}.product-facts span{padding:8px;background:#edf4f7;border-radius:8px}.product-unknown{display:flex;gap:8px;padding:12px;width:100%;font-size:14px;color:#486479}.product-panel h2{margin-top:28px}.product-panel .panel-actions{flex-wrap:wrap}.product-status{font-size:13px;color:#47677f}@media(max-width:600px){.product-panel{padding:18px}.product-row{align-items:flex-start;flex-direction:column}.product-panel input{min-width:0}.product-form{min-width:0}}
+
+/* Thông báo kết quả thao tác: góc phải trên, xếp chồng tối đa 4. */
+#action-toasts{position:fixed;top:84px;right:20px;z-index:300;display:grid;gap:10px;width:min(380px,calc(100vw - 32px));pointer-events:none}
+.action-toast{pointer-events:auto;display:grid;grid-template-columns:28px 1fr 24px;gap:10px;align-items:start;background:#fff;border:1px solid #d9deec;border-left:5px solid #348b77;border-radius:10px;padding:12px 12px 12px 14px;box-shadow:0 10px 30px rgba(17,39,71,.16);color:#17263e;animation:action-toast-in .18s ease-out}
+.action-toast.error{border-left-color:#b94f53}
+.action-toast.info{border-left-color:#2860db}
+.action-toast strong{display:block;font-size:.9rem;color:#112747}
+.action-toast p{margin:2px 0 0;font-size:.875rem;line-height:1.45;color:#2f3d55}
+.action-toast-icon{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#eaf7f2;color:#348b77;font-weight:700}
+.action-toast.error .action-toast-icon{background:#fff0f0;color:#b94f53}
+.action-toast.info .action-toast-icon{background:#edf3ff;color:#2860db}
+.action-toast-close{border:0;background:none;color:#65748a;font-size:1.25rem;line-height:1;cursor:pointer;padding:2px}
+.action-toast-close:hover,.action-toast-close:focus-visible{color:#112747}
+/* Slide only: a toast must stay readable even if the animation never runs. */
+@keyframes action-toast-in{from{transform:translateX(16px)}to{transform:none}}
+@media (max-width:640px){#action-toasts{top:auto;bottom:16px;right:16px}}
+@media (prefers-reduced-motion:reduce){.action-toast{animation:none}}
+
+/* Dải thông báo cố định đầu trang: tăng tương phản để đọc được. */
+.disclaimer-banner,.legal-library-note{color:#3a4a62;background:#eef3fb;border-color:#d3dcea}
+.disclaimer-banner>svg,.legal-library-note>svg{color:#4b79c4}
+.disclaimer-banner strong{color:#17263e}
+
+/* Duyệt thay đổi luật: bốn quyết định, gợi ý ảnh hưởng, loại hàng loạt. */
+.change-decision-title{margin:22px 0 10px}
+.change-decisions{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.change-decision{display:grid;gap:4px;text-align:left;background:#fff;border:1px solid #d9deec;border-radius:10px;padding:12px 14px;cursor:pointer;color:#17263e;font:inherit}
+.change-decision strong{font-size:.95rem;color:#112747}
+.change-decision span{font-size:.82rem;line-height:1.45;color:#525d75}
+.change-decision:hover,.change-decision:focus-visible{border-color:#4b79c4}
+.change-decision.selected{border-color:#2860db;box-shadow:0 0 0 2px rgba(40,96,219,.18);background:#f5f8ff}
+.change-impact ul,.change-review-main+div ul{margin:6px 0 0;padding-left:18px}
+.change-impact-badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#fff7e6;color:#8a5c12;font-size:.78rem;font-weight:600}
+.change-bulk{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:8px 0 14px;padding:10px 12px;border:1px dashed #d9deec;border-radius:10px;font-size:.85rem;color:#3a4a62}
+.change-bulk label{display:grid;gap:4px;min-width:min(100%,320px)}
+.change-bulk select{max-width:100%}
+.change-review-meta input[type=checkbox]{width:18px;height:18px;margin-right:4px}
+
+/* Profile: view first, edit one part at a time. */
+.product-profile{display:grid;gap:16px;margin-top:22px}
+.profile-intro{margin:0;font-size:.85rem;color:#51677e}
+.profile-card{background:#fff;border:1px solid #c6e3e1;border-radius:14px;padding:18px 20px}
+.profile-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.profile-card-head h3{margin:0;font-size:1.02rem;color:#0b3156}.profile-card-head p{margin:4px 0 0;font-size:.82rem;color:#51677e}
+.profile-view{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;margin:0}
+.profile-view dt{font-size:.75rem;color:#51677e}.profile-view dd{margin:2px 0 0;font-weight:600;color:#0b3156;overflow-wrap:anywhere}
+.profile-view dd.missing-value{font-weight:400;color:#8a99ad}
+.profile-facts-summary{display:flex;align-items:baseline;gap:10px;font-size:.88rem;color:#51677e}.profile-facts-summary strong{font-size:1.4rem;color:#167f91}
+.product-profile .form-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px}
+.profile-history>summary{cursor:pointer;font-weight:600;color:#0b3156}
+@media(max-width:640px){.profile-card{padding:14px}.profile-card-head{flex-direction:column}.profile-card-head .secondary-button{width:100%}}
+/* width:100% + padding overflowed narrow screens and was centred off-screen (alerts on phones). */
+.product-panel{box-sizing:border-box;max-width:min(960px,100%)}
+.compliance-panel{max-width:min(1100px,100%)}
+/* overflow:hidden still lets focus/scrollIntoView scroll the panel sideways (content shifted ~39px left on phones). */
+.product-panel{overflow-x:clip}

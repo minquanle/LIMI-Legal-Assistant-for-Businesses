@@ -1,0 +1,42 @@
+{
+  "name": "tinix-legal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vietnam Legal Document Aggregation & Search System",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "init:mvp:env": "node scripts/init-mvp-env.mjs",
+    "infra:mvp:up": "docker compose --env-file .limi.env -f compose.limi.yml up -d --wait",
+    "infra:mvp:down": "docker compose --env-file .limi.env -f compose.limi.yml down",
+    "infra:mvp:status": "docker compose --env-file .limi.env -f compose.limi.yml ps",
+    "build:mvp": "npm -w packages/backend run build:mvp",
+    "start:mvp": "npm -w packages/backend run start:mvp",
+    "dev:mvp": "npm -w packages/backend run dev:mvp",
+    "worker:mvp": "npm -w packages/backend run worker:mvp",
+    "scheduler:mvp": "npm -w packages/backend run scheduler:mvp",
+    "storage:mvp:init": "npm -w packages/backend run storage:mvp:init",
+    "test:mvp": "npm -w packages/backend run test:mvp",
+    "smoke:mvp": "npm -w packages/backend run smoke:mvp",
+    "db:mvp:deploy": "npm -w packages/backend run db:mvp:deploy",
+    "test:mvp:db": "npm -w packages/backend run test:mvp:db",
+    "import:mvp": "npm -w packages/backend run import:mvp --",
+    "test:mvp:legal": "npm -w packages/backend run test:mvp:legal",
+    "test:mvp:import": "npm -w packages/backend run test:mvp:import",
+    "crawler": "npm -w packages/crawler run",
+    "backend": "npm -w packages/backend run",
+    "frontend": "npm -w packages/frontend run",
+    "dev:backend": "npm -w packages/backend run dev",
+    "dev:frontend": "npm -w packages/frontend run dev",
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "crawl": "npm -w packages/crawler run start",
+    "test": "npm -w packages/shared run test && npm -w packages/backend run test && npm -w packages/crawler run test"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}

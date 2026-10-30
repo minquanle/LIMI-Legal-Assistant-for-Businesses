@@ -1,0 +1,2188 @@
+// Prisma schema for Vietnam Legal Document System
+// PostgreSQL with pgvector extension for semantic search
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+// B13-B15: business keys and immutable receipts survive queue/worker restarts.
+model WorkspaceAlert {
+  id String @id @default(uuid())
+  companyId String
+  key String @unique
+  kind String
+  title String
+  payloadJson Json
+  taskId String?
+  decisionId String?
+  eventId String?
+  createdAt DateTime @default(now())
+  @@index([companyId, createdAt])
+}
+model AlertUserState {
+  id String @id @default(uuid())
+  alertId String
+  userId String
+  readAt DateTime?
+  snoozedUntil DateTime?
+  @@unique([alertId, userId])
+}
+model AlertOutbox {
+  id String @id @default(uuid())
+  alertId String @unique
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  deliveredAt DateTime?
+  errorCode String?
+  createdAt DateTime @default(now())
+  @@index([deliveredAt, nextAttemptAt])
+}
+model AlertDeliveryAttempt {
+  id String @id @default(uuid())
+  outboxId String
+  attempt Int
+  channel String @default("IN_APP")
+  result String
+  createdAt DateTime @default(now())
+  @@unique([outboxId, attempt])
+}
+model CompanyReminderSetting {
+  companyId String @id
+  enabled Boolean @default(true)
+  preparationDays Int @default(7)
+  timezone String @default("Asia/Ho_Chi_Minh")
+  updatedAt DateTime @updatedAt
+}
+model SourceWatch {
+  id String @id @default(uuid())
+  url String @unique
+  domain String
+  mode String
+  sourceId String?
+  documentId String?
+  enabled Boolean @default(true)
+  nextCheckAt DateTime @default(now())
+  intervalHours Int @default(24)
+  failures Int @default(0)
+  lastSuccessAt DateTime?
+  lastError String?
+  baselineId String?
+  etag String?
+  lastModified String?
+  createdAt DateTime @default(now())
+  @@index([enabled, nextCheckAt])
+}
+model CrawlDomainState {
+  domain String @id
+  nextRequestAt DateTime @default(now())
+  lastSuccessAt DateTime?
+  lastError String?
+  robotsText String?
+  robotsCheckedAt DateTime?
+  watermark DateTime?
+}
+model WatchObservation {
+  id String @id @default(uuid())
+  watchId String
+  observedAt DateTime @default(now())
+  httpStatus Int?
+  result String
+  rawHash String?
+  contentHash String?
+  metadataHash String?
+  relationHash String?
+  parserVersion String
+  extractedJson Json
+  @@index([watchId, observedAt])
+}
+model LawChangeCandidate {
+  id String @id @default(uuid())
+  key String @unique
+  watchId String?
+  observationId String?
+  previousObservationId String?
+  kind String
+  title String
+  diffJson Json
+  status String @default("PENDING")
+  revision Int @default(1)
+  reviewerId String?
+  reviewedAt DateTime?
+  reviewNote String?
+  // NEW | OBLIGATION_UPDATE | NEEDS_IMPORT while status is PENDING
+  stage String @default("NEW")
+  workflowJson Json?
+  createdAt DateTime @default(now())
+  @@index([status, createdAt])
+}
+model ApprovedLawChange {
+  id String @id @default(uuid())
+  candidateId String @unique
+  releaseId String
+  effectiveDate DateTime @db.Date
+  whatChanged String
+  why String
+  action String
+  versionIds Json
+  citationsJson Json
+  reviewerId String
+  createdAt DateTime @default(now())
+}
+model ChangeCompanyImpact {
+  id String @id @default(uuid())
+  eventId String
+  companyId String
+  evaluationId String?
+  completedAt DateTime?
+  errorCode String?
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  @@unique([eventId, companyId])
+  @@index([completedAt, nextAttemptAt])
+}
+
+enum WorkspaceRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+model WorkspaceUser {
+  id String @id @default(uuid())
+  email String @unique
+  name String
+  passwordHash String?
+  platformReviewer Boolean @default(false)
+  createdAt DateTime @default(now())
+  memberships WorkspaceMembership[]
+  sessions WorkspaceSession[]
+  tokens WorkspaceAccessToken[]
+  feedback WorkspaceFeedback[]
+  feedbackMessages WorkspaceFeedbackMessage[]
+}
+
+model WorkspaceOrganization {
+  id String @id @default(uuid())
+  name String
+  createdAt DateTime @default(now())
+  memberships WorkspaceMembership[]
+  companies WorkspaceCompany[]
+  tokens WorkspaceAccessToken[]
+  audits WorkspaceAudit[]
+}
+
+model WorkspaceMembership {
+  id String @id @default(uuid())
+  userId String
+  organizationId String
+  role WorkspaceRole
+  user WorkspaceUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization WorkspaceOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  @@unique([userId, organizationId])
+}
+
+model WorkspaceSession {
+  id String @id @default(uuid())
+  tokenHash String @unique
+  csrfHash String
+  userId String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  user WorkspaceUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, expiresAt])
+}
+
+model WorkspaceAccessToken {
+  id String @id @default(uuid())
+  tokenHash String @unique
+  kind String
+  email String
+  userId String?
+  organizationId String?
+  role WorkspaceRole?
+  expiresAt DateTime
+  usedAt DateTime?
+  user WorkspaceUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization WorkspaceOrganization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model WorkspaceCompany {
+  id String @id @default(uuid())
+  organizationId String
+  taxId String
+  version Int @default(1)
+  profileJson Json
+  factsJson Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization WorkspaceOrganization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  profiles WorkspaceProfileVersion[]
+  sites WorkspaceSite[]
+  events WorkspaceCompanyEvent[]
+  evaluations ComplianceEvaluation[]
+  tasks ComplianceTask[]
+  pilotProgress PilotChecklistProgress[]
+  feedback WorkspaceFeedback[]
+  @@unique([organizationId, taxId])
+  @@index([organizationId, updatedAt])
+}
+
+model WorkspaceProfileVersion {
+  id String @id @default(uuid())
+  companyId String
+  version Int
+  profileJson Json
+  factsJson Json
+  actorId String
+  createdAt DateTime @default(now())
+  company WorkspaceCompany @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  evaluations ComplianceEvaluation[]
+  @@unique([companyId, version])
+}
+
+model WorkspaceSite {
+  id String @id @default(uuid())
+  companyId String
+  name String
+  kind String
+  address String
+  province String
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company WorkspaceCompany @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  @@index([companyId])
+}
+
+model WorkspaceCompanyEvent {
+  id String @id @default(uuid())
+  companyId String
+  type String
+  occurredOn DateTime @db.Date
+  note String
+  actorId String
+  createdAt DateTime @default(now())
+  company WorkspaceCompany @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  @@index([companyId, occurredOn])
+}
+
+model WorkspaceAudit {
+  id String @id @default(uuid())
+  organizationId String?
+  actorId String
+  action String
+  targetId String?
+  createdAt DateTime @default(now())
+  organization WorkspaceOrganization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  @@index([organizationId, createdAt])
+}
+
+model WorkspaceLoginThrottle {
+  key String @id
+  attempts Int @default(1)
+  windowStart DateTime @default(now())
+}
+
+model WorkspaceRegistryObservation {
+  id String @id @default(uuid())
+  userId String
+  taxId String
+  profileJson Json
+  provenanceJson Json
+  createdAt DateTime @default(now())
+  @@index([userId, taxId])
+}
+
+model Obligation {
+  id String @id @default(uuid())
+  key String @unique
+  createdAt DateTime @default(now())
+  versions ObligationVersion[]
+}
+
+model ObligationVersion {
+  id String @id @default(uuid())
+  obligationId String
+  version Int
+  revision Int @default(1)
+  status String @default("DRAFT")
+  contentJson Json
+  authorId String
+  publishedAt DateTime?
+  retiredAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  obligation Obligation @relation(fields: [obligationId], references: [id], onDelete: Restrict)
+  citations ObligationCitation[]
+  reviews ObligationReview[]
+  releaseItems CatalogueReleaseItem[]
+  decisions ComplianceDecision[]
+  tasks ComplianceTask[]
+  evidence ComplianceEvidence[]
+  importEntry ChecklistImportEntry?
+  pilotProgress PilotChecklistProgress[]
+  @@unique([obligationId, version])
+  @@index([status, createdAt])
+}
+
+model ChecklistImportEntry {
+  id String @id @default(uuid())
+  key String @unique
+  batchKey String
+  payloadHash String
+  versionId String? @unique
+  previewEnabled Boolean @default(false)
+  notesJson Json
+  blockedJson Json?
+  createdAt DateTime @default(now())
+  version ObligationVersion? @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  @@index([batchKey])
+}
+
+model PilotChecklistProgress {
+  id String @id @default(uuid())
+  companyId String
+  versionId String
+  basisHash String
+  revision Int @default(1)
+  status String @default("TODO")
+  stepsJson Json @default("[]")
+  reviewJson Json @default("{}")
+  note String @default("")
+  updatedAt DateTime @updatedAt
+  company WorkspaceCompany @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  version ObligationVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  @@unique([companyId, versionId])
+}
+
+model ObligationCitation {
+  id String @id @default(uuid())
+  versionId String
+  documentId String
+  snapshotId String @db.Uuid
+  parseRunId String @db.Uuid
+  provisionId String @db.Uuid
+  quote String
+  ocrVerified Boolean @default(false)
+  version ObligationVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  snapshot DocumentSnapshot @relation(fields: [documentId, snapshotId], references: [documentId, id], onDelete: Restrict)
+  parseRun ParseRun @relation(fields: [snapshotId, parseRunId], references: [snapshotId, id], onDelete: NoAction, onUpdate: NoAction)
+  provision ParsedProvision @relation(fields: [parseRunId, provisionId], references: [parseRunId, id], onDelete: NoAction, onUpdate: NoAction)
+  @@unique([versionId, provisionId])
+}
+
+model ObligationReview {
+  id String @id @default(uuid())
+  versionId String
+  reviewerId String
+  decision String
+  checksJson Json
+  note String
+  createdAt DateTime @default(now())
+  version ObligationVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+}
+
+model LegalCandidate {
+  id String @id @default(uuid())
+  key String @unique
+  documentId String
+  snapshotId String @db.Uuid
+  parseRunId String @db.Uuid
+  provisionId String @db.Uuid
+  groupCode String
+  score Int
+  title String
+  excerpt String
+  reasonJson Json
+  draftVersionId String?
+  createdAt DateTime @default(now())
+  @@index([groupCode, score])
+}
+
+model CatalogueRelease {
+  id String @id @default(uuid())
+  publishedAt DateTime @default(now())
+  actorId String
+  name String
+  manifestHash String
+  sealedAt DateTime?
+  items CatalogueReleaseItem[]
+  evaluations ComplianceEvaluation[]
+}
+
+model CatalogueReleaseItem {
+  id String @id @default(uuid())
+  releaseId String
+  versionId String
+  release CatalogueRelease @relation(fields: [releaseId], references: [id], onDelete: Restrict)
+  version ObligationVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  @@unique([releaseId, versionId])
+}
+
+model ComplianceEvaluation {
+  id String @id @default(uuid())
+  companyId String
+  profileVersionId String
+  releaseId String
+  asOfDate DateTime @db.Date
+  engineVersion String
+  inputHash String
+  contextJson Json
+  status String @default("QUEUED")
+  errorCode String?
+  createdAt DateTime @default(now())
+  completedAt DateTime?
+  company WorkspaceCompany @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  profile WorkspaceProfileVersion @relation(fields: [profileVersionId], references: [id], onDelete: Restrict)
+  release CatalogueRelease @relation(fields: [releaseId], references: [id], onDelete: Restrict)
+  decisions ComplianceDecision[]
+  @@unique([companyId, profileVersionId, releaseId, asOfDate, engineVersion, inputHash], name:"evaluation_business_key")
+}
+
+model ComplianceDecision {
+  id String @id @default(uuid())
+  evaluationId String
+  versionId String
+  scopeKey String
+  decision String
+  missingFacts Json
+  explanation String
+  dueDate DateTime? @db.Date
+  deadlineKind String
+  periodKey String
+  evaluation ComplianceEvaluation @relation(fields: [evaluationId], references: [id], onDelete: Restrict)
+  version ObligationVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  @@unique([evaluationId, versionId, scopeKey])
+}
+
+model ComplianceOutbox {
+  id String @id @default(uuid())
+  evaluationId String @unique
+  dispatchedAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model ComplianceTask {
+  id String @id @default(uuid())
+  companyId String
+  obligationId String
+  basisVersionId String
+  decisionId String
+  scopeKey String
+  periodKey String
+  title String
+  status String @default("TODO")
+  applicability String
+  assigneeId String?
+  dueDate DateTime? @db.Date
+  dueDateKind String
+  missingFacts Json
+  explanation String
+  revision Int @default(1)
+  stepsJson Json @default("[]")
+  reviewJson Json @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company WorkspaceCompany @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  basis ObligationVersion @relation(fields: [basisVersionId], references: [id], onDelete: Restrict)
+  history ComplianceTaskHistory[]
+  evidence ComplianceEvidence[]
+  @@unique([companyId, obligationId, scopeKey, periodKey], name:"task_business_key")
+  feedback WorkspaceFeedback[]
+  @@index([companyId, status, dueDate])
+}
+
+model WorkspaceFeedback {
+  id String @id @default(uuid())
+  companyId String
+  taskId String?
+  creatorId String
+  requestId String
+  category String
+  title String
+  contextJson Json @default("{}")
+  status String @default("OPEN")
+  revision Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company WorkspaceCompany @relation(fields:[companyId], references:[id], onDelete:Restrict)
+  task ComplianceTask? @relation(fields:[taskId], references:[id], onDelete:Restrict)
+  creator WorkspaceUser @relation(fields:[creatorId], references:[id], onDelete:Restrict)
+  messages WorkspaceFeedbackMessage[]
+  @@unique([companyId,requestId])
+  @@index([companyId,updatedAt,id])
+  @@index([status,updatedAt,id])
+}
+
+model WorkspaceFeedbackMessage {
+  id String @id @default(uuid())
+  feedbackId String
+  authorId String
+  requestId String
+  actorRole String
+  body String
+  statusAfter String
+  createdAt DateTime @default(now())
+  feedback WorkspaceFeedback @relation(fields:[feedbackId], references:[id], onDelete:Restrict)
+  author WorkspaceUser @relation(fields:[authorId], references:[id], onDelete:Restrict)
+  @@unique([feedbackId,requestId])
+  @@index([feedbackId,createdAt,id])
+}
+
+model ComplianceTaskHistory {
+  id String @id @default(uuid())
+  taskId String
+  actorId String
+  action String
+  beforeJson Json
+  afterJson Json
+  note String
+  createdAt DateTime @default(now())
+  task ComplianceTask @relation(fields: [taskId], references: [id], onDelete: Restrict)
+}
+
+model ComplianceEvidence {
+  id String @id @default(uuid())
+  taskId String
+  basisVersionId String
+  filename String
+  mimeType String
+  sizeBytes Int
+  checksum String
+  objectKey String @unique
+  bucket String
+  state String @default("PENDING")
+  uploadHash String
+  uploadExpiresAt DateTime
+  uploadedAt DateTime?
+  availableAt DateTime?
+  createdAt DateTime @default(now())
+  actorId String
+  task ComplianceTask @relation(fields: [taskId], references: [id], onDelete: Restrict)
+  basis ObligationVersion @relation(fields: [basisVersionId], references: [id], onDelete: Restrict)
+  @@index([state, uploadExpiresAt])
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector", schema: "public"), pgcrypto(schema: "public")]
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────
+
+enum DocumentType {
+  LUAT
+  PHAP_LENH
+  NGHI_DINH
+  NGHI_QUYET
+  QUYET_DINH
+  THONG_TU
+  THONG_TU_LIEN_TICH
+  CHI_THI
+  CONG_VAN
+  THONG_BAO
+  LENH
+  KHAC
+}
+
+enum ValidityStatus {
+  CON_HIEU_LUC
+  HET_HIEU_LUC
+  HET_HIEU_LUC_MOT_PHAN
+  CHUA_CO_HIEU_LUC
+  NGUNG_HIEU_LUC
+  KHONG_XAC_DINH
+}
+
+enum SourceSite {
+  VBPL
+  THUVIENPHAPLUAT
+  LUATVIETNAM
+  PHAPDIEN
+  CHINHPHU
+  VANBANPHAPLUAT
+  DULIEUPHAPLUAT
+  HUNG_YEN
+  OTHER
+}
+
+enum RelationshipType {
+  CAN_CU
+  HUONG_DAN
+  SUA_DOI
+  THAY_THE
+  BAI_BO
+  LIEN_QUAN
+  HOP_NHAT             // hợp nhất nhiều văn bản thành một văn bản hợp nhất
+  DINH_CHINH           // đính chính sai sót kỹ thuật (không phải sửa đổi nội dung)
+  GIA_HAN              // gia hạn hiệu lực/thời hạn áp dụng
+  NGUNG_HIEU_LUC       // tạm ngưng hiệu lực (khác hết hiệu lực hẳn)
+  KHOI_PHUC_HIEU_LUC   // khôi phục hiệu lực sau khi đã ngưng/hết hiệu lực
+}
+
+enum ASTNodeType {
+  PHAN
+  CHUONG
+  MUC
+  DIEU
+  KHOAN
+  DIEM
+  PHU_LUC
+  TEXT
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Canonical Legal Document (Bản ghi chuẩn hóa)
+// ─────────────────────────────────────────────────────────────────
+
+model CanonicalDocument {
+  id                String          @id @default(uuid())
+  
+  // Metadata fields
+  documentNumber    String          // Số/Ký hiệu (e.g., 31/2024/QH15)
+  normalizedNumber  String          // Chuẩn hóa để khử trùng lặp
+  documentType      DocumentType    // Loại văn bản
+  title             String          // Tiêu đề đầy đủ
+  issuingBody       String          // Cơ quan ban hành
+  issuingBodyCode   String          @default("")  // Mã cơ quan ban hành đã chuẩn hóa
+  signer            String          @default("")  // Người ký
+  promulgationDate  DateTime?       // Ngày ban hành
+  effectiveDate     DateTime?       // Ngày có hiệu lực
+  validityStatus    ValidityStatus  @default(KHONG_XAC_DINH)
+  preciseValidityStatus String      @default("")  // Trạng thái hiệu lực chi tiết
+  field             String          @default("")  // Lĩnh vực
+  
+  // Secondary metadata fields
+  gazetteNumber     String          @default("")  // Số công báo
+  gazetteDate       DateTime?       // Ngày đăng công báo
+  isConsolidated    Boolean         @default(false) // Là văn bản hợp nhất
+  isTranslation     Boolean         @default(false) // Là bản dịch tiếng Anh
+  trichYeu          String          @default("")  // Trích yếu nội dung
+  expiryDate        DateTime?       // Ngày hết hiệu lực
+  author            String          @default("")  // Tác giả (nếu có)
+  lastUpdatedAt     DateTime?       // Ngày cập nhật gần nhất trên nguồn
+  
+  // Full-text content (plain text extracted from HTML)
+  fullText          String          @default("")
+  
+  // Structured AST as JSON
+  ast               Json            @default("[]")
+  
+  // Timestamps
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  // Relations
+  sources           DocumentSource[]
+  attachments       Attachment[]
+  astNodes          LegalASTNode[]
+  embedding         DocumentEmbedding?
+  
+  // Outgoing relationships (this doc references/amends/replaces others)
+  outgoingRelations DocumentRelation[] @relation("outgoing")
+  // Incoming relationships (other docs reference/amend/replace this one)
+  incomingRelations DocumentRelation[] @relation("incoming")
+  userWatchlists    UserWatchlist[]
+  qaItems           LegalQAItem[]
+  complianceAnalysisRuns ComplianceAnalysisRun[]
+  parserAssistRuns  ParserAssistRun[]
+  adminViolations   AdminViolation[]
+
+  // ── Parser-quality / LLM-assist fields (see ParserAssistService) ──
+  parseConfidence    Float?    // 0.0–1.0, do ParserAssistService tự chấm khi có sửa đổi
+  needsReview        Boolean   @default(false)
+  parseQualityFlags  Json      @default("[]")  // string[] cờ từ assessParseQuality (astParseFailed, ...)
+  metadataSource     Json      @default("{}")  // { [field]: 'RAW' | 'LLM_INFERRED' } — trường nào do LLM sửa
+  suggestedRelations Json      @default("[]")  // quan hệ tham khảo do LLM đề xuất, chưa "thăng cấp" thành DocumentRelation
+  fieldCode          String?   // mã lĩnh vực chuẩn hoá (khớp INDUSTRIES) — khác `field` (freeform, giữ nguyên)
+  lastParserAssistAt DateTime?
+
+  // Candidate lookup only. Shared number/type/issuer is not proof of identity.
+  selectedSnapshotId String? @db.Uuid
+  selectedSnapshot DocumentSnapshot? @relation("SelectedSnapshot", fields: [id, selectedSnapshotId], references: [documentId, id], onDelete: NoAction, onUpdate: NoAction)
+  snapshots DocumentSnapshot[] @relation("DocumentSnapshots")
+  importedIdentities ImportedDocumentIdentity[]
+  scope LegalScope @default(UNKNOWN)
+  groupCode String?
+  reviewStatus LegalReviewStatus @default(PENDING)
+  qualityJson Json @default("{}")
+  importResults ImportRecordResult[]
+  @@index([normalizedNumber, documentType, issuingBodyCode], map: "canonical_candidate_idx")
+  @@index([documentType])
+  @@index([validityStatus])
+  @@index([issuingBody])
+  @@index([promulgationDate])
+  @@index([effectiveDate])
+  @@index([isConsolidated])
+  @@index([isTranslation])
+  @@index([promulgationDate, documentType])
+  @@index([needsReview])
+
+  @@map("canonical_documents")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Source Provenance (Nguồn gốc thu thập)
+// ─────────────────────────────────────────────────────────────────
+
+model DocumentSource {
+  id             String             @id @default(uuid())
+  documentId     String
+  document       CanonicalDocument  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  site           SourceSite         // Trang nguồn
+  url            String             // URL gốc trên trang nguồn
+  contentHash    String             @default("")  // Hash nội dung HTML để phát hiện thay đổi
+  lastCrawledAt  DateTime           @default(now())
+  rawHtml        String             @default("")  // HTML gốc lưu trữ
+  
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  domain String?
+  normalizedUrl String?
+  sourceRecordId String?
+  sourceKind LegalSourceKind @default(OTHER)
+  snapshotLinks SnapshotSource[]
+  observations SourceObservation[]
+  @@unique([documentId, id])
+  @@unique([domain, normalizedUrl], name: "source_normalized_url")
+  @@unique([domain, sourceRecordId], name: "source_record_identity")
+  
+  @@unique([site, url], name: "source_url_unique")
+  @@index([documentId])
+  @@index([site])
+  
+  @@map("document_sources")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Attachment Files (File đính kèm PDF/DOC gốc)
+// ─────────────────────────────────────────────────────────────────
+
+model Attachment {
+  id             String             @id @default(uuid())
+  documentId     String
+  document       CanonicalDocument  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  originalName   String             // Tên file gốc
+  hash           String             @unique  // SHA-256 hash
+  storagePath    String             // Đường dẫn lưu trữ
+  mimeType       String             // application/pdf, application/msword, etc.
+  sizeBytes      Int                // Kích thước file
+  
+  createdAt      DateTime           @default(now())
+  
+  @@index([documentId])
+  
+  @@map("attachments")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Legal AST Nodes (Cây cấu trúc Điều/Khoản/Điểm)
+// ─────────────────────────────────────────────────────────────────
+
+model LegalASTNode {
+  id             String             @id @default(uuid())
+  documentId     String
+  document       CanonicalDocument  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  nodeType       ASTNodeType        // PHAN, CHUONG, MUC, DIEU, KHOAN, DIEM
+  ordinal        String             // Số thứ tự (e.g., "1", "2", "a", "đ")
+  heading        String             @default("")  // Tiêu đề node
+  content        String             @default("")  // Nội dung text đầy đủ
+  path           String             // Đường dẫn tree path (e.g., "chuong-1.dieu-5.khoan-2")
+  depth          Int                // Độ sâu trong cây (0 = root level)
+  orderIndex     Int                // Thứ tự hiển thị
+  
+  // Parent-child relationship
+  parentId       String?
+  parent         LegalASTNode?      @relation("ASTNodeTree", fields: [parentId], references: [id])
+  children       LegalASTNode[]     @relation("ASTNodeTree")
+  
+  // Vector embedding for semantic search (768-dim for Vietnamese BI-encoder)
+  // embedding      Unsupported("vector(768)")?
+  
+  createdAt      DateTime           @default(now())
+  
+  @@index([documentId])
+  @@index([nodeType])
+  @@index([path])
+  @@index([parentId])
+  
+  @@map("legal_ast_nodes")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Document Relations (Quan hệ giữa các văn bản)
+// ─────────────────────────────────────────────────────────────────
+
+model DocumentRelation {
+  id                String             @id @default(uuid())
+  
+  sourceDocId       String
+  sourceDoc         CanonicalDocument  @relation("outgoing", fields: [sourceDocId], references: [id], onDelete: Cascade)
+  
+  targetDocId       String?
+  targetDoc         CanonicalDocument? @relation("incoming", fields: [targetDocId], references: [id], onDelete: SetNull)
+  
+  // If targetDocId is not resolved yet, store the raw reference
+  targetDocNumber   String             // Số/Ký hiệu văn bản đích
+  
+  relationType      RelationshipType   // Loại quan hệ
+  description       String             @default("")  // Mô tả
+  
+  // Section-level node references — which specific Điều/Khoản/Mục this relation originates from and points to
+  sourceNodeRef     String?            // e.g. "Điều 15" or "Khoản 2 Điều 7" in source document
+  targetNodeRef     String?            // e.g. "Điều 3" or "Mục I" in target document
+
+  sourceSnapshotId String? @db.Uuid
+  sourceSnapshot DocumentSnapshot? @relation("RelationSourceSnapshot", fields: [sourceDocId, sourceSnapshotId], references: [documentId, id], onDelete: NoAction, onUpdate: NoAction)
+  targetSnapshotId String? @db.Uuid
+  targetSnapshot DocumentSnapshot? @relation("RelationTargetSnapshot", fields: [targetDocId, targetSnapshotId], references: [documentId, id], onDelete: NoAction, onUpdate: NoAction)
+  origin LegalRelationOrigin @default(LEGACY)
+  resolveStatus LegalResolveStatus @default(UNRESOLVED)
+  reviewStatus LegalReviewStatus @default(PENDING)
+  provenanceJson Json @default("{}")
+  
+  createdAt         DateTime           @default(now())
+  
+  @@index([sourceDocId])
+  @@index([targetDocId])
+  @@index([targetDocNumber])
+  @@index([relationType])
+  
+  @@map("document_relations")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Crawl Log (Nhật ký cào dữ liệu)
+// ─────────────────────────────────────────────────────────────────
+
+model CrawlLog {
+  id             String     @id @default(uuid())
+  site           SourceSite
+  url            String
+  status         String     // success, error, skipped
+  message        String     @default("")
+  documentsFound Int        @default(0)
+  duration       Int        @default(0)  // milliseconds
+  
+  createdAt      DateTime   @default(now())
+  
+  @@index([site])
+  @@index([createdAt])
+  
+  @@map("crawl_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Document Embeddings (Vector embeddings for pgvector semantic search)
+// ─────────────────────────────────────────────────────────────────
+
+model DocumentEmbedding {
+  id         String            @id @default(uuid())
+  documentId String            @unique
+  document   CanonicalDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  embedding  Unsupported("vector(768)")?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@map("document_embeddings")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// AI Legal Copilot & Drafting Models
+// ─────────────────────────────────────────────────────────────────
+
+model DocumentTemplate {
+  id           String   @id @default(uuid())
+  code         String   @unique // e.g. "QUYET_DINH", "HDLD_2019", "TO_TRINH"
+  title        String   // e.g. "Mẫu Hợp đồng lao động (Bộ luật Lao động 2019)"
+  category     String   // "Hành chính & Quản trị", "Nhân sự & Lao động", "Pháp chế & Đầu tư", "Mua bán & Thương mại", "Tài chính & Kế toán"
+  description  String   @default("")
+  templateBody String   // Boilerplate structure with placeholders {{variable}}
+  variables    Json     @default("[]") // Array of variable objects [{ key, label, placeholder }]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  drafts       DraftDocument[]
+
+  @@map("document_templates")
+}
+
+model DraftDocument {
+  id          String   @id @default(uuid())
+  title       String
+  templateId  String?
+  template    DocumentTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  content     String   @default("") // Rich text / markdown draft content
+  status      String   @default("DRAFT") // DRAFT, REVIEW, FINAL
+  metadata    Json     @default("{}") // Additional fields like signer, issuingBody
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  citations         DraftCitation[]
+  approvalHistories ApprovalHistory[]
+  contractMasters   ContractMaster[]
+  audits            ContractRiskAudit[]
+
+  @@map("draft_documents")
+}
+
+model DraftCitation {
+  id             String   @id @default(uuid())
+  draftId        String
+  draft          DraftDocument @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  canonicalDocId String?
+  citationText   String   // e.g. "Luật Đất đai số 31/2024/QH15"
+  status         String   @default("VALID") // VALID, EXPIRED, AMENDED, UNKNOWN
+  notes          String   @default("")
+  createdAt      DateTime @default(now())
+
+  @@index([draftId])
+  @@map("draft_citations")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Enterprise Legal Operations Models
+// ─────────────────────────────────────────────────────────────────
+
+// Enum for DraftDocument approval status
+enum ApprovalStatus {
+  DRAFT
+  IN_REVIEW
+  LEGAL_CHECK
+  APPROVED
+  REJECTED
+}
+
+// Enum for Contract lifecycle status
+enum ContractStatus {
+  ACTIVE
+  EXPIRING_SOON
+  EXPIRED
+  TERMINATED
+  DRAFT
+}
+
+/// Lưu trữ cấu hình động quy trình trình ký cho từng doanh nghiệp
+/// workflowSteps: JSON Array các bước duyệt (step, name, role, requireSignature)
+/// alertThresholds: JSON Array mốc cảnh báo ngày [30, 15, 7]
+/// riskRules: JSON Object quy tắc tỷ lệ phạt & rủi ro
+model EnterpriseConfig {
+  id               String   @id @default(uuid())
+  orgName          String   @default("Doanh nghiệp mặc định")
+  workflowSteps    Json     @default("[]")   // [{ step, name, role, requireSignature }]
+  alertThresholds  Json     @default("[30, 15, 7]") // days before expiry
+  riskRules        Json     @default("{}") // { maxPenaltyPercent: 8, maxProbationDays: 60, ... }
+  isDefault        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("enterprise_configs")
+}
+
+/// Ghi lại lịch sử chuyển trạng thái trình ký và nhận xét tại mỗi bước
+model ApprovalHistory {
+  id           String         @id @default(uuid())
+  draftId      String
+  draft        DraftDocument  @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  fromStatus   String         // DRAFT, IN_REVIEW, LEGAL_CHECK, APPROVED, REJECTED
+  toStatus     String
+  stepName     String         @default("")  // Tên bước duyệt
+  actorName    String         @default("")  // Người thực hiện chuyển trạng thái
+  actorRole    String         @default("")  // Vai trò người duyệt
+  comment      String         @default("")  // Nhận xét / Ghi chú
+  createdAt    DateTime       @default(now())
+
+  @@index([draftId])
+  @@map("approval_histories")
+}
+
+
+
+
+/// Multi-Tenant Enterprise Workspace (Doanh nghiệp / Tổ chức)
+model Organization {
+  id               String   @id @default(uuid())
+  orgCode          String   @unique // "VINGROUP", "FPT_SOFTWARE", "TINIX_TECH"
+  name             String   // Tên Doanh nghiệp / Tổ chức
+  taxId            String   @default("") // Mã số thuế
+  industry         String   @default("CONG_NGHE") // FINTECH, BAT_DONG_SAN, THUONG_MAI, SAN_XUAT, Y_TE, CONG_NGHE
+  domain           String   @default("") // Email domain (e.g. "vingroup.net")
+  subscriptionTier String   @default("ENTERPRISE") // FREE, PROFESSIONAL, ENTERPRISE
+  logoUrl          String   @default("")
+  contactEmail     String   @default("")
+  contactPhone     String   @default("")
+  settings         Json     @default("{}") // Cấu hình riêng (Theme, thông báo, quota)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  users            AdminUser[]
+  units            OrganizationUnit[]
+  documents        EnterpriseDocument[]
+  workflowConfigs  BusinessWorkflowConfig[]
+  contracts        ContractMaster[]
+  aiProviders      AIProviderConfig[]
+  auditLogs        AdminAuditLog[]
+  aiTokenLogs      AITokenLog[]
+
+  @@index([orgCode])
+  @@index([isActive])
+  @@map("organizations")
+}
+
+/// Cây Cơ cấu Tổ chức & Phòng ban Nội bộ (Hierarchical Organizational Units)
+model OrganizationUnit {
+  id               String             @id @default(uuid())
+  organizationId   String
+  organization     Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  parentId         String?
+  parentUnit       OrganizationUnit?  @relation("OrgHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  childUnits       OrganizationUnit[] @relation("OrgHierarchy")
+  code             String             // "BAN_PHAP_CHE", "KHOI_KINH_DOANH", "PHAP_CHE_DU_AN"
+  name             String             // "Ban Pháp chế & Tuân thủ", "Khối Kinh doanh Bất động sản"
+  unitType         String             @default("DEPARTMENT") // BOARD, DIVISION, DEPARTMENT, TEAM, BRANCH
+  description      String             @default("")
+  managerName      String             @default("") // Tên người phụ trách đơn vị
+  managerEmail     String             @default("")
+  approvalLimitVND Float?             // Hạn mức phê duyệt tài chính/hợp đồng của đơn vị (VND)
+  permissions      Json               @default("[]") // Danh sách quyền hạn riêng cho đơn vị này
+  orderIndex       Int                @default(0)
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  users            AdminUser[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+  @@index([parentId])
+  @@map("organization_units")
+}
+
+/// Private Enterprise Knowledge Base Documents (Kho tài liệu & Quy chế nội bộ)
+model EnterpriseDocument {
+  id             String                    @id @default(uuid())
+  organizationId String
+  organization   Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title          String                    // Tên tài liệu / Quy chế (e.g. "Nội quy lao động Vingroup 2026")
+  documentNumber String                    @default("") // Số hiệu ban hành nội bộ (e.g. "01/2026/NQ-HĐQT")
+  category       String                    @default("NOI_QUY_LAO_DONG") // NOI_QUY_LAO_DONG, QUY_CHE_TAI_CHINH, THOA_UOC_TAP_THE, NGHI_QUYET_HDQT, QUY_TRINH_MUA_SAM, KHAC
+  description    String                    @default("")
+  fileUrl        String                    @default("")
+  fileType       String                    @default("PDF") // PDF, DOCX, TXT
+  fileSize       Int                       @default(0) // Bytes
+  chunkCount     Int                       @default(0)
+  status         String                    @default("READY") // PROCESSING, READY, ERROR
+  uploadedBy     String                    @default("System")
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
+
+  chunks         EnterpriseDocumentChunk[]
+
+  @@index([organizationId])
+  @@index([category])
+  @@index([status])
+  @@map("enterprise_documents")
+}
+
+/// Chunks bóc tách từ tài liệu nội bộ hỗ trợ RAG
+model EnterpriseDocumentChunk {
+  id             String             @id @default(uuid())
+  documentId     String
+  document       EnterpriseDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  chunkIndex     Int                // Thứ tự chunk (0, 1, 2...)
+  sectionTitle   String             @default("") // Tiêu đề mục / Điều khoản nội bộ (e.g. "Điều 5. Chế độ khen thưởng")
+  content        String             // Toàn văn nội dung đoạn văn bản
+  pageNumber     Int?               // Số trang trong file PDF
+  tokenCount     Int                @default(0)
+  createdAt      DateTime           @default(now())
+
+  @@index([documentId])
+  @@index([chunkIndex])
+  @@map("enterprise_document_chunks")
+}
+
+/// Quản lý danh mục Hợp đồng chính thức với theo dõi thời hạn và mốc thanh toán
+model ContractMaster {
+  id              String         @id @default(uuid())
+  organizationId  String?
+  organization    Organization?  @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  contractNumber  String         @default("") // Số hợp đồng
+  title           String         // Tên hợp đồng
+  partnerName     String         @default("")  // Tên đối tác / bên B
+  contractValue   Float?         // Giá trị hợp đồng (VND)
+  startDate       DateTime?
+  endDate         DateTime?      // Ngày kết thúc (dùng để tính cảnh báo)
+  status          ContractStatus @default(ACTIVE)
+  paymentMilestones Json         @default("[]") // [{ date, amount, description, isDone }]
+  attachmentUrl   String         @default("")
+  notes           String         @default("")
+  draftId         String?        // Liên kết dự thảo đính kèm
+  draft           DraftDocument? @relation(fields: [draftId], references: [id], onDelete: SetNull)
+  addendums       ContractAddendum[]
+  audits          ContractRiskAudit[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([endDate])
+  @@map("contract_masters")
+}
+
+/// Dynamic Business Workflow & Knowledge Binding Configuration
+model BusinessWorkflowConfig {
+  id                  String   @id @default(uuid())
+  organizationId      String?
+  organization        Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  isGlobalTemplate    Boolean  @default(true) // True: Áp dụng cho mọi công ty; False: Quy trình riêng của tenant
+  code                String   @unique // e.g., "HR_DISCIPLINE", "PROCUREMENT_BIDDING", "MA_DUE_DILIGENCE", "TAX_AUDIT"
+  name                String   // e.g., "Quy trình Xử lý Kỷ luật Sa thải"
+  category            String   // "Nhân sự & Lao động", "Đấu thầu & Mua sắm", "Đầu tư & M&A", "Thuế & Kế toán"
+  description         String   @default("")
+  boundLegalFields    Json     @default("[]") // ["Bộ luật Lao động 2019", "Luật BHXH"]
+  systemPrompt        String   @default("") // Specific AI Assistant Prompt for this workflow
+  complianceChecklist Json     @default("[]") // [{ id, title, legalCitation, isMandatory }]
+  steps               Json     @default("[]") // [{ step: 1, name: "...", role: "..." }]
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  executions          WorkflowExecution[]
+
+  @@index([organizationId])
+  @@map("business_workflow_configs")
+}
+
+/// Dynamic Workflow Execution Instance for specific business cases
+model WorkflowExecution {
+  id               String                 @id @default(uuid())
+  workflowConfigId String
+  workflowConfig   BusinessWorkflowConfig @relation(fields: [workflowConfigId], references: [id], onDelete: Cascade)
+  title            String                 // Tên vụ việc / hồ sơ thực thi
+  currentStep      Int                    @default(1)
+  status           String                 @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, CANCELLED
+  checklistResults Json                   @default("{}") // { [checkId]: { status: "PASSED"|"WARNING"|"FAILED", notes: "" } }
+  aiAuditNotes     Json                   @default("[]")
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+
+  @@index([workflowConfigId])
+  @@index([status])
+  @@map("workflow_executions")
+}
+
+/// Dynamic AI Model Provider & BYOK (Bring Your Own Key) Configuration
+model AIProviderConfig {
+  id              String   @id @default(uuid())
+  organizationId  String?
+  organization    Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  provider        String   // "OPENAI", "GEMINI", "ANTHROPIC", "LOCAL_OLLAMA"
+  name            String   // "Google Gemini 1.5 Pro", "OpenAI GPT-4o", "Ollama Llama3"
+  modelName       String   // "gemini-1.5-pro", "gpt-4o", "llama3:8b"
+  apiKey          String   @default("") // Encrypted / BYOK API Key
+  baseUrl         String   @default("") // Custom Base URL for Local LLM
+  isDefault       Boolean  @default(false)
+  taskAssignments Json     @default("[]") // ["RAG_SEARCH", "REDLINE_AUDIT", "OCR_PARSING", "WORKFLOW_COPILOT"]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("ai_provider_configs")
+}
+
+/// Role-Based Access Control (RBAC) & Feature Permission Matrix
+model RolePermission {
+  id          String   @id @default(uuid())
+  role        String   @unique // "SUPER_ADMIN", "LEGAL_HEAD", "LEGAL_SPECIALIST", "BUSINESS_USER", "AUDITOR"
+  roleName    String   // "Quản trị viên Cao cấp", "Trưởng phòng Pháp chế", "Chuyên viên Pháp lý", "Nhân viên Nghiệp vụ", "Kiểm toán viên"
+  description String   @default("")
+  permissions Json     @default("[]") // ["SEARCH_VIEW", "DRAFT_EDIT", "REDLINE_AUDIT", "WORKFLOW_ADVANCE", "WORKFLOW_FINAL_APPROVE", "ADMIN_CONFIG"]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       AdminUser[]
+
+  @@map("role_permissions")
+}
+
+/// Enterprise Admin & System Users
+model AdminUser {
+  id              String         @id @default(uuid())
+  organizationId  String?
+  organization    Organization?  @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  unitId          String?
+  unit            OrganizationUnit? @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  email           String         @unique
+  passwordHash    String         // PBKDF2/SHA512 hashed password
+  fullName        String
+  avatarUrl       String         @default("")
+  phone           String         @default("")
+  department      String         @default("Ban Pháp chế") // Ban Pháp chế, Ban Quản trị, Khối Kinh doanh, Ban Kiểm toán
+  jobTitle        String         @default("Chuyên viên Pháp lý")
+  roleCode        String         @default("LEGAL_SPECIALIST")
+  role            RolePermission? @relation(fields: [roleCode], references: [role], onDelete: Restrict)
+  status          String         @default("ACTIVE") // ACTIVE, LOCKED, INACTIVE, PENDING
+  lastLoginAt     DateTime?
+  lastLoginIp     String         @default("")
+  loginCount      Int            @default(0)
+  failedAttempts  Int            @default(0)
+  lockedUntil     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  sessions        AdminSession[]
+  auditLogs       AdminAuditLog[]
+
+  @@index([organizationId])
+  @@index([unitId])
+  @@index([roleCode])
+  @@index([status])
+  @@index([department])
+  @@map("admin_users")
+}
+
+/// Admin Login Sessions
+model AdminSession {
+  id          String     @id @default(uuid())
+  userId      String
+  user        AdminUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash   String     @unique // SHA256 of session token
+  ipAddress   String     @default("")
+  userAgent   String     @default("")
+  expiresAt   DateTime
+  createdAt   DateTime   @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("admin_sessions")
+}
+
+/// Enterprise Admin Audit Logs
+model AdminAuditLog {
+  id              String         @id @default(uuid())
+  organizationId  String?
+  organization    Organization?  @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  userId          String?
+  user            AdminUser?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userName        String         @default("System")
+  userRole        String         @default("SUPER_ADMIN")
+  action          String         // LOGIN, LOGOUT, CREATE_USER, UPDATE_USER, DELETE_USER, UPDATE_PERMISSIONS, CRAWLER_TRIGGER, CONFIG_CHANGE
+  resource        String         // USER, RBAC, CRAWLER, ENTERPRISE_CONFIG, AI_CONFIG
+  resourceId      String?        @default("")
+  details         Json           @default("{}") // Diff or metadata payload
+  ipAddress       String         @default("")
+  createdAt       DateTime       @default(now())
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+  @@map("admin_audit_logs")
+}
+
+
+/// Dynamic Contract Addendum Hierarchy Tree & Versioning
+model ContractAddendum {
+  id              String            @id @default(uuid())
+  contractId      String
+  contract        ContractMaster    @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  parentId        String?
+  parentAddendum  ContractAddendum? @relation("AddendumHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  childAddendums  ContractAddendum[] @relation("AddendumHierarchy")
+  title           String            // Tên Phụ lục (e.g. Phụ lục 01: Điều chỉnh giá trị)
+  addendumNumber  String            // Số phụ lục (e.g. PL-01/2026)
+  valueAdjustment Float?            // Chênh lệch giá trị (e.g. +200.000.000)
+  dateAdjustment  DateTime?         // Ngày hết hạn mới
+  contentDiff     Json?             // Diff so sánh thay đổi nội dung (JSON)
+  notes           String            @default("")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([contractId])
+  @@index([parentId])
+  @@map("contract_addendums")
+}
+
+/// AI Token Consumption & BYOK Cost Logging Engine
+model AITokenLog {
+  id               String        @id @default(uuid())
+  organizationId   String?
+  organization     Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  provider         String        // "GEMINI", "OPENAI", "LOCAL_OLLAMA"
+  modelName        String        // "gemini-1.5-pro", "gpt-4o"
+  task             String        // "RAG_SEARCH", "REDLINE_AUDIT", "OCR_PARSING", "WORKFLOW_COPILOT"
+  promptTokens     Int           @default(0)
+  completionTokens Int           @default(0)
+  totalTokens      Int           @default(0)
+  costUSD          Float         @default(0.0)
+  userRole         String        @default("BUSINESS_USER")
+  createdAt        DateTime      @default(now())
+
+  @@index([organizationId])
+  @@index([provider])
+  @@index([task])
+  @@index([createdAt])
+  @@map("ai_token_logs")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Contract Risk Audit & Auto-Redlining
+// ─────────────────────────────────────────────────────────────────
+
+/// Hệ thống Audit rủi ro hợp đồng
+model ContractRiskAudit {
+  id             String         @id @default(uuid())
+  contractId     String?
+  contract       ContractMaster? @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  draftId        String?
+  draft          DraftDocument? @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  status         String         @default("PENDING") // PENDING, SCANNING, COMPLETED, FAILED
+  riskScore      Float          @default(0) // 0-100 (Càng cao càng rủi ro)
+  riskLevel      String         @default("LOW") // LOW, MEDIUM, HIGH, CRITICAL
+  auditReport    Json           @default("[]") // Chi tiết các lỗi logic (Redlining) & điểm rủi ro
+  playbookData   Json?          // Playbook đàm phán AI
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([contractId])
+  @@index([draftId])
+  @@map("contract_risk_audits")
+}
+
+/// Quy tắc Audit rủi ro cho Hợp đồng (Risk Rules)
+model ContractRiskRule {
+  id             String         @id @default(uuid())
+  code           String         @unique // "PAYMENT_LATE_FEE", "TERMINATION_NOTICE"
+  category       String         // "Thanh toán", "Chấm dứt", "Phạt vi phạm"
+  name           String         // "Quy định về lãi suất phạt chậm trả"
+  description    String         @default("")
+  severity       String         @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  penaltyScore   Float          @default(10) // Số điểm cộng vào tổng Risk Score nếu vi phạm
+  llmPrompt      String         // Prompt để LLM dựa vào tìm lỗi logic trong điều khoản
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("contract_risk_rules")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Legal Chatbot & Intelligence
+// ─────────────────────────────────────────────────────────────────
+
+model ConversationSession {
+  id        String   @id @default(uuid())
+  userId    String   @default("system")
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages  ConversationMessage[]
+
+  @@map("conversation_sessions")
+}
+
+model ConversationMessage {
+  id        String   @id @default(uuid())
+  sessionId String
+  session   ConversationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role      String   // "user", "assistant"
+  content   String
+  citations Json     @default("[]")
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+  @@map("conversation_messages")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Watchlist & Notifications
+// ─────────────────────────────────────────────────────────────────
+
+model UserWatchlist {
+  id          String   @id @default(uuid())
+  userId      String
+  documentId  String
+  document    CanonicalDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, documentId])
+  @@map("user_watchlists")
+}
+
+model UserNotification {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // "DOCUMENT_UPDATE", "SYSTEM"
+  title       String
+  body        String
+  documentId  String?
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([read])
+  @@map("user_notifications")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Legal Q&A (Hỏi đáp Pháp luật tự động sinh bởi LLM)
+// ─────────────────────────────────────────────────────────────────
+
+/// Chủ đề nhóm câu hỏi & trả lời pháp luật
+model LegalQATopic {
+  id          String   @id @default(uuid())
+  name        String   @unique  // "Luật Đất đai", "Luật Lao động", "Thuế"...
+  slug        String   @unique  // "luat-dat-dai", "luat-lao-dong"
+  description String   @default("")
+  // Semantic icon slug resolved by packages/frontend/src/lib/topic-icons.ts
+  // (e.g. "scale", "briefcase"). Legacy rows may still hold an emoji; the
+  // frontend resolver falls back to a default Lucide icon for those.
+  icon        String   @default("file-text")
+  qaCount     Int      @default(0)    // Cached count
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  qaItems     LegalQAItem[]
+
+  @@map("legal_qa_topics")
+}
+
+/// Câu hỏi & trả lời pháp luật được sinh tự động từ LLM (Kèm Tình huống thực tế & Đối tượng & SEO)
+model LegalQAItem {
+  id             String            @id @default(uuid())
+  slug           String?           // URL slug cho SEO
+  documentId     String
+  document       CanonicalDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  topicId        String
+  topic          LegalQATopic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  question       String            // Câu hỏi
+  answer         String            // Câu trả lời chi tiết
+  situation      String?           // Bối cảnh / Tình huống thực tế chi tiết
+  tldrSummary    String?           // Tóm tắt 30 giây (TL;DR)
+  persona        String            @default("Chung") // "Doanh nghiệp & HR", "Người dân & Đất đai", "Kế toán & Thuế", "Cán bộ & Pháp chế"
+  practicalTip   String?           // Lời khuyên thực tế & Các bước xử lý
+  legalBasis     String            @default("")  // Căn cứ pháp lý (Điều/Khoản)
+  tags           Json              @default("[]") // ["đất đai", "sở hữu"]
+  viewCount      Int               @default(0)
+  helpfulCount   Int               @default(0)   // Số lượt vote Hữu ích 👍
+  unhelpfulCount Int               @default(0)   // Số lượt vote Chưa rõ 👎
+  status         String            @default("PUBLISHED") // PUBLISHED, DRAFT, HIDDEN
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([documentId])
+  @@index([topicId])
+  @@index([persona])
+  @@index([slug])
+  @@index([status])
+  @@map("legal_qa_items")
+}
+
+
+// ─────────────────────────────────────────────────────────────────
+// Contract Milestones & Calendar Reminders (Mốc hạn Hợp đồng)
+// ─────────────────────────────────────────────────────────────────
+
+model ContractMilestone {
+  id              String    @id @default(uuid())
+  contractTitle   String    // Tên hợp đồng / tài liệu
+  milestoneTitle  String    // Tên mốc (VD: Thanh toán đợt 1, Thông báo gia hạn, Hết hạn bảo hành)
+  milestoneType   String    // PAYMENT, RENEWAL, TERMINATION_NOTICE, WARRANTY, DELIVERY, COMPLIANCE
+  dueDate         DateTime? // Ngày đến hạn
+  relativeOffset  String?   // "30 ngày sau khi nghiệm thu" (nếu chưa có ngày cố định)
+  amount          String?   // Số tiền liên quan (nếu có, VD: "150.000.000 VNĐ")
+  obligatedParty  String?   // Bên chịu trách nhiệm (Bên A / Bên B / Công ty...)
+  actionRequired  String    // Hành động cần thực hiện
+  riskLevel       String    @default("MEDIUM") // CRITICAL, HIGH, MEDIUM, LOW
+  isCompleted     Boolean   @default(false)
+  completedAt     DateTime?
+  reminderDays    Int       @default(7) // Báo trước X ngày
+  notes           String    @default("")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([milestoneType])
+  @@index([dueDate])
+  @@index([isCompleted])
+  @@map("contract_milestones")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Sectoral Compliance Radar (Radar Cảnh báo Pháp lý theo Ngành)
+// ─────────────────────────────────────────────────────────────────
+
+model ComplianceRadarAlert {
+  id              String    @id @default(uuid())
+  industry        String    // FINTECH_BANKING, ECOMMERCE_DIGITAL, REAL_ESTATE_CONSTRUCTION, LABOR_HR, MANUFACTURING_IMPORT_EXPORT, HEALTHCARE_PHARMA, ENERGY_GREEN_TRANSITION, LOGISTICS_TRANSPORT, EDUCATION_TRAINING, DATA_PRIVACY_CYBERSECURITY
+  industryName    String    // "Ngân hàng & Fintech", "Thương mại điện tử & Dịch vụ số"...
+  documentId      String?
+  documentNumber  String    // Số hiệu văn bản
+  title           String    // Tiêu đề văn bản
+  promulgationDate DateTime?
+  effectiveDate   DateTime?
+  severity        String    @default("WARNING") // CRITICAL, WARNING, INFO
+  summary         String    // Tóm tắt tác động nghiệp vụ cốt lõi
+  
+  // 4-Pillar Impact Matrix
+  financialImpact   String?   // Tác động tài chính & đầu tư tuân thủ
+  operationalImpact String?   // Tác động quy trình, biểu mẫu & vận hành
+  hrImpact          String?   // Tác động nhân sự, phân quyền & đào tạo
+  penaltyReference  String?   // Căn cứ điều khoản chế tài xử phạt VPHC
+  maxPenaltyAmount  String?   // Mức phạt tiền tối đa hoặc chế tài bổ sung
+  
+  // Interactive Gap Self-Audit
+  gapQuestions    Json      @default("[]") // [{ id, question, weight, remediation }]
+
+  // Legacy flat fields — kept so the existing /radar-phap-ly UI keeps working
+  // unmodified. When a row is AI-generated these are derived (flattened) from
+  // applicableSubjects/complianceChecklist below at write time.
+  affectedAreas   Json      @default("[]") // ["Kế toán", "Pháp chế", "Vận hành", "Bảo mật thông tin"]
+  actionChecklist Json      @default("[]") // ["Cập nhật hợp đồng mẫu", "Thông báo cho khách hàng", "Nộp báo cáo trước 15/07"]
+  deadlineDate    DateTime? // Hạn chót phải hoàn tất tuân thủ
+  sourceUrl       String?
+
+  // Structured subjects/checklist produced by the AI compliance-analysis
+  // pipeline (packages/backend/src/services/compliance-analysis-service.ts).
+  // Shape: { subjectType: 'INDUSTRY'|'BUSINESS_ENTITY_TYPE'|'NON_INDUSTRY',
+  //          code, name, impactLevel, impactSummary }[]
+  applicableSubjects  Json  @default("[]")
+  // Shape: see ComplianceChecklistItem in compliance-analysis-service.ts —
+  // per-subject task, deadline (absolute, computed server-side), priority,
+  // suggestedDelegateCategory, optional requiredForm guidance.
+  complianceChecklist Json  @default("[]")
+  // AI-detected mentions of other legal documents in the text. Advisory only —
+  // never auto-written into DocumentRelation (that table is populated by the
+  // deterministic crawl-time parser, which is more trustworthy); an admin can
+  // promote an entry here to a real DocumentRelation during review.
+  // Shape: { documentNumber, relationType, snippet, resolvedDocumentId?, confidence }[]
+  relatedDocumentRefs Json  @default("[]")
+
+  // Provenance & review state — the pipeline writes directly (no publish
+  // gate), so these fields are how an admin finds and corrects AI output
+  // after the fact rather than before.
+  isAiGenerated  Boolean    @default(false)
+  aiProvider     String?    // "GEMINI" | "OPENAI" | "ANTHROPIC" | "LOCAL_OLLAMA"
+  aiModel        String?
+  aiConfidence   Float?     // 0.0–1.0, self-reported by the LLM — informational only, never gates anything
+  aiGeneratedAt  DateTime?
+  needsReview    Boolean    @default(false) // AI sets this when its own extraction was uncertain
+  reviewedBy     String?
+  reviewedAt     DateTime?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+
+  auditResults      ComplianceAuditResult[]
+  checklistProgress ComplianceChecklistProgress[]
+
+  @@unique([industry, documentNumber], name: "industry_document_key")
+  @@index([industry])
+  @@index([severity])
+  @@index([effectiveDate])
+  @@index([needsReview])
+  @@index([isAiGenerated])
+  @@map("compliance_radar_alerts")
+}
+
+// Operational log for the AI compliance-analysis pipeline — one row per
+// analysis attempt on a document. NOT a publish gate (ComplianceRadarAlert
+// rows are written directly on success); this exists purely for
+// debugging/audit/re-run, mirroring how ContractRiskAudit tracks pipeline
+// status separately from the audit content itself.
+model ComplianceAnalysisRun {
+  id                String            @id @default(uuid())
+  documentId        String
+  document          CanonicalDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  status            String            // PENDING, SCANNING, SUCCESS, FAILED
+  provider          String?
+  model             String?
+  promptTokens      Int?
+  completionTokens  Int?
+  rawResponse       String?           @db.Text // raw LLM text — for debugging when parsing fails
+  parsedOutput      Json?             // the parsed structured result actually written to ComplianceRadarAlert
+  errorMessage      String?
+  alertsCreated     Int               @default(0)
+  createdAt         DateTime          @default(now())
+
+  @@index([documentId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("compliance_analysis_runs")
+}
+
+// Operational log for the LLM-assisted parser-quality pipeline (see
+// ParserAssistService) — one row per assist attempt on a document, mirroring
+// ComplianceAnalysisRun above. Only runs when assessParseQuality() flagged
+// the document as needing help; the actual metadata corrections it produced
+// (after server-side validation) live on CanonicalDocument itself.
+model ParserAssistRun {
+  id                String            @id @default(uuid())
+  documentId        String
+  document          CanonicalDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  status            String            // PENDING, SCANNING, SUCCESS, FAILED
+  triggeredFlags    Json              @default("[]") // cờ nào từ assessParseQuality kích hoạt lần chạy này
+  provider          String?
+  model             String?
+  promptTokens      Int?
+  completionTokens  Int?
+  rawResponse       String?           @db.Text
+  parsedOutput      Json?
+  fieldsCorrected   Json              @default("[]")
+  errorMessage      String?
+  createdAt         DateTime          @default(now())
+
+  @@index([documentId])
+  @@index([status])
+  @@map("parser_assist_runs")
+}
+
+// Gap-audit score history. `userId` follows the same self-declared client-id
+// convention as UserWatchlist/UserNotification elsewhere in this schema —
+// there is no real login system in this app yet, so this is not a verified
+// identity, only a stable per-browser label (see radar-phap-ly's
+// `tinix_radar_client_id`, generated client-side so distinct visitors don't
+// share the same 'demo-user' history).
+model ComplianceAuditResult {
+  id             String   @id @default(uuid())
+  userId         String
+  alertId        String
+  alert          ComplianceRadarAlert @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  score          Int?
+  tier           String
+  answers        Json     @default("{}")
+  compliantCount Int
+  totalQuestions Int
+  createdAt      DateTime @default(now())
+
+  @@index([userId, alertId])
+  @@map("compliance_audit_results")
+}
+
+// Per-user completion state for an alert's actionChecklist items, replacing
+// the browser-only localStorage tracking that used to live entirely on the
+// client and went orphaned whenever an alert's id changed on reseed.
+model ComplianceChecklistProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  alertId     String
+  alert       ComplianceRadarAlert @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  actionIndex Int
+  completedAt DateTime @default(now())
+
+  @@unique([userId, alertId, actionIndex])
+  @@map("compliance_checklist_progress")
+}
+
+// Which industries a user wants deadline reminders for. Needed because
+// ComplianceRadarAlert only carries `industry`, not any notion of "who cares
+// about this" — RadarReminderCron fans out T-30/T-7/T-1 notifications to
+// whoever is subscribed to the alert's industry.
+model RadarIndustrySubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  industry  String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, industry])
+  @@map("radar_industry_subscriptions")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Supreme People's Court Case Law Precedents (Án lệ TANDTC)
+// ─────────────────────────────────────────────────────────────────
+
+model CaseLawPrecedent {
+  id                String    @id @default(uuid())
+  precedentNumber   String    @unique // VD: "Án lệ số 01/2016/AL", "Án lệ số 25/2018/AL"
+  title             String    // Tên án lệ
+  topic             String    // DÂN SỰ, KINH DOANH THƯƠNG MẠI, LAO ĐỘNG, ĐẤT ĐAI, HÌNH SỰ, HÀNH CHÍNH
+  issuingDecision   String    // Quyết định công bố của Chánh án TANDTC
+  approvalDate      DateTime? // Ngày thông qua
+  legalRule         String    // Khái quát nội dung án lệ (Quy tắc pháp lý rút ra)
+  factualSummary    String    // Tóm tắt tình huống án lệ
+  applicableArticles String?  // Các điều luật áp dụng (VD: "Điều 127 Bộ luật Dân sự 2015")
+  fullText          String    // Toàn văn nội dung án lệ và phán quyết
+  keywords          Json      @default("[]") // ["đặt cọc", "phạt cọc", "bất khả kháng"]
+  citationCount     Int       @default(0)
+  createdAt         DateTime  @default(now())
+
+  @@index([topic])
+  @@index([precedentNumber])
+  @@map("case_law_precedents")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Administrative Procedures Navigator (Thủ tục hành chính)
+// ─────────────────────────────────────────────────────────────────
+
+model AdminProcedureGuide {
+  id                String    @id @default(uuid())
+  code              String    @unique // VD: "TTHC-DN-01", "TTHC-DAT-02"
+  title             String    // Tên thủ tục (VD: "Đăng ký thành lập Công ty TNHH 2 thành viên trở lên")
+  category          String    // DOANH_NGHIEP, DAT_DAI, LAO_DONG, SHTT, THUE_KETOAN, XAY_DUNG
+  categoryName      String    // "Doanh nghiệp & Đầu tư", "Đất đai & Nhà ở"...
+  authority         String    // Cơ quan có thẩm quyền giải quyết (VD: "Phòng Đăng ký kinh doanh - Sở KH&ĐT")
+  processingDays    Int       @default(3) // Thời hạn giải quyết (ngày làm việc)
+  fee               String    @default("Miễn phí") // Phí, lệ phí nhà nước
+  targetSubject     String    // Đối tượng thực hiện (Cá nhân, Doanh nghiệp FDI, Doanh nghiệp trong nước)
+  legalBasis        String    // Căn cứ pháp lý (Luật Doanh nghiệp 2020, NĐ 01/2021/NĐ-CP...)
+  dossierList       Json      @default("[]") // [{ id, name, required, note, templateDownloadUrl }]
+  stepTimeline      Json      @default("[]") // [{ stepNumber, title, description, department, duration }]
+  templates         Json      @default("[]") // [{ name, format, url }]
+  onlinePortalUrl   String?   // Link nộp trực tuyến qua Cổng Dịch vụ công
+  notes             String?   // Lưu ý tránh bị trả hồ sơ
+  createdAt         DateTime  @default(now())
+
+  @@index([category])
+  @@map("admin_procedure_guides")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Administrative violation fine lookup (Tra cứu mức phạt vi phạm hành chính)
+// Extracted from the decree's own AST (KHOAN carries "Phạt tiền từ X đến Y",
+// each DIEM child under it is one specific hành vi) — see
+// scripts/extract-admin-violations.ts. Not copied from any third party; the
+// source is the Nghị định already crawled into CanonicalDocument.
+// ─────────────────────────────────────────────────────────────────
+
+model AdminViolation {
+  id                String            @id @default(uuid())
+  sourceDocId       String
+  sourceDoc         CanonicalDocument @relation(fields: [sourceDocId], references: [id], onDelete: Cascade)
+  sourceDocNumber   String            // VD: "168/2024/NĐ-CP" — kept denormalized for display without a join
+  field             String            // Lĩnh vực, VD: "Giao thông đường bộ"
+  vehicleType       String            @default("") // VD: "Xe máy", "Ô tô", "Xe máy chuyên dùng" — rỗng nếu không theo phương tiện
+  category          String            @default("") // Tên Mục chứa hành vi (VD: "Vi phạm quy tắc giao thông đường bộ")
+  behavior          String            @db.Text // Hành vi vi phạm, trích nguyên văn Điểm/Khoản
+  fineIndividualMin Decimal?          @db.Decimal(14, 0)
+  fineIndividualMax Decimal?          @db.Decimal(14, 0)
+  fineOrgMin        Decimal?          @db.Decimal(14, 0)
+  fineOrgMax        Decimal?          @db.Decimal(14, 0)
+  pointsDeducted    Int? // Số điểm bị trừ trên giấy phép lái xe, nếu có
+  dieuOrdinal       String
+  khoanOrdinal      String
+  diemOrdinal       String?
+  citation          String // "Điểm c khoản 7 Điều 7 Nghị định 168/2024/NĐ-CP" — hiển thị trực tiếp, không cần dựng lại
+  createdAt         DateTime          @default(now())
+
+  @@index([sourceDocId])
+  @@index([field])
+  @@index([vehicleType])
+  @@map("admin_violations")
+}
+
+/// Generic lookup-table storage for third-party reference datasets crawled
+/// from dulieuphapluat.vn (mã số thuế doanh nghiệp, đơn vị hành chính,
+/// giá đất theo tuyến đường, ...). One row per lookup-able record; `data`
+/// keeps the full original crawled shape so each tool's detail view can
+/// render whatever fields it has without a schema migration per dataset.
+/// `searchText` is a denormalized, accent-and-case-folded concatenation of
+/// the fields that tool actually searches by (built at import time), backed
+/// by a trigram index (see migration) for fast substring search even at the
+/// tax-registry dataset's ~1.4M-row scale.
+model ReferenceLookup {
+  id         String   @id @default(uuid())
+  datasetKey String // "tax-registry" | "admin-unit" | "land-price"
+  title      String // primary display line (company name / ward name / street segment)
+  subtitle   String? // secondary display line (tax code / province / price)
+  searchText String   @db.Text
+  data       Json
+  // sha1 of the source record; lets incremental appends skip duplicates
+  // (NULL for rows from the original bulk import, which never collide).
+  externalKey String?
+  createdAt  DateTime @default(now())
+
+  @@unique([datasetKey, externalKey])
+  @@index([datasetKey])
+  @@map("reference_lookups")
+}
+
+
+
+
+/// One incrementally-updated crawl source (a dulieuphapluat.vn dataset). The
+/// set of jobs is seeded from application/crawl-job-registry.ts; admins tune
+/// schedule/enabled/limits from the /admin/crawl-jobs page.
+model CrawlJob {
+  id             String        @id @default(uuid())
+  key            String        @unique // registry key, also the crawler's JOB_DATASET
+  name           String
+  description    String        @default("")
+  groupName      String        @default("")
+  importTarget   String? // ReferenceLookup datasetKey to append new rows into after a successful run
+  enabled        Boolean       @default(true)
+  schedule       String // cron expression
+  maxNewUrls     Int           @default(5000) // cap on new pages crawled per run
+  lastRunAt      DateTime?
+  lastStatus     String?
+  lastDurationMs Int?
+  lastNewRecords Int?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  runs           CrawlJobRun[]
+
+  @@map("crawl_jobs")
+}
+
+model CrawlJobRun {
+  id         String    @id @default(uuid())
+  jobId      String
+  job        CrawlJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  trigger    String // cron | manual
+  status     String // QUEUED | RUNNING | SUCCESS | FAILED | CANCELLED
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  newUrls    Int       @default(0)
+  newRecords Int       @default(0)
+  failedUrls Int       @default(0)
+  imported   Int       @default(0)
+  truncated  Boolean   @default(false)
+  error      String?   @db.Text
+  logTail    String?   @db.Text
+
+  @@index([jobId, startedAt])
+  @@map("crawl_job_runs")
+}
+
+// LIMI B2: authoritative version history. Legacy fullText/ast are compatibility caches.
+enum LegalScope {
+  NATIONAL
+  HUNG_YEN
+  OTHER
+  UNKNOWN
+}
+enum LegalReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum LegalSourceKind {
+  OFFICIAL
+  REPUBLISHED
+  DATASET
+  OTHER
+}
+enum SnapshotSourceRole {
+  METADATA
+  CONTENT
+  ATTACHMENT
+}
+enum SnapshotReason {
+  INITIAL_IMPORT
+  SOURCE_CHANGE
+  TEXT_CORRECTION
+  METADATA_CORRECTION
+  UNKNOWN
+}
+enum LegalRelationOrigin {
+  LEGACY
+  SOURCE_METADATA
+  TEXT_EXTRACTION
+  EXPERT
+}
+enum LegalResolveStatus {
+  UNRESOLVED
+  CANDIDATE
+  RESOLVED
+  AMBIGUOUS
+}
+enum AssetStatus {
+  PENDING
+  AVAILABLE
+  FAILED
+}
+enum SnapshotAssetRole {
+  RAW_RECORD
+  ORIGINAL_FILE
+  SOURCE_PAGE
+  FORM
+  OTHER
+}
+enum ImportFormat {
+  JSON
+  JSONL
+  JSON_GZIP
+  JSONL_GZIP
+}
+enum ImportRunStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  PARTIAL
+  FAILED
+  CANCELLED
+}
+enum ImportMode {
+  DRY_RUN
+  IMPORT
+}
+enum ImportOutcome {
+  INSERTED
+  UNCHANGED
+  NEW_VERSION
+  NEW_PARSE
+  REJECTED
+}
+enum LegalReviewKind {
+  LEGAL
+  OCR_TEXT
+  RELATIONSHIP
+}
+enum LegalReviewVerdict {
+  APPROVED
+  REJECTED
+  NEEDS_CHANGES
+}
+
+model ImportedDocumentIdentity {
+  id String @id @default(uuid()) @db.Uuid
+  datasetKey String
+  externalId String
+  documentId String
+  document CanonicalDocument @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  @@unique([datasetKey, externalId], name: "imported_identity")
+  @@index([documentId])
+  @@map("imported_document_identities")
+}
+
+model DocumentSnapshot {
+  id String @id @default(uuid()) @db.Uuid
+  documentId String
+  document CanonicalDocument @relation("DocumentSnapshots", fields: [documentId], references: [id], onDelete: Restrict)
+  selectedBy CanonicalDocument[] @relation("SelectedSnapshot")
+  contentHash String @db.Char(64)
+  metadataHash String @db.Char(64)
+  metadataJson Json
+  fullText String @db.Text
+  qualityJson Json @default("{}")
+  correctionsJson Json @default("{}")
+  parsedAt DateTime? @db.Timestamptz(6)
+  observedAt DateTime? @db.Timestamptz(6)
+  parserVersion String?
+  reason SnapshotReason @default(INITIAL_IMPORT)
+  rawRecordObjectKey String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  sources SnapshotSource[]
+  assets SnapshotAsset[]
+  parseRuns ParseRun[]
+  observations SourceObservation[]
+  reviews LegalReviewDecision[]
+  obligationCitations ObligationCitation[]
+  importResults ImportRecordResult[]
+  sourceRelations DocumentRelation[] @relation("RelationSourceSnapshot")
+  targetRelations DocumentRelation[] @relation("RelationTargetSnapshot")
+  @@unique([documentId, contentHash, metadataHash], name: "snapshot_version")
+  @@unique([documentId, id])
+  @@index([documentId, createdAt])
+  @@map("document_snapshots")
+}
+
+model SnapshotSource {
+  id String @id @default(uuid()) @db.Uuid
+  documentId String
+  snapshotId String @db.Uuid
+  snapshot DocumentSnapshot @relation(fields: [documentId, snapshotId], references: [documentId, id], onDelete: Restrict)
+  sourceId String
+  source DocumentSource @relation(fields: [documentId, sourceId], references: [documentId, id], onDelete: Restrict)
+  role SnapshotSourceRole
+  provenanceHash String @db.Char(64)
+  provenanceJson Json
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  @@unique([snapshotId, sourceId, role, provenanceHash])
+  @@index([sourceId])
+  @@map("snapshot_sources")
+}
+
+model ParseRun {
+  id String @id @default(uuid()) @db.Uuid
+  snapshotId String @db.Uuid
+  snapshot DocumentSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict)
+  parserVersion String
+  structureHash String @db.Char(64)
+  structureJson Json
+  qualityJson Json @default("{}")
+  offsetUnit String @default("UNICODE_CODE_POINT")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  sealedAt DateTime? @db.Timestamptz(6)
+  provisions ParsedProvision[]
+  reviews LegalReviewDecision[]
+  obligationCitations ObligationCitation[]
+  @@unique([snapshotId, parserVersion, structureHash], name: "parse_version")
+  @@unique([snapshotId, id])
+  @@map("parse_runs")
+}
+
+model ParsedProvision {
+  id String @id @default(uuid()) @db.Uuid
+  parseRunId String @db.Uuid
+  parseRun ParseRun @relation(fields: [parseRunId], references: [id], onDelete: Restrict)
+  externalNodeId String
+  nodeType ASTNodeType
+  ordinal String?
+  heading String?
+  spanStart Int
+  spanEnd Int
+  orderIndex Int
+  depth Int
+  contextJson Json @default("[]")
+  quotedAmendmentCandidate Boolean @default(false)
+  parentId String? @db.Uuid
+  parent ParsedProvision? @relation("VersionProvisionTree", fields: [parseRunId, parentId], references: [parseRunId, id], onDelete: NoAction, onUpdate: NoAction)
+  children ParsedProvision[] @relation("VersionProvisionTree")
+  obligationCitations ObligationCitation[]
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  @@unique([parseRunId, externalNodeId], name: "provision_external_id")
+  @@unique([parseRunId, id])
+  @@index([parseRunId, orderIndex])
+  @@index([parentId])
+  @@map("parsed_provisions")
+}
+
+model SourceObservation {
+  id String @id @default(uuid()) @db.Uuid
+  documentId String
+  sourceId String
+  source DocumentSource @relation(fields: [documentId, sourceId], references: [documentId, id], onDelete: Restrict)
+  snapshotId String? @db.Uuid
+  snapshot DocumentSnapshot? @relation(fields: [documentId, snapshotId], references: [documentId, id], onDelete: NoAction, onUpdate: NoAction)
+  observedAt DateTime @default(now()) @db.Timestamptz(6)
+  httpStatus Int?
+  rawHash String? @db.Char(64)
+  rawObjectKey String?
+  etag String?
+  lastModified String?
+  result String
+  provenanceJson Json @default("{}")
+  @@index([sourceId, observedAt])
+  @@map("source_observations")
+}
+
+model ObjectAsset {
+  id String @id @default(uuid()) @db.Uuid
+  bucket String
+  objectKey String
+  checksum String @db.Char(64)
+  sizeBytes BigInt
+  mimeType String
+  status AssetStatus @default(PENDING)
+  errorCode String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  snapshotLinks SnapshotAsset[]
+  importFiles ImportFile[]
+  @@unique([bucket, objectKey])
+  @@index([checksum])
+  @@map("object_assets")
+}
+
+model SnapshotAsset {
+  id String @id @default(uuid()) @db.Uuid
+  snapshotId String @db.Uuid
+  snapshot DocumentSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict)
+  assetId String @db.Uuid
+  asset ObjectAsset @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  role SnapshotAssetRole
+  provenanceJson Json @default("{}")
+  extractedText String? @db.Text
+  extractedTextHash String? @db.Char(64)
+  @@unique([snapshotId, assetId, role])
+  @@map("snapshot_assets")
+}
+
+model ImportFile {
+  id String @id @default(uuid()) @db.Uuid
+  datasetKey String
+  fileHash String @db.Char(64)
+  format ImportFormat
+  originalName String
+  schemaVersion String?
+  recordCount Int?
+  assetId String? @db.Uuid
+  asset ObjectAsset? @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  runs ImportRun[]
+  @@unique([datasetKey, fileHash])
+  @@map("import_files")
+}
+
+model ImportRun {
+  id String @id @default(uuid()) @db.Uuid
+  fileId String @db.Uuid
+  file ImportFile @relation(fields: [fileId], references: [id], onDelete: Restrict)
+  importerVersion String
+  mode ImportMode @default(IMPORT)
+  status ImportRunStatus @default(QUEUED)
+  lastCommittedRecordIndex Int @default(-1)
+  countersJson Json @default("{}")
+  startedAt DateTime? @db.Timestamptz(6)
+  finishedAt DateTime? @db.Timestamptz(6)
+  errorCode String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  results ImportRecordResult[]
+  @@index([fileId, createdAt])
+  @@map("import_runs")
+}
+
+model ImportRecordResult {
+  id String @id @default(uuid()) @db.Uuid
+  runId String @db.Uuid
+  run ImportRun @relation(fields: [runId], references: [id], onDelete: Restrict)
+  recordIndex Int
+  externalId String?
+  recordHash String? @db.Char(64)
+  outcome ImportOutcome
+  documentId String?
+  document CanonicalDocument? @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  snapshotId String? @db.Uuid
+  snapshot DocumentSnapshot? @relation(fields: [documentId, snapshotId], references: [documentId, id], onDelete: NoAction, onUpdate: NoAction)
+  errorCode String?
+  provenanceJson Json @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  @@unique([runId, recordIndex])
+  @@index([externalId])
+  @@map("import_record_results")
+}
+
+model LegalReviewDecision {
+  id String @id @default(uuid()) @db.Uuid
+  snapshotId String @db.Uuid
+  snapshot DocumentSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Restrict)
+  parseRunId String? @db.Uuid
+  parseRun ParseRun? @relation(fields: [snapshotId, parseRunId], references: [snapshotId, id], onDelete: NoAction, onUpdate: NoAction)
+  kind LegalReviewKind
+  verdict LegalReviewVerdict
+  reviewerRef String
+  asOfDate DateTime @db.Date
+  evidenceJson Json
+  notes String? @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  @@index([snapshotId, kind, createdAt])
+  @@map("legal_review_decisions")
+}
+
+// Reviewer-managed settings for discovering new legal documents from official sources (single row).
+model LawDiscoverySetting {
+  id String @id @default("default")
+  enabled Boolean @default(false)
+  sources Json @default("[]")
+  intervalHours Int @default(24)
+  maxPerRun Int @default(20)
+  effectiveFrom DateTime? @db.Date
+  updatedBy String?
+  lastRunAt DateTime?
+  updatedAt DateTime @updatedAt
+}

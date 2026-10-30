@@ -1,0 +1,45 @@
+ALTER TABLE "WorkspaceAlert" ADD FOREIGN KEY ("companyId") REFERENCES "WorkspaceCompany"(id) ON DELETE RESTRICT;
+ALTER TABLE "WorkspaceAlert" ADD FOREIGN KEY ("taskId") REFERENCES "ComplianceTask"(id) ON DELETE RESTRICT;
+ALTER TABLE "WorkspaceAlert" ADD FOREIGN KEY ("decisionId") REFERENCES "ComplianceDecision"(id) ON DELETE RESTRICT;
+ALTER TABLE "WorkspaceAlert" ADD FOREIGN KEY ("eventId") REFERENCES "ApprovedLawChange"(id) ON DELETE RESTRICT;
+ALTER TABLE "AlertUserState" ADD FOREIGN KEY ("alertId") REFERENCES "WorkspaceAlert"(id) ON DELETE RESTRICT;
+ALTER TABLE "AlertUserState" ADD FOREIGN KEY ("userId") REFERENCES "WorkspaceUser"(id) ON DELETE RESTRICT;
+ALTER TABLE "AlertOutbox" ADD FOREIGN KEY ("alertId") REFERENCES "WorkspaceAlert"(id) ON DELETE RESTRICT;
+ALTER TABLE "AlertDeliveryAttempt" ADD FOREIGN KEY ("outboxId") REFERENCES "AlertOutbox"(id) ON DELETE RESTRICT;
+ALTER TABLE "AlertDeliveryAttempt" ADD CHECK (channel='IN_APP' AND result IN ('DELIVERED','FAILED','SUPPRESSED') AND attempt>0);
+ALTER TABLE "CompanyReminderSetting" ADD FOREIGN KEY ("companyId") REFERENCES "WorkspaceCompany"(id) ON DELETE RESTRICT;
+ALTER TABLE "CompanyReminderSetting" ADD CHECK (timezone='Asia/Ho_Chi_Minh' AND "preparationDays" BETWEEN 0 AND 90);
+ALTER TABLE "WatchObservation" ADD FOREIGN KEY ("watchId") REFERENCES "SourceWatch"(id) ON DELETE RESTRICT;
+ALTER TABLE "SourceWatch" ADD FOREIGN KEY ("documentId") REFERENCES canonical_documents(id) ON DELETE RESTRICT;
+ALTER TABLE "SourceWatch" ADD FOREIGN KEY ("sourceId") REFERENCES document_sources(id) ON DELETE RESTRICT;
+ALTER TABLE "SourceWatch" ADD FOREIGN KEY ("baselineId") REFERENCES "WatchObservation"(id) ON DELETE RESTRICT;
+ALTER TABLE "SourceWatch" ADD CHECK (mode IN ('DOCUMENT','DISCOVERY','ATTACHMENT') AND "intervalHours" BETWEEN 1 AND 168);
+ALTER TABLE "LawChangeCandidate" ADD FOREIGN KEY ("watchId") REFERENCES "SourceWatch"(id) ON DELETE RESTRICT;
+ALTER TABLE "LawChangeCandidate" ADD FOREIGN KEY ("observationId") REFERENCES "WatchObservation"(id) ON DELETE RESTRICT;
+ALTER TABLE "LawChangeCandidate" ADD FOREIGN KEY ("previousObservationId") REFERENCES "WatchObservation"(id) ON DELETE RESTRICT;
+ALTER TABLE "LawChangeCandidate" ADD CHECK (status IN ('PENDING','APPROVED','REJECTED'));
+ALTER TABLE "ApprovedLawChange" ADD FOREIGN KEY ("candidateId") REFERENCES "LawChangeCandidate"(id) ON DELETE RESTRICT;
+ALTER TABLE "ApprovedLawChange" ADD FOREIGN KEY ("releaseId") REFERENCES "CatalogueRelease"(id) ON DELETE RESTRICT;
+ALTER TABLE "ApprovedLawChange" ADD FOREIGN KEY ("reviewerId") REFERENCES "WorkspaceUser"(id) ON DELETE RESTRICT;
+ALTER TABLE "ChangeCompanyImpact" ADD FOREIGN KEY ("eventId") REFERENCES "ApprovedLawChange"(id) ON DELETE RESTRICT;
+ALTER TABLE "ChangeCompanyImpact" ADD FOREIGN KEY ("companyId") REFERENCES "WorkspaceCompany"(id) ON DELETE RESTRICT;
+ALTER TABLE "ChangeCompanyImpact" ADD FOREIGN KEY ("evaluationId") REFERENCES "ComplianceEvaluation"(id) ON DELETE RESTRICT;
+CREATE TRIGGER alert_immutable BEFORE UPDATE OR DELETE ON "WorkspaceAlert" FOR EACH ROW EXECUTE FUNCTION compliance_immutable();
+CREATE TRIGGER delivery_attempt_immutable BEFORE UPDATE OR DELETE ON "AlertDeliveryAttempt" FOR EACH ROW EXECUTE FUNCTION compliance_immutable();
+CREATE TRIGGER watch_observation_immutable BEFORE UPDATE OR DELETE ON "WatchObservation" FOR EACH ROW EXECUTE FUNCTION compliance_immutable();
+CREATE TRIGGER approved_change_immutable BEFORE UPDATE OR DELETE ON "ApprovedLawChange" FOR EACH ROW EXECUTE FUNCTION compliance_immutable();
+CREATE FUNCTION change_candidate_guard() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+ IF TG_OP='DELETE' OR OLD.status<>'PENDING' OR ROW(NEW.id,NEW.key,NEW.kind,NEW.title,NEW."watchId",NEW."observationId",NEW."previousObservationId",NEW."diffJson",NEW."createdAt") IS DISTINCT FROM ROW(OLD.id,OLD.key,OLD.kind,OLD.title,OLD."watchId",OLD."observationId",OLD."previousObservationId",OLD."diffJson",OLD."createdAt") THEN RAISE EXCEPTION 'Immutable change proposal'; END IF;
+ IF NEW.status='APPROVED' AND NOT EXISTS (SELECT 1 FROM "ApprovedLawChange" WHERE "candidateId"=OLD.id) THEN RAISE EXCEPTION 'Approved event required'; END IF;
+ RETURN NEW; END $$;
+CREATE TRIGGER change_candidate_guard BEFORE UPDATE OR DELETE ON "LawChangeCandidate" FOR EACH ROW EXECUTE FUNCTION change_candidate_guard();
+CREATE FUNCTION approved_change_guard() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+ IF NOT EXISTS(SELECT 1 FROM "LawChangeCandidate" WHERE id=NEW."candidateId" AND status='PENDING' AND kind<>'PARSER_CHANGE') OR NOT EXISTS(SELECT 1 FROM "WorkspaceUser" WHERE id=NEW."reviewerId" AND "platformReviewer") OR NOT EXISTS(SELECT 1 FROM "CatalogueRelease" WHERE id=NEW."releaseId" AND "sealedAt" IS NOT NULL) OR jsonb_array_length(NEW."versionIds")=0 THEN RAISE EXCEPTION 'Invalid legal change approval'; END IF;
+ IF EXISTS(SELECT 1 FROM jsonb_array_elements_text(NEW."versionIds") v WHERE NOT EXISTS(SELECT 1 FROM "CatalogueReleaseItem" i JOIN "ObligationVersion" o ON o.id=i."versionId" WHERE i."releaseId"=NEW."releaseId" AND o.id=v AND o.status='PUBLISHED')) THEN RAISE EXCEPTION 'Version outside release'; END IF;
+ RETURN NEW; END $$;
+CREATE TRIGGER approved_change_guard BEFORE INSERT ON "ApprovedLawChange" FOR EACH ROW EXECUTE FUNCTION approved_change_guard();
+CREATE FUNCTION alert_scope_guard() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+ IF NEW."taskId" IS NOT NULL AND NOT EXISTS(SELECT 1 FROM "ComplianceTask" WHERE id=NEW."taskId" AND "companyId"=NEW."companyId") OR NEW."decisionId" IS NOT NULL AND NOT EXISTS(SELECT 1 FROM "ComplianceDecision" d JOIN "ComplianceEvaluation" e ON e.id=d."evaluationId" WHERE d.id=NEW."decisionId" AND e."companyId"=NEW."companyId" AND e.status='COMPLETED') THEN RAISE EXCEPTION 'Alert outside company'; END IF;
+ IF NEW.kind IN ('LAW_CHANGE','VERIFY_SCOPE') AND NEW."eventId" IS NULL THEN RAISE EXCEPTION 'Approved change required'; END IF;
+ RETURN NEW; END $$;
+CREATE TRIGGER alert_scope_guard BEFORE INSERT ON "WorkspaceAlert" FOR EACH ROW EXECUTE FUNCTION alert_scope_guard();

@@ -1,0 +1,41 @@
+{
+  "name": "@tinix-legal/crawler",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Crawlee-based multi-source Vietnam legal document crawler",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "start:vbpl": "tsx src/crawlers/vbpl/index.ts",
+    "start:chinhphu": "tsx src/crawlers/chinhphu/index.ts",
+    "start:phapdien": "tsx src/crawlers/phapdien/index.ts",
+    "start:tvpl": "tsx src/crawlers/tvpl/index.ts",
+    "start:seed:tvpl": "tsx src/crawlers/tvpl/index.ts --seed",
+    "start:seed:tvpl:dry": "tsx src/crawlers/tvpl/index.ts --seed --dry-run",
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.0.0",
+    "@tinix-legal/shared": "*",
+    "bullmq": "^5.79.2",
+    "cheerio": "^1.0.0",
+    "crawlee": "^3.12.0",
+    "dotenv": "^16.4.0",
+    "ioredis": "^5.11.1",
+    "minio": "^8.0.7",
+    "node-cron": "^3.0.3",
+    "playwright": "^1.48.0",
+    "prisma": "^6.0.0",
+    "winston": "^3.14.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.10"
+  }
+}

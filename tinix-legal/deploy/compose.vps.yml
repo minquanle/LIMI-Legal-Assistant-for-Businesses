@@ -1,0 +1,13 @@
+# Layer over compose.staging.yml on a Linux VPS. Requires Docker Compose >=2.24.4.
+# Keep .staging.env private on the server; use a public HTTPS hostname in LIMI_SITE.
+name: limi-server
+services:
+  gateway:
+    ports: !override
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes: !override
+      - './Caddyfile.public:/etc/caddy/Caddyfile:ro'
+      - 'certificates:/data'
+      - 'caddy_config:/config'

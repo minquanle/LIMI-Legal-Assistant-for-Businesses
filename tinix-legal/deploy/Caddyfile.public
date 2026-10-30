@@ -1,0 +1,12 @@
+{$LIMI_SITE} {
+    request_body {
+        max_size 11MB
+    }
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy same-origin
+        -Server
+    }
+    reverse_proxy web:3000
+}

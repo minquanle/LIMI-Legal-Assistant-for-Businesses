@@ -1,0 +1,2 @@
+import {redirect} from 'next/navigation';
+export default async function Law({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<Record<string,string|string[]|undefined>>}){const {id}=await params,raw=await searchParams;const p=new URLSearchParams({view:'laws',law:id});for(const [key,value]of Object.entries(raw))if(typeof value==='string'&&['snapshotId','parseRunId','provision'].includes(key))p.set(key,value);redirect('/workspace?'+p);}

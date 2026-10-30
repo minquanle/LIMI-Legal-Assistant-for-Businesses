@@ -1,0 +1,40 @@
+import {PrismaClient} from '@prisma/client';
+import {mkdir,writeFile,readFile,copyFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import {loadConfig} from '../src/modules/operations/config.js';
+import {publicProvenance} from '../src/modules/legal/curated-record.mapper.js';
+import {provisionText} from '../src/modules/legal/record-adapter.js';
+const root=fileURLToPath(new URL('../../../../',import.meta.url)),out=join(root,'outputs/LLM_CHECKLIST_KIT_20261012');
+await mkdir(join(out,'data'),{recursive:true});await mkdir(join(out,'reference'),{recursive:true});
+const db=new PrismaClient({datasources:{db:{url:loadConfig().databaseUrl}}});
+const files:Array<{path:string;bytes:number;sha256:string}>=[];
+async function save(path:string,body:string){await writeFile(join(out,path),body);files.push({path,bytes:Buffer.byteLength(body),sha256:createHash('sha256').update(body).digest('hex')});}
+const registry={stage:{type:'string',values:['new','running','changing','paused'],note:'unknown is stored as UNKNOWN, never use eq unknown as an applicability shortcut'},employees:{type:'string',values:['0','1-9','10-49','50-99','100+']},employeeCount:{type:'integer',minimum:0},activity:{type:'string[]',values:['goods','services','manufacturing','digital']},channels:{type:'string[]',values:['direct','marketplace','social','website']},places:{type:'string[]',values:['office','store','warehouse','factory']},signals:{type:'string[]',values:['invoice','customerData','notary','regulated','smallEnterprise','copyrightAssets','digitalPublishing','foreign','crossborder','ads']},province:{type:'string',note:'Exact confirmed province string; no automatic geographic inference'},'site.kind':{type:'string',values:['office','store','warehouse','factory']},'site.province':{type:'string'},'event.type':{type:'string',values:['FOUNDED','HIRED','SITE_OPENED','WEBSITE_STARTED','SUSPENDED','RESUMED','DISSOLUTION_STARTED','OTHER']}};
+await save('04_FACT_REGISTRY.json',JSON.stringify(registry,null,2)+'\n');
+const str=(min=1,max=4000)=>({type:'string',minLength:min,maxLength:max});
+const object=(properties:any,required=Object.keys(properties))=>({type:'object',properties,required,additionalProperties:false});
+const enumString=(values:string[])=>({type:'string',enum:values});const date={type:'string',format:'date'},uuid={type:'string',format:'uuid'};
+const scalarFields=['stage','employees','province','site.kind','site.province','event.type'],arrayFields=['activity','channels','places','signals'];
+const rule={oneOf:[object({all:{type:'array',minItems:1,maxItems:20,items:{$ref:'#/$defs/rule'}}}),object({any:{type:'array',minItems:1,maxItems:20,items:{$ref:'#/$defs/rule'}}}),object({not:{$ref:'#/$defs/rule'}}),object({fact:enumString(Object.keys(registry)),op:{const:'exists'}}),object({fact:enumString(scalarFields),op:{const:'eq'},value:str(0,200)}),object({fact:enumString(scalarFields),op:{const:'in'},value:{type:'array',minItems:1,maxItems:30,items:str(0,200)}}),object({fact:{const:'employeeCount'},op:enumString(['eq','gt','gte','lt','lte']),value:{type:'number'}}),object({fact:{const:'employeeCount'},op:{const:'in'},value:{type:'array',minItems:1,maxItems:30,items:{type:'number'}}}),object({fact:enumString(arrayFields),op:{const:'has'},value:str(0,200)})]};
+const day={oneOf:[{type:'integer',minimum:1,maximum:28},{const:'LAST'}]};
+const deadline={oneOf:[object({kind:{const:'NONE'}}),object({kind:{const:'FIXED'},date}),object({kind:{const:'OFFSET'},trigger:enumString(['FOUNDED','EVENT']),days:{type:'integer',minimum:0,maximum:3650}}),object({kind:{const:'ANNUAL'},month:{type:'integer',minimum:1,maximum:12},day}),object({kind:{const:'QUARTERLY'},monthsAfterEnd:{type:'integer',minimum:1,maximum:3},day})]};
+const schema={$schema:'https://json-schema.org/draft/2020-12/schema',$id:'https://limi.local/schemas/llm-draft.json',title:'One JSONL line: existing LIMI draftSchema payload',$defs:{rule},...object({content:object({title:str(5,250),action:str(10,4000),group:enumString(['tax','accounting','labor','insurance','company','commerce','data','fire','environment','food','hungyen']),scope:enumString(['COMPANY','SITE','EVENT']),rule:{$ref:'#/$defs/rule'},exceptions:str(1,4000),effectiveFrom:date,effectiveUntil:{oneOf:[date,{type:'null'}]},deadline,steps:{type:'array',minItems:1,maxItems:30,items:str(3,1000)},evidenceRequired:{type:'boolean'},evidenceInstructions:str(3,2000)}),citations:{type:'array',minItems:1,maxItems:10,items:object({documentId:uuid,snapshotId:uuid,parseRunId:uuid,provisionId:uuid,ocrVerified:{const:false}})}})};
+await save('03_OUTPUT_SCHEMA.json',JSON.stringify(schema,null,2)+'\n');
+try{
+ const docs=await db.canonicalDocument.findMany({where:{selectedSnapshotId:{not:null}},orderBy:[{groupCode:'asc'},{documentNumber:'asc'}],include:{importedIdentities:{select:{externalId:true,datasetKey:true}}}});
+ const groups=new Map<string,any[]>();let articles=0,excludedQuoted=0;
+ for(const d of docs){const s=await db.documentSnapshot.findUniqueOrThrow({where:{id:d.selectedSnapshotId!},include:{sources:{include:{source:{select:{url:true,domain:true,sourceKind:true}}}}}});
+  const run=await db.parseRun.findFirstOrThrow({where:{snapshotId:s.id,sealedAt:{not:null}},orderBy:[{createdAt:'desc'},{id:'desc'}]});
+  const nodes=await db.parsedProvision.findMany({where:{parseRunId:run.id,nodeType:'DIEU'},orderBy:{orderIndex:'asc'}});excludedQuoted+=nodes.filter(n=>n.quotedAmendmentCandidate).length;
+  const item={documentId:d.id,externalIds:d.importedIdentities,snapshotId:s.id,parseRunId:run.id,contentHash:s.contentHash,group:d.groupCode,scope:d.scope,documentNumber:d.documentNumber,title:d.title,metadata:publicProvenance(s.metadataJson),quality:publicProvenance(s.qualityJson),sources:s.sources.map(x=>({role:x.role,...x.source})),offsetUnit:run.offsetUnit,fullText:s.fullText,articles:nodes.map(n=>({provisionId:n.id,heading:n.heading,ordinal:n.ordinal,spanStart:n.spanStart,spanEnd:n.spanEnd,quotedAmendmentCandidate:n.quotedAmendmentCandidate,citationAllowed:!n.quotedAmendmentCandidate,text:provisionText(s.fullText,n.spanStart,n.spanEnd)}))};
+  const group=d.groupCode??'company',bucket=groups.get(group)??[];bucket.push(item);groups.set(group,bucket);articles+=nodes.length;
+ }
+ const batches=[];for(const [group,items] of groups){for(let i=0;i<items.length;i+=5){const path=`data/${group}-${String(i/5+1).padStart(2,'0')}.jsonl`;const chunk=items.slice(i,i+5);await save(path,chunk.map(x=>JSON.stringify(x)).join('\n')+'\n');batches.push({path,group,documents:chunk.length,bytes:files.at(-1)!.bytes});}}
+ const candidates=await db.legalCandidate.findMany({orderBy:[{score:'desc'},{id:'asc'}],select:{id:true,documentId:true,snapshotId:true,parseRunId:true,provisionId:true,title:true,groupCode:true,score:true,reasonJson:true}});
+ await save('data/candidate-hints.jsonl',candidates.map(x=>JSON.stringify(x)).join('\n')+'\n');
+ for(const [source,dest] of [['tinix-legal/packages/backend/src/modules/compliance/contracts.ts','reference/backend-contracts.ts'],['tinix-legal/packages/compliance-core/src/index.ts','reference/rule-engine.ts'],['tinix-legal/packages/backend/src/modules/workspace/contracts.ts','reference/workspace-contracts.ts'],['outputs/KE_HOACH_GHEP_DATA_THANH_CHECKLIST.md','reference/implementation-plan.md']])await save(dest,await readFile(join(root,source),'utf8'));
+ await save('manifest.json',JSON.stringify({createdAt:new Date().toISOString(),asOfDate:'2026-10-12',documents:docs.length,articleNodes:articles,quotedArticleNodesNotUsableAsCitations:excludedQuoted,batches,candidateHints:candidates.length,engineVersion:'limi-rules-1.0.0',outputFormat:'draft-obligations.jsonl: each line EXACTLY {content,citations}',containsBusinessProfiles:false,containsCredentials:false,idsBoundToCurrentDatabase:true,automaticLegalApproval:false,files},null,2)+'\n');
+ console.log(JSON.stringify({folder:out,documents:docs.length,articleNodes:articles,batches:batches.length,bytes:files.reduce((n,f)=>n+f.bytes,0)}));
+}finally{await db.$disconnect();}

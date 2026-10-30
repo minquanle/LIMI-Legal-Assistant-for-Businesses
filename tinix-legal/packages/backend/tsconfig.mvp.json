@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "outDir": "./dist-mvp"
+  },
+  "include": ["src/mvp-*.ts", "src/modules/operations/**/*.ts", "src/modules/legal/**/*.ts"],
+  "exclude": ["node_modules", "dist", "dist-mvp", "**/*.test.ts"]
+}

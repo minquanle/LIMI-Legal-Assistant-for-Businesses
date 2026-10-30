@@ -1,0 +1,148 @@
+name: limi-staging
+x-backend: &backend
+  image: limi-backend:${LIMI_RELEASE:?Set LIMI_RELEASE}
+  build:
+    context: ../..
+    dockerfile: tinix-legal/deploy/backend.Dockerfile
+  env_file: .staging.env
+  environment:
+    NODE_ENV: production
+    API_HOST: 0.0.0.0
+    DATABASE_URL: postgresql://${LIMI_POSTGRES_USER}:${LIMI_POSTGRES_PASSWORD}@postgres:5432/${LIMI_POSTGRES_DB}
+    REDIS_URL: redis://redis:6379
+    MINIO_ENDPOINT: minio
+    MINIO_PORT: 9000
+    MINIO_USE_SSL: 'false'
+    MINIO_ACCESS_KEY: ${LIMI_MINIO_ROOT_USER}
+    MINIO_SECRET_KEY: ${LIMI_MINIO_ROOT_PASSWORD}
+    MINIO_BUCKET: limi-private
+    ALLOWED_ORIGINS: ${LIMI_SITE}
+  restart: unless-stopped
+  init: true
+  security_opt: [no-new-privileges:true]
+  depends_on:
+    postgres: {condition: service_healthy}
+    redis: {condition: service_healthy}
+    minio: {condition: service_healthy}
+  healthcheck:
+    test: [CMD, node, -e, "fetch('http://127.0.0.1:'+process.env.API_PORT+'/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+    interval: 15s
+    timeout: 6s
+    retries: 10
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${LIMI_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${LIMI_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${LIMI_POSTGRES_DB}
+    volumes: [postgres:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, --appendonly, 'yes', --maxmemory-policy, noeviction]
+    volumes: [redis:/data]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  minio:
+    image: limi-minio:dev-20251015
+    build:
+      context: ..
+      dockerfile: docker/minio.Dockerfile
+    environment:
+      MINIO_ROOT_USER: ${LIMI_MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${LIMI_MINIO_ROOT_PASSWORD}
+    command: [server, /data, --console-address, ':9001']
+    volumes: [objects:/data]
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, http://localhost:9000/minio/health/ready]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  migrate:
+    <<: *backend
+    image: limi-tools:${LIMI_RELEASE}
+    build:
+      context: ../..
+      dockerfile: tinix-legal/deploy/backend.Dockerfile
+      target: build
+    command: [node, node_modules/tsx/dist/cli.mjs, packages/backend/scripts/migrate-mvp.ts]
+    restart: 'no'
+    healthcheck: {disable: true}
+  storage-init:
+    <<: *backend
+    image: limi-tools:${LIMI_RELEASE}
+    build:
+      context: ../..
+      dockerfile: tinix-legal/deploy/backend.Dockerfile
+      target: build
+    command: [node, node_modules/tsx/dist/cli.mjs, packages/backend/scripts/init-mvp-storage.ts]
+    restart: 'no'
+    healthcheck: {disable: true}
+  api:
+    <<: *backend
+    environment:
+      NODE_ENV: production
+      API_HOST: 0.0.0.0
+      API_PORT: 4010
+      DATABASE_URL: postgresql://${LIMI_POSTGRES_USER}:${LIMI_POSTGRES_PASSWORD}@postgres:5432/${LIMI_POSTGRES_DB}
+      REDIS_URL: redis://redis:6379
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_USE_SSL: 'false'
+      MINIO_ACCESS_KEY: ${LIMI_MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${LIMI_MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: limi-private
+      ALLOWED_ORIGINS: ${LIMI_SITE}
+  worker:
+    <<: *backend
+    command: [node, packages/backend/dist-mvp/mvp-worker.js]
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4011/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 6s
+      retries: 10
+  scheduler:
+    <<: *backend
+    command: [node, packages/backend/dist-mvp/mvp-scheduler.js]
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4012/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 6s
+      retries: 10
+  web:
+    image: limi-web:${LIMI_RELEASE:?Set LIMI_RELEASE}
+    build:
+      context: ../..
+      dockerfile: tinix-legal/deploy/web.Dockerfile
+    environment:
+      LIMI_API_URL: http://api:4010
+    depends_on:
+      api: {condition: service_healthy}
+    init: true
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+  gateway:
+    image: caddy:2.10-alpine
+    environment:
+      LIMI_SITE: ${LIMI_SITE}
+    ports: ['127.0.0.1:8443:8443']
+    volumes: ['./Caddyfile:/etc/caddy/Caddyfile:ro', 'certificates:/data', 'caddy_config:/config']
+    depends_on: [web]
+    restart: unless-stopped
+volumes:
+  postgres:
+  redis:
+  objects:
+  certificates:
+  caddy_config:

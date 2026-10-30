@@ -1,0 +1,72 @@
+/* Mở rộng luồng công việc nhưng giữ nguyên hệ màu của prototype. */
+.status-badge.blue{background:#eaf1ff;color:#466da9}
+.law-backed{font-size:.69rem;font-weight:800;letter-spacing:.04em;color:#286e75;background:#e7f6f3;border-radius:4px;padding:3px 6px}
+.task-card h3{font-size:1rem}
+.task-card p{font-size:.87rem;color:#5b6e83}
+.task-card-meta>span:last-child,.task-card-meta>span{font-size:.76rem}
+.reminder-banner{width:100%;display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:15px 17px;border:1px solid #bad9de;border-radius:11px;background:#eaf7f8;color:#225e6a;text-align:left;font-size:.9rem}
+.reminder-banner span{flex:1}.reminder-banner strong{font-weight:800}.reminder-banner:hover{border-color:#75b6bd}
+.legal-library{margin-bottom:38px}.legal-library .section-heading{margin-bottom:14px}
+.legal-library-note{background:#edf6f7;border:1px solid #d8e9eb;color:#426d78;border-radius:10px;padding:13px 16px;font-size:.87rem;line-height:1.6;margin-bottom:17px}
+.legal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.legal-card{display:flex;flex-direction:column;gap:11px;background:#fff;border:1px solid #e1e9ef;border-radius:13px;padding:21px;min-width:0}
+.legal-card:first-child{border-color:#bcdde0;box-shadow:0 6px 24px #1c627009}
+.legal-card-top{display:flex;align-items:center;justify-content:space-between;gap:7px;flex-wrap:wrap}
+.legal-type{font-size:.72rem;font-weight:800;color:#24737e;letter-spacing:.02em}
+.legal-card h3{font-size:1.05rem;line-height:1.4;letter-spacing:-.02em;color:#243a54;margin:0}
+.legal-card>p{font-size:.87rem;line-height:1.65;color:#5d6f84;margin:0}
+.legal-card-meta{display:flex;gap:8px 14px;flex-wrap:wrap;color:#748498;font-size:.77rem}
+.legal-card-meta span:not(:last-child){border-right:1px solid #dbe4ec;padding-right:14px}
+.legal-card-bottom{border-top:1px solid #e9eef2;padding-top:13px;margin-top:auto;display:grid;gap:9px}
+.legal-card-bottom>span{font-size:.79rem;line-height:1.55;color:#748498}
+.legal-card-bottom>div{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.legal-link{font-size:.83rem;font-weight:800;color:#227a83;text-decoration:none}
+.legal-link:hover,.basis-item a:hover{text-decoration:underline}
+.legal-card-bottom .text-action{font-size:.81rem}
+.mock-section-title{margin:25px 0 14px}
+.detail-sheet{width:min(690px,100%)}
+.sheet-content{padding:28px 32px}
+.sheet-content h2{margin-bottom:22px}
+.detail-intro{padding:17px 19px;border:1px solid #cce6e5;border-left:4px solid #46a4a1;background:#f0faf8;border-radius:0 10px 10px 0;margin-bottom:19px}
+.detail-intro strong{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:#2a767d}
+.detail-intro p{font-size:1rem;color:#244659;line-height:1.55;margin:5px 0 0}
+.sheet-section h3{font-size:.84rem;color:#326f7d;letter-spacing:.03em}
+.sheet-section p{font-size:.91rem;line-height:1.7}
+.sheet-section p+p{margin-top:8px}
+.detail-hint{font-size:.8rem!important;color:#8291a2!important;margin-top:11px!important}
+.answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:15px}
+.answer-option{border:1px solid #dbe5ec;border-radius:8px;background:#fff;color:#405971;text-align:left;padding:11px 12px;font-size:.86rem;font-weight:700;min-height:44px}
+.answer-option:hover{border-color:#84bfc2}.answer-option.selected{border-color:#4ba4a5;background:#ecf8f7;color:#1f6e72;box-shadow:inset 0 0 0 1px #4ba4a5}
+.detail-section-row{display:flex;align-items:center;justify-content:space-between;gap:8px}.detail-section-row span{color:#6f8296;font-size:.8rem;font-weight:700}
+.step-checklist{display:grid;gap:8px;margin-top:13px}
+.step-line{display:flex;align-items:flex-start;gap:11px;padding:12px;border:1px solid #e4ebf0;border-radius:9px;line-height:1.5;color:#3d526b;font-size:.87rem;cursor:pointer}
+.step-line:has(input:checked){background:#f0faf7;border-color:#bdded6;color:#2b625e}
+.step-line input{width:18px;height:18px;accent-color:#2e938d;flex:none;margin:2px 0 0}
+.step-number-mini{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#eaf1f5;color:#608094;font-weight:800;font-size:.7rem;flex:none}
+.evidence-form{display:grid;gap:9px;margin-top:17px}.evidence-form label,.date-field{font-size:.85rem;font-weight:800;color:#3c5b70}
+.evidence-form textarea{width:100%;border:1px solid #dce6ec;border-radius:8px;padding:11px 12px;font-size:.9rem;line-height:1.55;resize:vertical;outline:none}
+.evidence-form textarea:focus,.date-field input:focus{border-color:#469da2;box-shadow:0 0 0 3px #4da1a51c}
+.evidence-form .secondary-button{justify-self:start}.date-field{display:grid;gap:7px;margin-top:14px;max-width:245px}
+.date-field input{border:1px solid #dce6ec;border-radius:8px;padding:9px 11px;font:inherit;color:#41576d;outline:none}
+.basis-list{display:grid;gap:9px}.basis-item{display:grid;gap:6px;padding:13px 15px;border:1px solid #dbe8eb;border-radius:9px;background:#f8fcfc}
+.basis-item strong{font-size:.85rem;color:#294d63}.basis-item small{font-size:.8rem;line-height:1.55;color:#657c8d}
+.basis-item a{font-size:.8rem;color:#227a83;font-weight:800;text-decoration:none}
+.detail-footer{align-items:center}.completion-note{flex:1 1 100%;font-size:.78rem;color:#6e8293;line-height:1.4}
+.detail-footer .primary-button{font-size:.86rem}.detail-footer .ghost-danger{font-size:.82rem}
+@media(max-width:880px){.legal-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.sheet-content{padding:22px 19px}.legal-card{padding:17px}.answer-grid{grid-template-columns:1fr}.detail-footer{padding:13px 16px}.detail-footer .primary-button{flex:1}.reminder-banner{font-size:.84rem}}
+
+/* --- P1/P2: cổng hoàn tất, nhãn hiệu lực, bộ lọc thư viện, quá hạn --- */
+.task-card-meta .due-meta.overdue{color:#c0533f;font-weight:700}
+.task-card-meta .due-meta.soon{color:#9a6a1c}
+.fresh-tag{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.02em;color:#286e75;background:#e7f6f3;border-radius:4px;padding:2px 6px;vertical-align:middle}
+.fresh-tag.soon{color:#935800;background:#fff4dd}
+.legal-filter{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.legal-filter-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.legal-chip{border:1px solid #dbe5ec;background:#fff;color:#4a627a;border-radius:20px;padding:7px 14px;font-size:.8rem;font-weight:700}
+.legal-chip:hover{border-color:#84bfc2}
+.legal-chip.active{background:#20707a;border-color:#20707a;color:#fff}
+.legal-toggle{border:1px solid #dbe5ec;background:#fff;color:#4a627a;border-radius:20px;padding:7px 13px;font-size:.8rem;font-weight:700;display:inline-flex;align-items:center;gap:7px}
+.legal-toggle:hover{border-color:#84bfc2}
+.legal-toggle.on{background:#e7f6f3;border-color:#8fcdc6;color:#1f6e72}
+.legal-toggle svg{opacity:.3}.legal-toggle.on svg{opacity:1}

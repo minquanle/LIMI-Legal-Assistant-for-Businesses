@@ -1,0 +1,93 @@
+# Render Blueprint for LIMI (free plan). Dashboard → New → Blueprint → pick this repo.
+# Free-plan limits: web services sleep after 15 min idle; the free Postgres expires after 30 days.
+databases:
+  - name: limi-db
+    plan: free
+    region: singapore
+    databaseName: limi
+    user: limi
+    ipAllowList: []          # private network only
+
+services:
+  - type: keyvalue
+    name: limi-redis
+    plan: free
+    region: singapore
+    maxmemoryPolicy: noeviction   # BullMQ queues must not be evicted
+    ipAllowList: []
+
+  # Express API. Runs the worker and scheduler jobs in the same process (no free background workers).
+  - type: web
+    name: limi-api
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: tinix-legal
+    buildCommand: npm ci --include=dev && npm run build:mvp
+    startCommand: npm run db:mvp:deploy && npm run start:mvp
+    healthCheckPath: /health/live
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: API_HOST
+        value: 0.0.0.0
+      - key: API_PORT
+        value: "10000"
+      - key: WORKER_HEALTH_PORT
+        value: "10001"
+      - key: SCHEDULER_HEALTH_PORT
+        value: "10002"
+      - key: LIMI_EMBED_JOBS
+        value: "true"
+      - key: HEALTH_TIMEOUT_MS
+        value: "4000"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: limi-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: limi-redis
+          property: connectionString
+      # Public address of the web service, e.g. https://limi-web.onrender.com (set after the first deploy).
+      - key: ALLOWED_ORIGINS
+        sync: false
+      # Evidence files: Cloudflare R2 (S3-compatible, free 10 GB).
+      - key: MINIO_ENDPOINT        # <account-id>.r2.cloudflarestorage.com
+        sync: false
+      - key: MINIO_ACCESS_KEY
+        sync: false
+      - key: MINIO_SECRET_KEY
+        sync: false
+      - key: MINIO_BUCKET
+        value: limi-evidence
+      - key: MINIO_PORT
+        value: "443"
+      - key: MINIO_USE_SSL
+        value: "true"
+      - key: MINIO_REGION
+        value: auto
+
+  # Next.js site + gateway (/workspace, /api/workspace, /api/legal).
+  - type: web
+    name: limi-web
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: limi-product
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: LIMI_API_HOSTPORT
+        fromService:
+          type: web
+          name: limi-api
+          property: hostport

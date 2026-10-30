@@ -1,0 +1,1102 @@
+{
+  "facts": {
+    "stage": {
+      "value": "running",
+      "status": "USER_CONFIRMED"
+    },
+    "places": {
+      "value": [
+        "office",
+        "store"
+      ],
+      "status": "USER_CONFIRMED"
+    },
+    "signals": {
+      "value": [
+        "customerData",
+        "copyrightAssets",
+        "foreign",
+        "crossborder",
+        "ads"
+      ],
+      "status": "USER_CONFIRMED"
+    },
+    "activity": {
+      "value": [
+        "goods",
+        "services"
+      ],
+      "status": "USER_CONFIRMED"
+    },
+    "channels": {
+      "value": [
+        "direct",
+        "website"
+      ],
+      "status": "USER_CONFIRMED"
+    },
+    "employees": {
+      "value": "10-49",
+      "status": "USER_CONFIRMED"
+    }
+  },
+  "profile": {
+    "type": "",
+    "founded": ""
+  },
+  "items": [
+    {
+      "title": "Bàn giao công việc và tài liệu khi thay đổi người làm kế toán",
+      "rule": {
+        "all": [
+          {
+            "op": "in",
+            "fact": "stage",
+            "value": [
+              "new",
+              "running",
+              "changing",
+              "paused"
+            ]
+          },
+          {
+            "op": "eq",
+            "fact": "hasAccountingStaffChange",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasAccountingStaffChange"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Ban hành và công khai quy chế thưởng khi có chế độ thưởng",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasBonusScheme",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasBonusScheme"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Bảo đảm tính toàn vẹn và khả năng tra cứu thông điệp dữ liệu",
+      "rule": {
+        "op": "eq",
+        "fact": "usesElectronicContracts",
+        "value": "yes"
+      },
+      "missing": [
+        "usesElectronicContracts"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Bố trí người hoặc bộ phận phụ trách an toàn, vệ sinh lao động",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasProductionBusinessBase",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasProductionBusinessBase"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Chuẩn bị hồ sơ chứng minh chi phí được trừ và ưu đãi TNDN",
+      "rule": {
+        "op": "eq",
+        "fact": "corporateIncomeTaxRequired",
+        "value": "yes"
+      },
+      "missing": [
+        "corporateIncomeTaxRequired"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Chuẩn bị hồ sơ và ký giao dịch công chứng của doanh nghiệp",
+      "rule": {
+        "op": "eq",
+        "fact": "hasNotarialTransactions",
+        "value": "yes"
+      },
+      "missing": [
+        "hasNotarialTransactions"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Chuẩn bị hồ sơ và trách nhiệm khi đề nghị hỗ trợ DNNVV",
+      "rule": {
+        "op": "eq",
+        "fact": "claimsSmeSupport",
+        "value": "yes"
+      },
+      "missing": [
+        "claimsSmeSupport"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Chuẩn hóa thông tin cung cấp trong giao dịch từ xa với người tiêu dùng",
+      "rule": {
+        "all": [
+          {
+            "op": "eq",
+            "fact": "handlesConsumerTransactions",
+            "value": "yes"
+          },
+          {
+            "op": "eq",
+            "fact": "hasRemoteConsumerTransactions",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "handlesConsumerTransactions",
+        "hasRemoteConsumerTransactions"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Công khai báo cáo tài chính năm theo nhánh hạn 120 ngày",
+      "rule": {
+        "all": [
+          {
+            "op": "in",
+            "fact": "stage",
+            "value": [
+              "new",
+              "running",
+              "changing",
+              "paused"
+            ]
+          },
+          {
+            "op": "eq",
+            "fact": "annualFinancialDisclosureCase",
+            "value": "standard120"
+          }
+        ]
+      },
+      "missing": [
+        "annualFinancialDisclosureCase"
+      ],
+      "deadline": {
+        "days": 120,
+        "kind": "FISCAL_YEAR_END_OFFSET",
+        "months": 0
+      }
+    },
+    {
+      "title": "Công khai chính sách và điều kiện giao dịch trên nền tảng TMĐT",
+      "rule": {
+        "op": "eq",
+        "fact": "operatesEcommercePlatform",
+        "value": "yes"
+      },
+      "missing": [
+        "operatesEcommercePlatform"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Công khai và lưu giữ hợp đồng theo mẫu giao kết với người tiêu dùng",
+      "rule": {
+        "all": [
+          {
+            "op": "eq",
+            "fact": "handlesConsumerTransactions",
+            "value": "yes"
+          },
+          {
+            "op": "eq",
+            "fact": "usesStandardConsumerContracts",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "handlesConsumerTransactions",
+        "usesStandardConsumerContracts"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Công khai và thực hiện chính sách bảo hành sản phẩm cho người tiêu dùng",
+      "rule": {
+        "all": [
+          {
+            "op": "eq",
+            "fact": "handlesConsumerTransactions",
+            "value": "yes"
+          },
+          {
+            "op": "eq",
+            "fact": "hasConsumerWarranty",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "handlesConsumerTransactions",
+        "hasConsumerWarranty"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Cung cấp thông tin sản phẩm, giá và điều kiện giao dịch cho người tiêu dùng",
+      "rule": {
+        "op": "eq",
+        "fact": "handlesConsumerTransactions",
+        "value": "yes"
+      },
+      "missing": [
+        "handlesConsumerTransactions"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Đánh giá và kiểm soát yếu tố nguy hiểm, có hại trong năm",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasHazardousWork",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasHazardousWork"
+      ],
+      "deadline": {
+        "kind": "REVIEW_PERIOD",
+        "period": "YEAR"
+      }
+    },
+    {
+      "title": "Duy trì điều kiện an toàn tại cơ sở dịch vụ ăn uống",
+      "rule": {
+        "op": "eq",
+        "fact": "providesFoodServices",
+        "value": "yes"
+      },
+      "missing": [
+        "providesFoodServices"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Duy trì điều kiện an toàn tại cơ sở sản xuất thực phẩm",
+      "rule": {
+        "op": "eq",
+        "fact": "producesFood",
+        "value": "yes"
+      },
+      "missing": [
+        "producesFood"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Hoàn thành nghĩa vụ thuế trước chấm dứt mã số thuế",
+      "rule": {
+        "op": "eq",
+        "fact": "plansDissolution",
+        "value": "yes"
+      },
+      "missing": [
+        "plansDissolution"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Khám sức khỏe tối thiểu sáu tháng một lần cho nhóm lao động đặc thù",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasSpecialHealthExamWorkers",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasSpecialHealthExamWorkers"
+      ],
+      "deadline": {
+        "days": 0,
+        "kind": "DATE_OFFSET",
+        "months": 6,
+        "triggerFact": "lastSpecialHealthExamDate"
+      }
+    },
+    {
+      "title": "Kiểm soát căn cứ và giới hạn khấu trừ lương bồi thường tài sản",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "usesSalaryDeductions",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "usesSalaryDeductions"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Kiểm soát tạm chuyển người lao động sang công việc khác hợp đồng",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasTemporaryJobTransfers",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasTemporaryJobTransfers"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Kiểm tra cách tính lương làm thêm giờ và làm việc ban đêm",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "any": [
+              {
+                "op": "eq",
+                "fact": "hasOvertime",
+                "value": "yes"
+              },
+              {
+                "op": "eq",
+                "fact": "hasNightWork",
+                "value": "yes"
+              }
+            ]
+          }
+        ]
+      },
+      "missing": [
+        "hasOvertime",
+        "hasNightWork"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Kiểm tra chế độ thử việc, tiền lương và thông báo kết quả",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasProbation",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasProbation"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Kiểm tra giấy phép hoặc xác nhận miễn của lao động nước ngoài",
+      "rule": {
+        "op": "eq",
+        "fact": "hasForeignWorkers",
+        "value": "yes"
+      },
+      "missing": [
+        "hasForeignWorkers"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Kiểm tra hồ sơ hưởng hỗ trợ và miễn giảm thuế kinh tế tư nhân",
+      "rule": {
+        "op": "eq",
+        "fact": "claimsTaxIncentives",
+        "value": "yes"
+      },
+      "missing": [
+        "claimsTaxIncentives"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Kiểm tra nội dung và điều kiện trước quảng cáo hàng hóa, dịch vụ",
+      "rule": {
+        "op": "eq",
+        "fact": "hasAdvertising",
+        "value": "yes"
+      },
+      "missing": [
+        "hasAdvertising"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Kiểm tra quyền sử dụng tác phẩm và tài sản sở hữu công nghiệp",
+      "rule": {
+        "op": "eq",
+        "fact": "usesThirdPartyIp",
+        "value": "yes"
+      },
+      "missing": [
+        "usesThirdPartyIp"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Kiểm tra tính hợp lệ và bảo toàn chứng từ kế toán điện tử",
+      "rule": {
+        "all": [
+          {
+            "op": "in",
+            "fact": "stage",
+            "value": [
+              "new",
+              "running",
+              "changing",
+              "paused"
+            ]
+          },
+          {
+            "op": "eq",
+            "fact": "usesElectronicAccountingDocuments",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "usesElectronicAccountingDocuments"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Kiểm tra và thực hiện đề nghị gia hạn thuế, tiền thuê đất năm 2026",
+      "rule": {
+        "op": "eq",
+        "fact": "claims2026TaxExtension",
+        "value": "yes"
+      },
+      "missing": [
+        "claims2026TaxExtension"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Lập hồ sơ vệ sinh lao động và quản lý sức khỏe tại cơ sở",
+      "rule": {
+        "op": "eq",
+        "fact": "hasProductionBusinessBase",
+        "value": "yes"
+      },
+      "missing": [
+        "hasProductionBusinessBase"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Lập và nộp báo cáo tài chính năm theo nhánh hạn 90 ngày",
+      "rule": {
+        "all": [
+          {
+            "op": "in",
+            "fact": "stage",
+            "value": [
+              "new",
+              "running",
+              "changing",
+              "paused"
+            ]
+          },
+          {
+            "op": "eq",
+            "fact": "annualFinancialSubmissionCase",
+            "value": "standard90"
+          }
+        ]
+      },
+      "missing": [
+        "annualFinancialSubmissionCase"
+      ],
+      "deadline": {
+        "days": 90,
+        "kind": "FISCAL_YEAR_END_OFFSET",
+        "months": 0
+      }
+    },
+    {
+      "title": "Nộp hồ sơ tham gia BHXH cho nhóm thuộc trách nhiệm đăng ký của doanh nghiệp",
+      "rule": {
+        "op": "eq",
+        "fact": "socialInsuranceEmployerRegistrationRequired",
+        "value": "yes"
+      },
+      "missing": [
+        "socialInsuranceEmployerRegistrationRequired"
+      ],
+      "deadline": {
+        "days": 30,
+        "kind": "DATE_OFFSET",
+        "months": 0,
+        "triggerFact": "socialInsuranceCoverageStartDate"
+      }
+    },
+    {
+      "title": "Quản lý cấp phát và sử dụng phương tiện bảo vệ cá nhân",
+      "rule": {
+        "op": "eq",
+        "fact": "hasHazardousWork",
+        "value": "yes"
+      },
+      "missing": [
+        "hasHazardousWork"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Quản lý đồng ý và giới hạn tổ chức làm thêm giờ",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasOvertime",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasOvertime"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Quản lý hồ sơ và điều kiện sử dụng lao động chưa thành niên",
+      "rule": {
+        "op": "eq",
+        "fact": "hasMinorWorkers",
+        "value": "yes"
+      },
+      "missing": [
+        "hasMinorWorkers"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Rà soát điều khoản bị cấm trong hợp đồng với người tiêu dùng",
+      "rule": {
+        "all": [
+          {
+            "op": "eq",
+            "fact": "handlesConsumerTransactions",
+            "value": "yes"
+          },
+          {
+            "op": "eq",
+            "fact": "usesConsumerContracts",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "handlesConsumerTransactions",
+        "usesConsumerContracts"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Theo dõi cấp lại, gia hạn và thu hồi giấy phép lao động nước ngoài",
+      "rule": {
+        "op": "eq",
+        "fact": "hasForeignWorkers",
+        "value": "yes"
+      },
+      "missing": [
+        "hasForeignWorkers"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập báo cáo tai nạn lao động 6 tháng và năm",
+      "rule": {
+        "op": "eq",
+        "fact": "hasProductionBusinessBase",
+        "value": "yes"
+      },
+      "missing": [
+        "hasProductionBusinessBase"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập cơ chế thông báo và lựa chọn khi thu thập, sử dụng dữ liệu người tiêu dùng",
+      "rule": {
+        "all": [
+          {
+            "op": "eq",
+            "fact": "handlesConsumerTransactions",
+            "value": "yes"
+          },
+          {
+            "op": "eq",
+            "fact": "collectsConsumerData",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "handlesConsumerTransactions",
+        "collectsConsumerData"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập giao kết và thực hiện hợp đồng điện tử",
+      "rule": {
+        "op": "eq",
+        "fact": "usesElectronicContracts",
+        "value": "yes"
+      },
+      "missing": [
+        "usesElectronicContracts"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập hồ sơ dưỡng sức, phục hồi sức khỏe sau ốm đau và thai sản",
+      "rule": {
+        "op": "eq",
+        "fact": "hasEmployeeRecoveryApplications",
+        "value": "yes"
+      },
+      "missing": [
+        "hasEmployeeRecoveryApplications"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập khấu trừ và nộp thay GTGT cho nhà thầu nước ngoài",
+      "rule": {
+        "op": "eq",
+        "fact": "foreignContractorVatWithholdingRequired",
+        "value": "yes"
+      },
+      "missing": [
+        "foreignContractorVatWithholdingRequired"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập kiểm soát cung cấp dịch vụ liên tục cho người tiêu dùng",
+      "rule": {
+        "all": [
+          {
+            "op": "eq",
+            "fact": "handlesConsumerTransactions",
+            "value": "yes"
+          },
+          {
+            "op": "eq",
+            "fact": "providesContinuousConsumerServices",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "handlesConsumerTransactions",
+        "providesContinuousConsumerServices"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập lịch khám sức khỏe hằng năm cho nhóm lao động thông thường",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasOrdinaryHealthExamWorkers",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasOrdinaryHealthExamWorkers"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập quy trình sửa đổi, bổ sung hợp đồng lao động",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasContractAmendments",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasContractAmendments"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập quy trình thu hồi hàng hóa có khuyết tật",
+      "rule": {
+        "all": [
+          {
+            "op": "eq",
+            "fact": "handlesConsumerTransactions",
+            "value": "yes"
+          },
+          {
+            "op": "eq",
+            "fact": "sellsConsumerGoods",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "handlesConsumerTransactions",
+        "sellsConsumerGoods"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập thanh toán và trả hồ sơ khi chấm dứt hợp đồng lao động",
+      "rule": {
+        "op": "eq",
+        "fact": "hasLaborTermination",
+        "value": "yes"
+      },
+      "missing": [
+        "hasLaborTermination"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thiết lập xử lý thông tin vi phạm và báo cáo nền tảng TMĐT",
+      "rule": {
+        "op": "eq",
+        "fact": "operatesEcommercePlatform",
+        "value": "yes"
+      },
+      "missing": [
+        "operatesEcommercePlatform"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Thực hiện thay đổi thông tin và tổ chức lại trong đăng ký thuế",
+      "rule": {
+        "op": "eq",
+        "fact": "hasTaxRegistrationChanges",
+        "value": "yes"
+      },
+      "missing": [
+        "hasTaxRegistrationChanges"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Tổ chức chứng từ, sổ và báo cáo theo chế độ kế toán DNNVV",
+      "rule": {
+        "op": "eq",
+        "fact": "accountingRegime",
+        "value": "TT133"
+      },
+      "missing": [
+        "accountingRegime"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Tổ chức chứng từ, sổ và báo cáo theo chế độ kế toán Thông tư 99",
+      "rule": {
+        "op": "eq",
+        "fact": "accountingRegime",
+        "value": "TT99"
+      },
+      "missing": [
+        "accountingRegime"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Tổ chức quyết toán TNCN và kiểm tra điều kiện ủy quyền",
+      "rule": {
+        "op": "eq",
+        "fact": "paysPersonalIncome",
+        "value": "yes"
+      },
+      "missing": [
+        "paysPersonalIncome"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Tổ chức tiếp nhận và nộp hồ sơ ốm đau, thai sản",
+      "rule": {
+        "op": "eq",
+        "fact": "hasInsuranceBenefitApplications",
+        "value": "yes"
+      },
+      "missing": [
+        "hasInsuranceBenefitApplications"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Tổ chức tự kiểm tra và báo cáo an toàn vệ sinh lao động",
+      "rule": {
+        "op": "eq",
+        "fact": "hasProductionBusinessBase",
+        "value": "yes"
+      },
+      "missing": [
+        "hasProductionBusinessBase"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Trang cấp phương tiện bảo vệ cá nhân cho công việc có nguy cơ",
+      "rule": {
+        "all": [
+          {
+            "op": "gt",
+            "fact": "employeeCount",
+            "value": 0
+          },
+          {
+            "op": "eq",
+            "fact": "hasHazardousWork",
+            "value": "yes"
+          }
+        ]
+      },
+      "missing": [
+        "hasHazardousWork"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Xác định nhân sự và bộ phận phụ trách bảo vệ dữ liệu",
+      "rule": {
+        "op": "eq",
+        "fact": "processesPersonalData",
+        "value": "yes"
+      },
+      "missing": [
+        "processesPersonalData"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Xử lý hóa đơn và chứng từ điện tử đã lập sai sót",
+      "rule": {
+        "op": "eq",
+        "fact": "hasInvoiceErrors",
+        "value": "yes"
+      },
+      "missing": [
+        "hasInvoiceErrors"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    },
+    {
+      "title": "Xử lý khai báo, điều tra và quyền lợi tai nạn lao động",
+      "rule": {
+        "op": "eq",
+        "fact": "hasLaborAccident",
+        "value": "yes"
+      },
+      "missing": [
+        "hasLaborAccident"
+      ],
+      "deadline": {
+        "kind": "NONE"
+      }
+    }
+  ]
+}
