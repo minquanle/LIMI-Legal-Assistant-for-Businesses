@@ -1,5 +1,5 @@
 # Render Blueprint for LIMI (free plan). Dashboard → New → Blueprint → pick this repo.
-# Free-plan limits: web services sleep after 15 min idle; the free Postgres expires after 30 days.
+# Free-plan limits: the web service sleeps after 15 min idle; the free Postgres expires after 30 days.
 databases:
   - name: limi-db
     plan: free
@@ -16,33 +16,40 @@ services:
     maxmemoryPolicy: noeviction   # BullMQ queues must not be evicted
     ipAllowList: []
 
-  # Express API. Runs the worker and scheduler jobs in the same process (no free background workers).
+  # Single web service: Next.js on $PORT plus the Express API (and its worker/scheduler jobs) on 127.0.0.1:4010.
+  # Two public services calling each other were throttled by Render's edge (HTTP 429), and the free plan
+  # has no private network — so both run in one instance (see render-start.sh).
   - type: web
-    name: limi-api
+    name: limi-web
     runtime: node
     plan: free
     region: singapore
-    rootDir: tinix-legal
-    buildCommand: npm install --include=dev --no-audit --no-fund && npm run build:mvp
-    startCommand: npm run db:mvp:deploy && npm run start:mvp
-    healthCheckPath: /health/live
+    buildCommand: >-
+      cd tinix-legal && npm install --include=dev --no-audit --no-fund && npm run build:mvp &&
+      cd ../limi-product && npm install --include=dev --no-audit --no-fund && npm run build
+    startCommand: bash render-start.sh
+    healthCheckPath: /
     envVars:
       - key: NODE_VERSION
         value: "22"
       - key: NODE_ENV
         value: production
+      - key: LIMI_API_URL
+        value: http://127.0.0.1:4010
       - key: API_HOST
-        value: 0.0.0.0
+        value: 127.0.0.1
       - key: API_PORT
-        value: "10000"
+        value: "4010"
       - key: WORKER_HEALTH_PORT
-        value: "10001"
+        value: "4011"
       - key: SCHEDULER_HEALTH_PORT
-        value: "10002"
+        value: "4012"
       - key: LIMI_EMBED_JOBS
         value: "true"
       - key: HEALTH_TIMEOUT_MS
         value: "4000"
+      - key: ALLOWED_ORIGINS
+        value: https://limi-web.onrender.com
       - key: DATABASE_URL
         fromDatabase:
           name: limi-db
@@ -52,10 +59,7 @@ services:
           type: keyvalue
           name: limi-redis
           property: connectionString
-      # Public address of the web service, e.g. https://limi-web.onrender.com (set after the first deploy).
-      - key: ALLOWED_ORIGINS
-        sync: false
-      # Evidence files: Cloudflare R2 (S3-compatible, free 10 GB).
+      # Evidence files: Cloudflare R2 (S3-compatible, free 10 GB). Placeholders work until R2 is set up.
       - key: MINIO_ENDPOINT        # <account-id>.r2.cloudflarestorage.com
         sync: false
       - key: MINIO_ACCESS_KEY
@@ -70,22 +74,3 @@ services:
         value: "true"
       - key: MINIO_REGION
         value: auto
-
-  # Next.js site + gateway (/workspace, /api/workspace, /api/legal).
-  - type: web
-    name: limi-web
-    runtime: node
-    plan: free
-    region: singapore
-    rootDir: limi-product
-    buildCommand: npm install --include=dev --no-audit --no-fund && npm run build
-    startCommand: npm run start
-    healthCheckPath: /
-    envVars:
-      - key: NODE_VERSION
-        value: "22"
-      - key: NODE_ENV
-        value: production
-      # Free instances cannot receive private-network traffic, so the gateway calls the public API URL.
-      - key: LIMI_API_URL
-        value: https://limi-api.onrender.com
