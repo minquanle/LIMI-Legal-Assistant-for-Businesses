@@ -86,8 +86,6 @@ services:
         value: "22"
       - key: NODE_ENV
         value: production
-      - key: LIMI_API_HOSTPORT
-        fromService:
-          type: web
-          name: limi-api
-          property: hostport
+      # Free instances cannot receive private-network traffic, so the gateway calls the public API URL.
+      - key: LIMI_API_URL
+        value: https://limi-api.onrender.com
