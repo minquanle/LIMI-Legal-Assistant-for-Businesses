@@ -23,7 +23,7 @@ services:
     plan: free
     region: singapore
     rootDir: tinix-legal
-    buildCommand: npm ci --include=dev && npm run build:mvp
+    buildCommand: npm install --include=dev --no-audit --no-fund && npm run build:mvp
     startCommand: npm run db:mvp:deploy && npm run start:mvp
     healthCheckPath: /health/live
     envVars:
@@ -78,7 +78,7 @@ services:
     plan: free
     region: singapore
     rootDir: limi-product
-    buildCommand: npm ci --include=dev && npm run build
+    buildCommand: npm install --include=dev --no-audit --no-fund && npm run build
     startCommand: npm run start
     healthCheckPath: /
     envVars:
