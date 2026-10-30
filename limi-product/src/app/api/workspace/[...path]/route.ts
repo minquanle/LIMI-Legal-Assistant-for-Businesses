@@ -18,7 +18,8 @@ async function proxy(request:Request,{params}:Context){
     const body=request.method==='GET'?undefined:new Uint8Array(await request.arrayBuffer());if(body&&body.byteLength>max)return Response.json({error:'INVALID_REQUEST'},{status:413});
     const response=await fetch(`${legalApiBase()}/api/v1/${path.map(encodeURIComponent).join('/')}?${new URL(request.url).searchParams}`,{method:request.method,headers,body,cache:'no-store',signal:AbortSignal.timeout(15000)});
     const out=new Headers({'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
-    for(const name of ['content-type','content-disposition','content-length']){const value=response.headers.get(name);if(value)out.set(name,value);}
+    // fetch() already decoded a compressed upstream body; its content-length is the compressed size, so never copy it.
+    for(const name of ['content-type','content-disposition']){const value=response.headers.get(name);if(value)out.set(name,value);}
     for(const value of response.headers.getSetCookie())out.append('set-cookie',value);
     return new Response(response.body,{status:response.status,headers:out});
   }catch{return Response.json({error:'WORKSPACE_UNAVAILABLE'},{status:503});}

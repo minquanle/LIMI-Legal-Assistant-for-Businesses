@@ -6,7 +6,8 @@ export async function GET(request:Request,{params}:{params:Promise<{path:string[
   const source=new URL(request.url);
   try{const response=await fetch(`${legalApiBase()}/api/v1/${path.map(encodeURIComponent).join('/')}?${source.searchParams}`,{cache:'no-store',signal:AbortSignal.timeout(30000)});
     const headers=new Headers({'X-Content-Type-Options':'nosniff','Cache-Control':'no-store'});
-    for(const key of ['content-type','content-length','content-disposition']){const value=response.headers.get(key);if(value)headers.set(key,value);}
+    // content-length omitted: fetch() decodes compressed upstream bodies.
+    for(const key of ['content-type','content-disposition']){const value=response.headers.get(key);if(value)headers.set(key,value);}
     return new Response(response.body,{status:response.status,headers});
   }catch{return Response.json({error:'DOWNLOAD_UNAVAILABLE'},{status:503});}
 }
