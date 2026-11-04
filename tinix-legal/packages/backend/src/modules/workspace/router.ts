@@ -7,6 +7,7 @@ import {email,password,companyInput,profileInput,siteSchema,eventSchema,confirme
 import {workspaceAccess,HttpError} from './access.js';
 import {enqueueCompanyRefresh} from '../compliance/evaluation.js';
 import {createLimiter} from './rate-limit.js';
+import {lookupRegistry,registryProfileFromBrowser,REGISTRY_CACHE_MS,REGISTRY_SOURCE} from './registry.js';
 
 type Tx=Prisma.TransactionClient;
 const uuid=z.string().uuid();
@@ -14,7 +15,7 @@ const wrap=(fn:(req:Request,res:Response)=>Promise<void>)=>(req:Request,res:Resp
 export function createWorkspaceRouter(db:PrismaClient,config:MvpConfig){
   const router=Router(),cookieName=config.nodeEnv==='production'?'__Host-limi_session':'limi_session';
   const {audit,origin,session,mutation,member,company}=workspaceAccess(db,config);
-  const loginFailures=createLimiter(10,15*60*1000),registerPerEmail=createLimiter(3,60*60*1000),registerTotal=createLimiter(60,60*60*1000);
+  const loginFailures=createLimiter(10,15*60*1000),registerPerEmail=createLimiter(3,60*60*1000),registerTotal=createLimiter(60,60*60*1000),registryLookups=createLimiter(40,60*60*1000),passwordChanges=createLimiter(5,15*60*1000);
   const setCookie=(res:Response,value:string,maxAge:number)=>res.cookie(cookieName,value,{httpOnly:true,secure:config.nodeEnv==='production',sameSite:'lax',path:'/',maxAge});
   async function createSession(res:Response,userId:string){
     const raw=token(),csrf=hash('csrf:'+raw),expiresAt=new Date(Date.now()+7*24*3600*1000);
@@ -51,6 +52,19 @@ export function createWorkspaceRouter(db:PrismaClient,config:MvpConfig){
     res.json({user:{id:s.userId,email:s.user.email,name:s.user.name,platformReviewer:s.user.platformReviewer},memberships,csrfToken:csrf,expiresAt:s.expiresAt});
   }));
   router.post('/auth/logout',wrap(async(req,res)=>{const s=await mutation(req);await db.$transaction(async tx=>{await tx.workspaceSession.update({where:{id:s.id},data:{revokedAt:new Date()}});await audit(tx,s.userId,'LOGOUT');});setCookie(res,'',0);res.json({ok:true});}));
+  // Signed-in password change: the current password is required, other sessions are signed out, this one stays.
+  router.post('/auth/password',wrap(async(req,res)=>{const s=await mutation(req);
+    const body=z.object({currentPassword:z.string().min(1).max(128),newPassword:password,confirmPassword:z.string().max(128)}).strict().parse(req.body);
+    if(body.newPassword!==body.confirmPassword)throw new HttpError(400,'PASSWORD_CONFIRMATION_MISMATCH');
+    if(!passwordChanges.take(s.userId))throw new HttpError(429,'TOO_MANY_ATTEMPTS');
+    const user=await db.workspaceUser.findUniqueOrThrow({where:{id:s.userId}});
+    if(!await passwordMatches(body.currentPassword,user.passwordHash??null))throw new HttpError(400,'CURRENT_PASSWORD_INVALID');
+    if(body.currentPassword===body.newPassword)throw new HttpError(400,'PASSWORD_UNCHANGED');
+    const encoded=await passwordHash(body.newPassword);
+    await db.$transaction(async tx=>{await tx.workspaceUser.update({where:{id:s.userId},data:{passwordHash:encoded}});
+      await tx.workspaceSession.updateMany({where:{userId:s.userId,revokedAt:null,NOT:{id:s.id}},data:{revokedAt:new Date()}});await audit(tx,s.userId,'PASSWORD_CHANGED');});
+    res.json({ok:true});
+  }));
   router.post('/auth/revoke-all',wrap(async(req,res)=>{const s=await mutation(req);await db.$transaction(async tx=>{await tx.workspaceSession.updateMany({where:{userId:s.userId,revokedAt:null},data:{revokedAt:new Date()}});await audit(tx,s.userId,'REVOKE_ALL');});setCookie(res,'',0);res.json({ok:true});}));
   router.post('/auth/activate',wrap(async(req,res)=>{
     origin(req);const body=z.object({token:z.string().min(20).max(100),password,name:z.string().trim().min(1).max(120)}).strict().parse(req.body);
@@ -109,12 +123,26 @@ export function createWorkspaceRouter(db:PrismaClient,config:MvpConfig){
   }));
   router.get('/companies/:id/events',wrap(async(req,res)=>{const s=await session(req),c=await company(db,s.userId,req.params.id as string);res.json({items:await db.workspaceCompanyEvent.findMany({where:{companyId:c.id},orderBy:{occurredOn:'desc'},take:100})});}));
   router.post('/companies/:id/events',wrap(async(req,res)=>{const s=await mutation(req),body=eventSchema.parse(req.body);const row=await db.$transaction(async tx=>{const c=await company(tx,s.userId,req.params.id as string,true);const event=await tx.workspaceCompanyEvent.create({data:{companyId:c.id,...body,occurredOn:new Date(body.occurredOn),actorId:s.userId}});await audit(tx,s.userId,'EVENT_RECORDED',event.id,c.organizationId);await enqueueCompanyRefresh(tx,c.id,s.userId);return event;});res.status(201).json(row);}));
-  router.get('/registry/:taxId',wrap(async(req,res)=>{await session(req);const id=taxId.parse(req.params.taxId);
-    try{const r=await fetch(`https://api.vietqr.io/v2/business/${encodeURIComponent(id)}`,{signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error();const p=await r.json() as any;
-      if(p.code!=='00'||!p.data?.name||taxId.safeParse(p.data.id).data!==id)throw Error();const text=(v:unknown)=>typeof v==='string'?v.trim().slice(0,2000):'';
-      const s=await session(req),profile={taxId:id,name:text(p.data.name),shortName:text(p.data.shortName),internationalName:text(p.data.internationalName),address:text(p.data.address),status:text(p.data.status)},provenance={provider:'VietQR / CASSO',url:'https://vietqr.io/danh-sach-api/tax-id-lookup/',retrievedAt:new Date().toISOString(),verified:false};
-      const observation=await db.workspaceRegistryObservation.create({data:{userId:s.userId,taxId:id,profileJson:profile,provenanceJson:provenance}});res.json({profile,provenance,observationId:observation.id,manualFallback:true});
-    }catch{res.status(503).json({error:'REGISTRY_UNAVAILABLE',manualFallback:true});}
+  // Registry lookups: a recent server-side result is reused (VietQR limits datacenter traffic); when the provider is
+  // unreachable the browser may query it from the user's own connection and submit the result, stored as unverified.
+  router.get('/registry/:taxId',wrap(async(req,res)=>{const s=await session(req),id=taxId.parse(req.params.taxId);
+    if(!registryLookups.take(s.userId))throw new HttpError(429,'TOO_MANY_ATTEMPTS');
+    const record=async(profile:object,provenance:object)=>{const observation=await db.workspaceRegistryObservation.create({data:{userId:s.userId,taxId:id,profileJson:profile as Prisma.InputJsonValue,provenanceJson:provenance as Prisma.InputJsonValue}});res.json({profile,provenance,observationId:observation.id,manualFallback:true});};
+    const recent=await db.workspaceRegistryObservation.findMany({where:{taxId:id,createdAt:{gte:new Date(Date.now()-REGISTRY_CACHE_MS)}},orderBy:{createdAt:'desc'},take:20});
+    // Browser-submitted observations are never shared with other users: they cannot be verified server-side.
+    const cached=recent.find(o=>(o.provenanceJson as {channel?:string}|null)?.channel!=='browser');
+    if(cached){await record(cached.profileJson as object,{...(cached.provenanceJson as object),cachedFrom:cached.id});return;}
+    const outcome=await lookupRegistry(id);
+    if(outcome.ok){await record(outcome.profile,outcome.provenance);return;}
+    res.status(outcome.status).json({error:outcome.code,manualFallback:true,browserFallback:outcome.code!=='REGISTRY_NOT_FOUND'});
+  }));
+  router.post('/registry/:taxId/browser-observation',wrap(async(req,res)=>{const s=await mutation(req),id=taxId.parse(req.params.taxId);
+    if(!registryLookups.take(s.userId))throw new HttpError(429,'TOO_MANY_ATTEMPTS');
+    const body=z.object({profile:z.object({name:z.string().max(2000),shortName:z.string().max(2000).optional(),internationalName:z.string().max(2000).optional(),address:z.string().max(2000).optional(),status:z.string().max(2000).optional()}).strict()}).strict().parse(req.body);
+    const profile=registryProfileFromBrowser(id,body.profile);if(!profile)throw new HttpError(400,'INVALID_REQUEST');
+    const provenance={...REGISTRY_SOURCE,retrievedAt:new Date().toISOString(),verified:false,channel:'browser'};
+    const observation=await db.workspaceRegistryObservation.create({data:{userId:s.userId,taxId:id,profileJson:profile,provenanceJson:provenance}});
+    res.status(201).json({profile,provenance,observationId:observation.id,manualFallback:true});
   }));
   router.use((error:unknown,_req:Request,res:Response,_next:NextFunction)=>{
     if(error instanceof z.ZodError){res.status(400).json({error:'INVALID_REQUEST',fields:error.issues.map(x=>x.path.join('.'))});return;}

@@ -50,6 +50,10 @@ export async function runLawDiscovery(db:PrismaClient){
  await recheckWatchset(db);return true;
 }
 
+// "Thông tư số 56/2026/TT-NHNN sửa đổi…" → "56/2026/TT-NHNN" when the page metadata has no "Số ký hiệu".
+export function documentNumberFromTitle(title:unknown):string|null{const m=typeof title==='string'?title.match(/(?:^|\s)(?:số\s+)?(\d{1,5}\/(?:\d{4}\/)?[A-ZĐ][A-ZĐa-zđ0-9]*(?:-[A-ZĐa-zđ0-9]+)*)/u):null;return m?m[1]:null;}
+// A selected source whose last success is older than twice its interval (plus a day) is reported as stale.
+export function staleSince(lastSuccessAt:Date|null,intervalHours:number,now=new Date()):boolean{return !lastSuccessAt||now.getTime()-lastSuccessAt.getTime()>(2*intervalHours+24)*3600000;}
 export async function discoveryStatus(db:PrismaClient){
  const settings=await getDiscoverySettings(db),sources=await discoverySources(db),selected=new Set(Array.isArray(settings.sources)?settings.sources as string[]:[]);
  const since7=new Date(Date.now()-7*86400000),since24=new Date(Date.now()-86400000);
@@ -64,8 +68,8 @@ export async function discoveryStatus(db:PrismaClient){
  return {
   settings:{enabled:settings.enabled,sources:[...selected].filter(u=>sources.some(w=>w.url===u)),intervalHours:settings.intervalHours,maxPerRun:settings.maxPerRun,effectiveFrom:settings.effectiveFrom?settings.effectiveFrom.toISOString().slice(0,10):null,updatedAt:settings.updatedAt},
   options:{intervalHours:INTERVAL_OPTIONS,maxPerRun:MAX_PER_RUN_OPTIONS},
-  sources:sources.map(w=>({url:w.url,label:sourceLabel(w.url),domain:w.domain,selected:selected.has(w.url),enabled:w.enabled,lastSuccessAt:w.lastSuccessAt,lastError:w.lastError,nextCheckAt:w.enabled?w.nextCheckAt:null})),
-  stats:{new24h:new24,new7d:new7,skippedByDate7d:skipped7,lastRunAt:runs[0]??null,nextRunAt:settings.enabled?next[0]??null:null},
-  recent:recent.map(c=>{const meta=(c.diffJson as any)?.metadata??{};return {id:c.id,title:c.title,status:c.status,createdAt:c.createdAt,number:meta['Số ký hiệu']??null,issued:Object.entries(meta).find(([k])=>/ban hành/iu.test(k))?.[1]??null};})
+  sources:sources.map(w=>({url:w.url,label:sourceLabel(w.url),domain:w.domain,selected:selected.has(w.url),enabled:w.enabled,lastSuccessAt:w.lastSuccessAt,lastError:w.lastError,nextCheckAt:w.enabled?w.nextCheckAt:null,stale:w.enabled&&staleSince(w.lastSuccessAt,w.intervalHours)})),
+  stats:{new24h:new24,new7d:new7,skippedByDate7d:skipped7,lastRunAt:runs[0]??null,nextRunAt:settings.enabled?next[0]??null:null,overdue:Boolean(settings.enabled&&next[0]&&next[0].getTime()<Date.now()-5*60000)},
+  recent:recent.map(c=>{const meta=(c.diffJson as any)?.metadata??{};return {id:c.id,title:c.title,status:c.status,createdAt:c.createdAt,number:meta['Số ký hiệu']??documentNumberFromTitle(c.title),issued:Object.entries(meta).find(([k])=>/ban hành/iu.test(k))?.[1]??null};})
  };
 }

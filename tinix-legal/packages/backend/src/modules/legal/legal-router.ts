@@ -5,10 +5,12 @@ import { z } from 'zod';
 import { publicProvenance } from './curated-record.mapper.js';
 import { provisionText } from './record-adapter.js';
 import { legalOpenApi } from './openapi.js';
+import {rankLaws} from './law-search.js';
 const uuid=z.string().uuid(),page=z.coerce.number().int().min(1).max(10000).default(1),pageSize=z.coerce.number().int().min(1).max(100).default(20);
 const paging=z.object({page,pageSize}).strict();
 const lawQuery=z.object({page,pageSize,q:z.string().trim().min(1).max(200).optional(),group:z.string().regex(/^[a-z_]{1,40}$/).optional(),
   scope:z.nativeEnum(LegalScope).optional(),type:z.nativeEnum(DocumentType).optional(),validity:z.nativeEnum(ValidityStatus).optional()}).strict();
+const IN_MEMORY_SEARCH_LIMIT=3000;
 class HttpError extends Error {constructor(public status:number,public code:string){super(code);}}
 const summarySelect={id:true,documentNumber:true,title:true,documentType:true,scope:true,groupCode:true,reviewStatus:true,selectedSnapshotId:true,
   importedIdentities:{select:{externalId:true,datasetKey:true}},selectedSnapshot:{select:{metadataJson:true,qualityJson:true,contentHash:true,createdAt:true}}} satisfies Prisma.CanonicalDocumentSelect;
@@ -26,10 +28,19 @@ export function createLegalRouter(db:PrismaClient,storage:Client) {
   }
   async function snapshot(id:string,requested?:string){const doc=await document(id),snapshotId=requested??doc.selectedSnapshotId!;
     const value=await db.documentSnapshot.findFirst({where:{id:snapshotId,documentId:doc.id}});if(!value)throw new HttpError(404,'SNAPSHOT_NOT_FOUND');return {doc,snapshot:value};}
-  const list=asyncRoute(async(req,res)=>{const q=lawQuery.parse(req.query),where:Prisma.CanonicalDocumentWhereInput={selectedSnapshotId:{not:null},
-    ...(q.group?{groupCode:q.group}:{}),...(q.scope?{scope:q.scope}:{}),...(q.type?{documentType:q.type}:{}),...(q.validity?{validityStatus:q.validity}:{}),
-    ...(q.q?{OR:[{documentNumber:{contains:q.q,mode:'insensitive'}},{normalizedNumber:{contains:q.q,mode:'insensitive'}},{title:{contains:q.q,mode:'insensitive'}}]}:{})};
-    const [total,rows]=await db.$transaction([db.canonicalDocument.count({where}),db.canonicalDocument.findMany({where,select:summarySelect,orderBy:[{documentNumber:'asc'},{id:'asc'}],skip:(q.page-1)*q.pageSize,take:q.pageSize})]);
+  const list=asyncRoute(async(req,res)=>{const q=lawQuery.parse(req.query),filters:Prisma.CanonicalDocumentWhereInput={selectedSnapshotId:{not:null},
+    ...(q.group?{groupCode:q.group}:{}),...(q.scope?{scope:q.scope}:{}),...(q.type?{documentType:q.type}:{}),...(q.validity?{validityStatus:q.validity}:{})};
+    const size=await db.canonicalDocument.count({where:filters});
+    if(size<=IN_MEMORY_SEARCH_LIMIT){
+      // Accent-insensitive search with abbreviations and newest-first order (see law-search.ts); the catalogue is small.
+      const rows=await db.canonicalDocument.findMany({where:filters,select:{id:true,documentNumber:true,normalizedNumber:true,title:true,trichYeu:true,issuingBody:true,field:true,promulgationDate:true,selectedSnapshot:{select:{metadataJson:true}}}});
+      const ranked=rankLaws(rows.map(r=>{const m=(r.selectedSnapshot?.metadataJson??{}) as Record<string,unknown>;return {...r,promulgationDate:r.promulgationDate??(typeof m.promulgationDate==='string'?m.promulgationDate:null),issuingBody:r.issuingBody||(typeof m.issuingBody==='string'?m.issuingBody:'')};}),q.q);
+      const pageIds=ranked.slice((q.page-1)*q.pageSize,q.page*q.pageSize).map(r=>r.id);
+      const byId=new Map((await db.canonicalDocument.findMany({where:{id:{in:pageIds}},select:summarySelect})).map(r=>[r.id,r]));
+      res.json({items:pageIds.map(id=>byId.get(id)).filter((r):r is Summary=>Boolean(r)).map(dto),total:ranked.length,page:q.page,pageSize:q.pageSize});return;
+    }
+    const where:Prisma.CanonicalDocumentWhereInput={...filters,...(q.q?{OR:[{documentNumber:{contains:q.q,mode:'insensitive'}},{normalizedNumber:{contains:q.q,mode:'insensitive'}},{title:{contains:q.q,mode:'insensitive'}}]}:{})};
+    const [total,rows]=await db.$transaction([db.canonicalDocument.count({where}),db.canonicalDocument.findMany({where,select:summarySelect,orderBy:[{promulgationDate:{sort:'desc',nulls:'last'}},{documentNumber:'asc'},{id:'asc'}],skip:(q.page-1)*q.pageSize,take:q.pageSize})]);
     res.json({items:rows.map(dto),total,page:q.page,pageSize:q.pageSize});});
   router.get('/laws',list);router.get('/laws/search',list);router.get('/search',list);
   router.get('/laws/:id',asyncRoute(async(req,res)=>{const q=z.object({snapshotId:uuid.optional()}).strict().parse(req.query),{doc,snapshot:s}=await snapshot(req.params.id as string,q.snapshotId);

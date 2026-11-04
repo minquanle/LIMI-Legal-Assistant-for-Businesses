@@ -21,6 +21,14 @@ import {sourceAuthoring} from './source-authoring.js';
 type Tx=Prisma.TransactionClient;
 const citationView={snapshot:{select:{document:{select:{documentNumber:true,title:true}}}},provision:{select:{heading:true,ordinal:true,nodeType:true}}} as const;
 async function withLegalDates<T extends {decisionId:string,basisVersionId:string}>(db:PrismaClient,rows:T[]){const decisions=await db.complianceDecision.findMany({where:{id:{in:rows.map(t=>t.decisionId)}}});return rows.map(t=>({...t,legalDueDate:decisions.find(d=>d.id===t.decisionId&&d.versionId===t.basisVersionId)?.dueDate??null}));}
+// Customers must be able to tell an obligation an expert approved from one the system published on its own.
+// Self-approval is recorded only in the audit trail (OBLIGATION_AUTO_APPROVED on the version id).
+async function reviewKinds(db:PrismaClient,versionIds:string[]):Promise<Map<string,'EXPERT'|'AUTO'>>{
+  const ids=[...new Set(versionIds.filter(Boolean))];if(!ids.length)return new Map();
+  const auto=new Set((await db.workspaceAudit.findMany({where:{action:'OBLIGATION_AUTO_APPROVED',targetId:{in:ids}},select:{targetId:true}})).map(a=>a.targetId));
+  return new Map(ids.map(id=>[id,auto.has(id)?'AUTO':'EXPERT']));
+}
+
 export function createComplianceRouter(db:PrismaClient,storage:Client,config:MvpConfig){
  const r=Router(),access=workspaceAccess(db,config),{reviewer,session,mutation,company,audit}=access;
  r.use(sourceAuthoring(db,config));
@@ -79,7 +87,8 @@ export function createComplianceRouter(db:PrismaClient,storage:Client,config:Mvp
  }
  const where:Prisma.ComplianceTaskWhereInput={AND:clauses};
  const rows=await withLegalDates(db,await db.complianceTask.findMany({where,include:{basis:{select:{contentJson:true}}},orderBy:sort==='title'?[{title:'asc'},{id:'asc'}]:sort==='recent'?[{updatedAt:'desc'},{id:'asc'}]:[{dueDate:{sort:'asc',nulls:'last'}},{createdAt:'desc'},{id:'asc'}],skip:page*size,take:size}));
- const items=req.query.summary==='1'?rows.map(t=>{const c=t.basis.contentJson as any;return {...t,basis:{contentJson:{title:c.title,group:c.group,action:c.action,steps:c.steps.map(()=>null)}}};}):rows;
+ const kinds=await reviewKinds(db,rows.map(t=>t.basisVersionId));
+ const items=req.query.summary==='1'?rows.map(t=>{const c=t.basis.contentJson as any;return {...t,basis:{reviewKind:kinds.get(t.basisVersionId),contentJson:{title:c.title,group:c.group,action:c.action,steps:c.steps.map(()=>null)}}};}):rows.map(t=>({...t,basis:{...t.basis,reviewKind:kinds.get(t.basisVersionId)}}));
  res.json({items,total:await db.complianceTask.count({where}),page,pageSize:size});
  }));
  r.get('/companies/:id/dashboard',wrap(async(req,res)=>{const s=await session(req),c=await company(db,s.userId,id(req));const rows=await db.complianceTask.groupBy({by:['status','applicability'],where:{companyId:c.id},_count:true});const missing=await db.complianceTask.findMany({where:{companyId:c.id,applicability:'NEEDS_INFORMATION',status:{notIn:['DONE','NOT_APPLICABLE']}},select:{id:true,missingFacts:true,applicability:true}});const fact=(f:string)=>f.replace(/^date:(FACT:)?/,''),questions=rankMissingFacts(missing.map(t=>({decision:t.applicability,missingFacts:t.missingFacts as string[]}))).slice(0,5).map(q=>({...q,taskId:missing.find(t=>(t.missingFacts as string[]).some(f=>fact(f)===q.fact))?.id})),top=new Set(questions.slice(0,3).map(q=>q.fact));
@@ -88,7 +97,8 @@ export function createComplianceRouter(db:PrismaClient,storage:Client,config:Mvp
  r.get('/tasks/:id',wrap(async(req,res)=>{const s=await session(req),t=await task(db,s.userId,id(req));const full=await db.complianceTask.findUniqueOrThrow({where:{id:t.id},include:{basis:{include:{citations:{include:citationView}}},history:{orderBy:{createdAt:'desc'},take:100},evidence:{orderBy:{createdAt:'desc'},take:100}}});const c=await company(db,s.userId,t.companyId);const members=await db.workspaceMembership.findMany({where:{organizationId:c.organizationId},select:{user:{select:{id:true,name:true,email:true}}}});const pending=full.history.find(x=>x.action==='BASIS_REVIEW_REQUIRED');const candidateId=(pending?.afterJson as any)?.candidateBasisVersionId;const candidate=candidateId&&candidateId!==full.basisVersionId?await db.obligationVersion.findUnique({where:{id:candidateId},include:{citations:{include:citationView}}}):null;const [dated]=await withLegalDates(db,[full]);
  const verification=verificationPlan(full.basis.contentJson as any,c.factsJson as any,c.profileJson,full.missingFacts as string[]);
  const related=await db.complianceTask.findMany({where:{companyId:c.id,applicability:'NEEDS_INFORMATION',status:{notIn:['DONE','NOT_APPLICABLE']}},select:{id:true,missingFacts:true}});
- res.json({...full,verification:{...verification,profileVersion:c.version,questions:verification.questions.map(q=>({...q,affectedCount:related.filter(t=>(t.missingFacts as string[]).some(f=>f.replace(/^date:(FACT:)?/,'')===q.fact)).length}))},legalDueDate:dated.legalDueDate,basisCandidate:candidate?{...candidate,decisionId:(pending?.afterJson as any)?.decisionId}:null,evidence:full.evidence.map(evidenceDto),members:members.map(m=>m.user)});}));
+ const kinds=await reviewKinds(db,[full.basisVersionId]);
+ res.json({...full,basis:{...full.basis,reviewKind:kinds.get(full.basisVersionId)},verification:{...verification,profileVersion:c.version,questions:verification.questions.map(q=>({...q,affectedCount:related.filter(t=>(t.missingFacts as string[]).some(f=>f.replace(/^date:(FACT:)?/,'')===q.fact)).length}))},legalDueDate:dated.legalDueDate,basisCandidate:candidate?{...candidate,decisionId:(pending?.afterJson as any)?.decisionId}:null,evidence:full.evidence.map(evidenceDto),members:members.map(m=>m.user)});}));
  r.post('/tasks/:id/answers',wrap(async(req,res)=>{
   const s=await mutation(req),input=verificationAnswersInput.parse(req.body);
   const result=await db.$transaction(async tx=>{await task(tx,s.userId,id(req),true);return saveVerificationAnswers(tx,id(req),s.userId,input);},{timeout:60000});

@@ -25,7 +25,9 @@ export function createFeedbackRouter(db:PrismaClient,config:MvpConfig){
    db.workspaceFeedback.findMany({where,orderBy:[{updatedAt:'desc'},{id:'desc'}],skip:input.page*PAGE,take:PAGE,include:{creator:{select:{name:true}},company:{select:{profileJson:true}},messages:{orderBy:[{createdAt:'asc'},{id:'asc'}],take:1,select:{body:true}},_count:{select:{messages:true}}}}),
    db.workspaceFeedback.count({where}),db.workspaceFeedback.groupBy({by:['status'],where:scope,_count:true})
   ]);
-  res.json({items:items.map(({company,creator,messages,_count,...x})=>({...x,companyName:(company.profileJson as any)?.name??'Doanh nghiệp',authorName:creator.name,preview:messages[0]?.body.slice(0,180)??'',messageCount:_count.messages})),total,page:input.page,pageSize:PAGE,counts:Object.fromEntries(counts.map(x=>[x.status,x._count]))});
+  // Who spoke last tells the company there is a new answer from LIMI (the browser keeps what it has already seen).
+  const last=new Map((await db.workspaceFeedbackMessage.findMany({where:{feedbackId:{in:items.map(x=>x.id)}},orderBy:[{createdAt:'desc'},{id:'desc'}],distinct:['feedbackId'],select:{feedbackId:true,actorRole:true,createdAt:true}})).map(m=>[m.feedbackId,m]));
+  res.json({items:items.map(({company,creator,messages,_count,...x})=>({...x,companyName:(company.profileJson as any)?.name??'Doanh nghiệp',authorName:creator.name,preview:messages[0]?.body.slice(0,180)??'',messageCount:_count.messages,lastMessageAt:last.get(x.id)?.createdAt??null,lastMessageRole:last.get(x.id)?.actorRole??null})),total,page:input.page,pageSize:PAGE,counts:Object.fromEntries(counts.map(x=>[x.status,x._count]))});
  }
  r.get('/companies/:id/feedback',wrap((req,res)=>list(req,res)));
  r.get('/admin/feedback',wrap((req,res)=>list(req,res,true)));
