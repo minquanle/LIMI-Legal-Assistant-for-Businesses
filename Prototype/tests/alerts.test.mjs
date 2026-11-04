@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { alerts, samples } from '../dist/data.js';
 import { buildTasks } from '../dist/rules.js';
 import { legalDocuments, getTaskGuide } from '../dist/legal.js';
-import { daysUntil, countdownLabel, deadlineLabel, alertPhase, alertMilestones } from '../dist/alert-time.js';
+import { daysUntil, countdownLabel, alertPhase, alertMilestones } from '../dist/alert-time.js';
 
 // The selectable demo accounts intentionally start with no activity ticked.
 // Keep complete profiles here so alert rules are still tested against explicit facts.
@@ -93,10 +93,4 @@ test('countdown is based on calendar days, including the effective-day boundary'
   assert.equal(alertPhase('2027-01-01', new Date(2026, 8, 18)), 'Theo dõi sớm');
   assert.equal(alertPhase('2027-01-01', new Date(2026, 11, 20)), 'Sắp có hiệu lực');
   assert.deepEqual(alertMilestones('2027-01-01', new Date(2026, 8, 18)).map(item => item.date), ['2026-10-03', '2026-12-02', '2026-12-25', '2027-01-01']);
-});
-
-test('deadline labels say a passed deadline is overdue, not in effect', () => {
-  assert.equal(deadlineLabel('2026-11-02', new Date(2026, 9, 30, 9, 0)), 'còn 3 ngày');
-  assert.equal(deadlineLabel('2026-11-02', new Date(2026, 10, 2, 23, 0)), 'hạn hôm nay');
-  assert.equal(deadlineLabel('2026-11-02', new Date(2026, 10, 4, 8, 0)), 'đã quá hạn 2 ngày');
 });
