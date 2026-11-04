@@ -9,6 +9,12 @@ export function countdownLabel(dateStr, today = new Date()) {
   return days > 0 ? `còn ${days} ngày` : days === 0 ? 'hiệu lực hôm nay' : `đã hiệu lực ${Math.abs(days)} ngày`;
 }
 
+// Deadlines (e.g. the last day to file a request) pass; they never "take effect".
+export function deadlineLabel(dateStr, today = new Date()) {
+  const days = daysUntil(dateStr, today);
+  return days > 0 ? `còn ${days} ngày` : days === 0 ? 'hạn hôm nay' : `đã quá hạn ${Math.abs(days)} ngày`;
+}
+
 export function alertPhase(dateStr, today = new Date()) {
   const days = daysUntil(dateStr, today);
   if (days > 90) return 'Theo dõi sớm';
