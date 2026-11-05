@@ -11,7 +11,7 @@ import {configureFeedback,renderFeedback,renderFeedbackOverlay,mountFeedback,inv
 // The standalone static prototype remains a separate demonstration.
 import {emptyBusiness,lookupBusiness,normalizeTaxId} from './business.js?v=6';
 import {openComplianceTask,openReviewVersion,openReviewGroup,configureCompliance,renderCompliance,renderComplianceOverlay,mountCompliance,invalidateCompliance} from './compliance-workspace.js?v=38';
-import {openChanges,alertUnreadCount,refreshAlertBadge,configureAlerts,renderAlertsProduct,renderAlertOverlay,mountAlerts,invalidateAlerts} from './alerts-workspace.js?v=15';
+import {openChanges,alertUnreadCount,refreshAlertBadge,configureAlerts,renderAlertsProduct,renderAlertOverlay,mountAlerts,invalidateAlerts} from './alerts-workspace.js?v=19';
 export const getProductAlertCount=()=>alertUnreadCount();
 export const getProductFeedbackCount=()=>feedbackUnreadCount();
 export const productEnabled=Boolean(window.LIMI_WORKSPACE_API);
@@ -39,6 +39,11 @@ messages.REGISTRY_NOT_FOUND='Không tìm thấy doanh nghiệp với mã số th
 messages.REGISTRY_RATE_LIMITED='Nguồn tra cứu đang giới hạn lượt truy cập. Vui lòng thử lại sau ít phút hoặc tự nhập hồ sơ.';
 messages.CURRENT_PASSWORD_INVALID='Mật khẩu hiện tại không đúng.';
 messages.PASSWORD_UNCHANGED='Mật khẩu mới cần khác mật khẩu hiện tại.';
+messages.INVALID_IMPACT_VERSIONS='Có nghĩa vụ được chọn không còn trong bộ checklist đang phát hành hoặc chưa có căn cứ. Tải lại rồi chọn lại.';
+messages.INVALID_EFFECTIVE_DATE='Ngày hiệu lực nằm ngoài thời gian áp dụng của một nghĩa vụ được chọn. Kiểm tra lại ngày hoặc bỏ chọn nghĩa vụ đó.';
+messages.REVISION_CONFLICT='Đề xuất vừa được người khác xử lý hoặc thay đổi. Tải lại để xem trạng thái mới.';
+messages.INVALID_RELEASE='Chưa có bộ checklist đã phát hành để gửi cảnh báo.';
+messages.PARSER_CHANGE_NOT_LEGAL='Đây là thay đổi của bộ đọc dữ liệu, không phải thay đổi pháp lý nên không gửi cảnh báo.';
 messages.INVALID_REQUEST='Thông tin gửi lên chưa hợp lệ. Kiểm tra các trường được yêu cầu trên trang này.';
 async function api(path,method='GET',body){
   noteRequest(method);

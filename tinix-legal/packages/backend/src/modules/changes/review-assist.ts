@@ -28,6 +28,14 @@ export function matchCandidate(index:CitationIndex,c:{title:string,diffJson:unkn
  const numbers=candidateNumbers(c);
  return index.versions.map(v=>({...v,matched:v.numbers.filter(n=>numbers.has(n))})).filter(v=>v.matched.length).map(({versionId,obligationId,title,matched})=>({versionId,obligationId,title,documentNumbers:matched}));
 }
+// "Nghị định số 399/2026/NĐ-CP của Chính phủ: Quy định mức lương…" → subject "Quy định mức lương…", stated once,
+// with issuer and dates; what businesses read must not carry reviewer instructions.
+export function changeSummary(title:string,head:string,issued:string,effective?:string){
+ const subject=(title.includes(': ')?title.slice(title.indexOf(': ')+2):title).trim().replace(/[.\s]+$/,'');
+ const dates=[issued,effective?'có hiệu lực từ '+effective:''].filter(Boolean).join(', ');
+ const lead=`${head}${dates?` (${dates})`:''}`;
+ return subject.toLocaleLowerCase('vi')===head.toLocaleLowerCase('vi')?lead+'.':`${lead}: ${subject.charAt(0).toLocaleUpperCase('vi')+subject.slice(1)}.`;
+}
 export function suggestReview(index:CitationIndex,c:{title:string,diffJson:unknown}){
  const d=(c.diffJson??{}) as any,meta=d.metadata??{},matches=matchCandidate(index,c);
  const docs=[...new Set(matches.flatMap(m=>m.documentNumbers))],titles=matches.map(m=>`“${m.title}”`);
@@ -35,7 +43,7 @@ export function suggestReview(index:CitationIndex,c:{title:string,diffJson:unkno
  const issued=[meta['Cơ quan ban hành'],meta['Ngày ban hành']?'ban hành '+meta['Ngày ban hành']:''].filter(Boolean).join(', ');
  return {
   basis:'METADATA_ONLY' as const,releaseId:index.releaseId,matches,versionIds:matches.map(m=>m.versionId),effectiveDate:metadataDate(d),
-  whatChanged:`${head}${issued?` (${issued})`:''}: ${c.title}. Cần đọc bản gốc để ghi rõ điều, khoản thay đổi.`,
+  whatChanged:changeSummary(c.title,head,issued,meta['Ngày có hiệu lực']),
   why:matches.length?`Văn bản liên quan tới ${docs.join(', ')}, là căn cứ của ${titles.join(', ')} trong bộ checklist đang áp dụng.`:'',
   action:matches.length?`Rà soát lại ${titles.join(', ')} theo văn bản mới; cập nhật hồ sơ, quy trình nội bộ nếu nội dung áp dụng thay đổi.`:''
  };

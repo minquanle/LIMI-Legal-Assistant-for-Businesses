@@ -27,3 +27,11 @@ describe('change review assistance (metadata only)',()=>{
   expect(suggestReview(index,{title:'x',diffJson:{metadata:{'Ngày ban hành':'13-10-2026'}}}).effectiveDate).toBeNull();
  });
 });
+import {changeSummary} from './review-assist.js';
+describe('change summary for the alert',()=>{
+ it('states the subject once with issuer and dates, without reviewer notes',()=>{
+  expect(changeSummary('Nghị định số 399/2026/NĐ-CP của Chính phủ: Quy định mức lương tối thiểu đối với người lao động','Nghị định 399/2026/NĐ-CP','Chính phủ, ban hành 02-11-2026','01-01-2027'))
+   .toBe('Nghị định 399/2026/NĐ-CP (Chính phủ, ban hành 02-11-2026, có hiệu lực từ 01-01-2027): Quy định mức lương tối thiểu đối với người lao động.');
+  expect(changeSummary('Luật Quảng cáo sửa đổi','Luật Quảng cáo sửa đổi','',undefined)).toBe('Luật Quảng cáo sửa đổi.');
+ });
+});

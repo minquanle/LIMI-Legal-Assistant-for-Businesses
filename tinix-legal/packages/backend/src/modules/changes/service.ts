@@ -6,6 +6,13 @@ import {enqueueEvaluation,processEvaluation} from '../compliance/evaluation.js';
 import {createAlert} from '../alerts/service.js';
 import {HttpError} from '../workspace/access.js';
 export const approvalSchema=z.object({expectedRevision:z.number().int().positive(),releaseId:uuid.optional(),effectiveDate:z.string().date(),versionIds:z.array(uuid).min(1).max(100),whatChanged:z.string().trim().min(10).max(4000).refine(readableReviewText,'REVIEW_TEXT_REQUIRED'),why:z.string().trim().min(10).max(4000).refine(readableReviewText,'REVIEW_TEXT_REQUIRED'),action:z.string().trim().min(10).max(4000).refine(readableReviewText,'REVIEW_TEXT_REQUIRED'),note:z.string().trim().min(10).max(2000),sourceVerified:z.literal(true)}).strict();
+// Businesses are re-evaluated on the change's effective date, or, for a change already in force when the current
+// checklist set was published, on that publication date: an evaluation cannot use a set before it existed.
+// The alert itself always shows the real effective date.
+export function impactEvaluationDate(effectiveDate:Date,releasePublishedAt:Date){
+ const vn=(d:Date)=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}).format(d),effective=effectiveDate.toISOString().slice(0,10),published=vn(releasePublishedAt);
+ return effective>=published?effective:published;
+}
 export async function approveChange(tx:Prisma.TransactionClient,candidateId:string,actorId:string,input:z.infer<typeof approvalSchema>){
  await tx.$queryRaw`SELECT id FROM "LawChangeCandidate" WHERE id=${candidateId} FOR UPDATE`;
  const c=await tx.lawChangeCandidate.findUnique({where:{id:candidateId}});if(!c)throw new HttpError(404,'CHANGE_NOT_FOUND');if(c.status!=='PENDING'||c.revision!==input.expectedRevision)throw new HttpError(409,'REVISION_CONFLICT');
@@ -13,7 +20,6 @@ export async function approveChange(tx:Prisma.TransactionClient,candidateId:stri
  const release=await tx.catalogueRelease.findFirst({where:{sealedAt:{not:null},...(input.releaseId?{id:input.releaseId}:{} )},orderBy:[{publishedAt:'desc'},{id:'desc'}],include:{items:{include:{version:{include:{citations:true}}}}}});if(!release?.sealedAt)throw new HttpError(400,'INVALID_RELEASE');
  const ids=[...new Set(input.versionIds)];const versions=release.items.filter(i=>ids.includes(i.versionId)).map(i=>i.version);if(versions.length!==ids.length||versions.some(v=>v.status!=='PUBLISHED'||!v.citations.length))throw new HttpError(400,'INVALID_IMPACT_VERSIONS');
  if(versions.some(v=>{const x=contentSchema.parse(v.contentJson);return x.effectiveFrom>input.effectiveDate||x.effectiveUntil&&x.effectiveUntil<input.effectiveDate;}))throw new HttpError(400,'INVALID_EFFECTIVE_DATE');
- if(release.publishedAt>new Date(input.effectiveDate+'T16:59:59.999Z'))throw new HttpError(400,'RELEASE_AFTER_EFFECTIVE_DATE');
  const event=await tx.approvedLawChange.create({data:{candidateId,releaseId:release.id,effectiveDate:new Date(input.effectiveDate),whatChanged:input.whatChanged,why:input.why,action:input.action,versionIds:ids,citationsJson:json(versions.flatMap(v=>v.citations)),reviewerId:actorId}});
  await tx.lawChangeCandidate.update({where:{id:c.id},data:{status:'APPROVED',revision:{increment:1},reviewerId:actorId,reviewedAt:new Date(),reviewNote:input.note}});
  // Atomic, bounded pages: interruption cannot leave an approved event without its workset.
@@ -28,7 +34,8 @@ export async function processChangeImpact(db:PrismaClient,id:string){
   const event=await tx.approvedLawChange.findUniqueOrThrow({where:{id:impact.eventId}});
   if(impact.evaluationId){evaluationId=impact.evaluationId;return;}
   await tx.$queryRaw`SELECT id FROM "WorkspaceCompany" WHERE id=${impact.companyId} FOR UPDATE`;
-  const e=await enqueueEvaluation(tx,impact.companyId,event.reviewerId,event.effectiveDate.toISOString().slice(0,10),event.releaseId);evaluationId=e.id;
+  const release=await tx.catalogueRelease.findUniqueOrThrow({where:{id:event.releaseId}});
+  const e=await enqueueEvaluation(tx,impact.companyId,event.reviewerId,impactEvaluationDate(event.effectiveDate,release.publishedAt!),event.releaseId);evaluationId=e.id;
   await tx.changeCompanyImpact.update({where:{id},data:{evaluationId:e.id}});
  });if(!evaluationId)return;
  await processEvaluation(db,evaluationId);
