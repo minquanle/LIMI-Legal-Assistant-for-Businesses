@@ -1,5 +1,5 @@
 import {draftPriority} from './reviewer-controls.js?v=5';
-import {renderAnalytics,miniRing} from './cms-charts.js?v=1';
+import {renderAnalytics,miniRing} from './cms-charts.js?v=3';
 let chartTab='checklists',chartDays=14;
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const groups={tax:'Thuế',accounting:'Kế toán',labor:'Lao động',insurance:'Bảo hiểm',company:'Doanh nghiệp',commerce:'Thương mại',data:'Dữ liệu',fire:'PCCC',environment:'Môi trường',food:'Thực phẩm'};

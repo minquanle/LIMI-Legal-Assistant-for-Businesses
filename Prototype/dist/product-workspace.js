@@ -4,7 +4,7 @@ import {checklistFacts,factLabel} from './checklist-facts.js?v=7';
 // Deprecated period facts stay in the registry for old versions but are no longer asked; saving keeps their stored values.
 const formFacts=checklistFacts.filter(f=>!f.deprecated);
 import {resolveWorkspaceView} from './workspace-navigation.js?v=4';
-import {configureOverview,renderOverview,mountOverview,invalidateOverview} from './reviewer-overview.js?v=13';
+import {configureOverview,renderOverview,mountOverview,invalidateOverview} from './reviewer-overview.js?v=15';
 import {configureDiscovery,renderDiscovery,mountDiscovery,invalidateDiscovery} from './law-discovery.js?v=2';
 import {configureFeedback,renderFeedback,renderFeedbackOverlay,mountFeedback,invalidateFeedback,openTaskFeedback,feedbackUnreadCount,refreshFeedbackBadge} from './feedback-workspace.js?v=3';
 // The hosted product uses PostgreSQL through a same-origin, cookie-authenticated API.
