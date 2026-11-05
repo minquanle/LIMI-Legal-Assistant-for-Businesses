@@ -10,7 +10,7 @@ import {configureFeedback,renderFeedback,renderFeedbackOverlay,mountFeedback,inv
 // The hosted product uses PostgreSQL through a same-origin, cookie-authenticated API.
 // The standalone static prototype remains a separate demonstration.
 import {emptyBusiness,lookupBusiness,normalizeTaxId} from './business.js?v=6';
-import {openComplianceTask,openReviewVersion,openReviewGroup,configureCompliance,renderCompliance,renderComplianceOverlay,mountCompliance,invalidateCompliance} from './compliance-workspace.js?v=37';
+import {openComplianceTask,openReviewVersion,openReviewGroup,configureCompliance,renderCompliance,renderComplianceOverlay,mountCompliance,invalidateCompliance} from './compliance-workspace.js?v=38';
 import {openChanges,alertUnreadCount,refreshAlertBadge,configureAlerts,renderAlertsProduct,renderAlertOverlay,mountAlerts,invalidateAlerts} from './alerts-workspace.js?v=15';
 export const getProductAlertCount=()=>alertUnreadCount();
 export const getProductFeedbackCount=()=>feedbackUnreadCount();
