@@ -21,8 +21,6 @@
 .inline-form label{display:grid;gap:6px;font-size:.875rem;color:#2c4558}
 .inline-form input,.inline-form select{border:1px solid #c6e3e1;border-radius:8px;padding:10px 12px;background:#fff;color:#133c57}
 .inline-form .secondary-button{justify-self:start}
-.invite-result{max-width:560px;display:grid;gap:6px}
-.invite-result code{display:inline-block;word-break:break-all;font-size:.875rem;background:#eef4f7;padding:6px 8px;border-radius:6px;user-select:all}
 .audit-row{font-size:.875rem;color:#3e5468;margin:4px 0}
 .audit-row span{font-variant-numeric:tabular-nums}
 
