@@ -49,4 +49,10 @@ export async function observeWatch(db:PrismaClient,watchId:string,fetcher:Fetche
 }
 async function record(db:PrismaClient,watchId:string,httpStatus:number|undefined,result:string,x:unknown,parserVersion:string){return db.$transaction(async tx=>{const o=await tx.watchObservation.create({data:{watchId,httpStatus,result,parserVersion,extractedJson:json(x)}}),w=await tx.sourceWatch.findUniqueOrThrow({where:{id:watchId}});if(w.sourceId&&w.documentId)await tx.sourceObservation.create({data:{sourceId:w.sourceId,documentId:w.documentId,httpStatus,result:'WATCH_'+result,provenanceJson:json({watchId,observationId:o.id,parserVersion,...(x&&typeof x==='object'?x:{})})}});return o;});}
 async function success(db:PrismaClient,id:string,domain:string,hours:number){const now=new Date();await db.$transaction([db.sourceWatch.update({where:{id},data:{lastSuccessAt:now,lastError:null,failures:0,nextCheckAt:new Date(now.getTime()+hours*3600000)}}),db.crawlDomainState.update({where:{domain},data:{lastSuccessAt:now,lastError:null,watermark:now}})]);}
-export async function recheckWatchset(db:PrismaClient){const rows=await db.sourceWatch.findMany({where:{enabled:true,nextCheckAt:{lte:new Date()}},orderBy:{nextCheckAt:'asc'},take:500}),domains=new Set<string>();for(const row of rows){if(domains.has(row.domain))continue;domains.add(row.domain);await observeWatch(db,row.id);if(domains.size>=8)break;}}
+// One request per domain per pass. Discovery pages (lists of newly issued documents) go first: they share their domain
+// with hundreds of document pages, and strictly oldest-first ordering let them starve for days.
+export async function recheckWatchset(db:PrismaClient){const now=new Date(),due={enabled:true,nextCheckAt:{lte:now}};
+ const discovery=await db.sourceWatch.findMany({where:{...due,mode:'DISCOVERY'},orderBy:{nextCheckAt:'asc'},take:50});
+ const rest=await db.sourceWatch.findMany({where:{...due,mode:{not:'DISCOVERY'}},orderBy:{nextCheckAt:'asc'},take:500});
+ const domains=new Set<string>();for(const row of watchOrder(discovery,rest)){if(domains.has(row.domain))continue;domains.add(row.domain);await observeWatch(db,row.id);if(domains.size>=8)break;}}
+export function watchOrder<T extends {id:string}>(discovery:T[],rest:T[]):T[]{const seen=new Set(discovery.map(w=>w.id));return [...discovery,...rest.filter(w=>!seen.has(w.id))];}

@@ -1,4 +1,4 @@
-import {notify} from './action-feedback.js?v=1';
+import {notify} from './action-feedback.js?v=3';
 // "Luật mới": reviewer settings for discovering newly issued documents on official sources.
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const INTERVALS=[[1,'1 giờ'],[3,'3 giờ'],[24,'1 ngày']];
@@ -19,7 +19,7 @@ async function act(fn,done){if(busy)return;busy=true;error='';h.render();try{awa
 function sourcesBlock(){const all=data.sources.length>0&&data.sources.every(s=>draft.sources.includes(s.url)),some=draft.sources.length>0&&!all;
  return `<fieldset class="discovery-field"><legend>Nguồn văn bản</legend>
  <label class="discovery-check discovery-all"><input type="checkbox" data-discovery-all ${all?'checked':''} ${some?'data-indeterminate="1"':''}><span><strong>Tất cả nguồn</strong><small>${data.sources.length} nguồn chính thức</small></span></label>
- <div class="discovery-sources">${data.sources.map(s=>`<label class="discovery-check"><input type="checkbox" data-discovery-source value="${esc(s.url)}" ${draft.sources.includes(s.url)?'checked':''}><span><strong>${esc(s.label)}</strong><small>${esc(s.domain)} · ${s.lastError?esc(errors[s.lastError]||'Lần quét gần nhất lỗi'):s.lastSuccessAt?'Quét lúc '+time(s.lastSuccessAt):'Chưa quét'}</small></span></label>`).join('')||'<p class="discovery-empty">Chưa có nguồn nào được cấu hình.</p>'}</div></fieldset>`;}
+ <div class="discovery-sources">${data.sources.map(s=>`<label class="discovery-check"><input type="checkbox" data-discovery-source value="${esc(s.url)}" ${draft.sources.includes(s.url)?'checked':''}><span><strong>${esc(s.label)}</strong><small>${esc(s.domain)} · ${s.lastError?esc(errors[s.lastError]||'Lần quét gần nhất lỗi'):s.lastSuccessAt?'Quét lúc '+time(s.lastSuccessAt):'Chưa quét'}</small>${s.stale?`<small class="discovery-stale" role="note">Nguồn này đã lâu chưa quét được${s.lastSuccessAt?' (lần cuối '+time(s.lastSuccessAt)+')':''}. Hãy bấm “Quét ngay” hoặc kiểm tra nguồn.</small>`:''}</span></label>`).join('')||'<p class="discovery-empty">Chưa có nguồn nào được cấu hình.</p>'}</div></fieldset>`;}
 const segmented=(name,legend,hint,options,value)=>`<fieldset class="discovery-field"><legend>${legend}</legend><div class="discovery-segmented" role="radiogroup">${options.map(([v,l])=>`<label><input type="radio" name="${name}" value="${v}" ${Number(value)===v?'checked':''}><span>${l}</span></label>`).join('')}</div>${hint?`<small class="discovery-hint">${hint}</small>`:''}</fieldset>`;
 
 function form(){return `<form id="law-discovery-form" class="discovery-panel">
@@ -34,10 +34,10 @@ function form(){return `<form id="law-discovery-form" class="discovery-panel">
 
 function rail(){const st=data.stats,cards=[['Văn bản mới 24 giờ',st.new24h],['Văn bản mới 7 ngày',st.new7d],['Bỏ qua do ngày hiệu lực (7 ngày)',st.skippedByDate7d]];
  return `<aside class="discovery-rail">
- <section class="discovery-panel"><h2>Tình trạng</h2><dl class="discovery-facts"><div><dt>Trạng thái</dt><dd><span class="discovery-pill ${data.settings.enabled?'on':''}">${data.settings.enabled?'Đang bật':'Đang tắt'}</span></dd></div><div><dt>Quét gần nhất</dt><dd>${time(st.lastRunAt)}</dd></div><div><dt>Lần quét tiếp theo</dt><dd>${data.settings.enabled?time(st.nextRunAt):'—'}</dd></div><div><dt>Cập nhật thiết lập</dt><dd>${time(data.settings.updatedAt)}</dd></div></dl>
+ <section class="discovery-panel"><h2>Tình trạng</h2><dl class="discovery-facts"><div><dt>Trạng thái</dt><dd><span class="discovery-pill ${data.settings.enabled?'on':''}">${data.settings.enabled?'Đang bật':'Đang tắt'}</span></dd></div><div><dt>Quét gần nhất</dt><dd>${time(st.lastRunAt)}</dd></div><div><dt>Lần quét tiếp theo</dt><dd>${!data.settings.enabled?'—':st.overdue?`Đang chờ trong hàng đợi (đến hạn từ ${time(st.nextRunAt)})`:time(st.nextRunAt)}</dd></div><div><dt>Cập nhật thiết lập</dt><dd>${time(data.settings.updatedAt)}</dd></div></dl>
  <div class="discovery-stats">${cards.map(([l,n])=>`<div><strong>${n}</strong><span>${l}</span></div>`).join('')}</div></section>
  <section class="discovery-panel"><div class="discovery-rail-head"><h2>Văn bản mới tìm thấy</h2><button type="button" class="text-action" data-discovery="changes">Duyệt ${h.icon('arrow',14)}</button></div>
- ${data.recent.length?`<ul class="discovery-recent">${data.recent.map(r=>`<li><strong>${esc(r.title)}</strong><span>${[r.number,r.issued?'Ban hành '+r.issued:null].filter(Boolean).map(esc).join(' · ')||'Chưa đọc được số hiệu'}</span><small><em class="discovery-status ${esc(r.status.toLowerCase())}">${esc(statuses[r.status]||r.status)}</em> Tìm thấy ${time(r.createdAt)}</small></li>`).join('')}</ul>`:'<p class="discovery-empty">Chưa có văn bản mới nào. Khi bật thu thập, văn bản tìm được sẽ hiện ở đây và trong mục Duyệt thay đổi luật.</p>'}</section>
+ ${data.recent.length?`<ul class="discovery-recent">${data.recent.map(r=>`<li><strong>${esc(r.title)}</strong><span>${[r.number,r.issued?'Ban hành '+r.issued:null].filter(Boolean).map(esc).join(' · ')||'Chưa rõ số hiệu'}</span><small><em class="discovery-status ${esc(r.status.toLowerCase())}">${esc(statuses[r.status]||r.status)}</em> Tìm thấy ${time(r.createdAt)}</small></li>`).join('')}</ul>`:'<p class="discovery-empty">Chưa có văn bản mới nào. Khi bật thu thập, văn bản tìm được sẽ hiện ở đây và trong mục Duyệt thay đổi luật.</p>'}</section>
  </aside>`;}
 
 export function renderDiscovery(){if(!h?.account())return '';

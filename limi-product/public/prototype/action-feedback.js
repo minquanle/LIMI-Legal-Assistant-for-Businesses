@@ -10,7 +10,9 @@ document.addEventListener('submit',e=>{const s=e.submitter;lastLabel=clean(s?s.g
 export function noteRequest(method){if(method&&method!=='GET')mutations++;}
 export function beginAction(){const action={label:lastLabel,mutations,notices};lastLabel='';return action;}
 // A specific message already shown by the action (e.g. "Đã lưu hồ sơ") replaces the generic one.
-export function endAction(action){if(mutations>action.mutations&&notices===action.notices)notify(action.label?`Đã thực hiện: ${action.label}.`:'Đã lưu thay đổi.');}
+export function endAction(action){clearErrorToasts();if(mutations>action.mutations&&notices===action.notices)notify(action.label?`Đã lưu: ${action.label}.`:'Đã lưu thay đổi.');}
+// A successful retry supersedes the errors of earlier attempts (e.g. a wrong password before the right one).
+export function clearErrorToasts(){document.querySelectorAll('#action-toasts .action-toast.error').forEach(el=>el.remove());}
 
 function stack(){let el=document.getElementById('action-toasts');if(!el){el=document.createElement('div');el.id='action-toasts';el.setAttribute('aria-live','polite');document.body.append(el);}return el;}
 export function notify(message,kind='success'){

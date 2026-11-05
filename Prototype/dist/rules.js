@@ -1,5 +1,5 @@
-import { alerts } from './data.js?v=10';
-import { checklistTemplates, templateMatch } from './mock-db.js?v=6';
+import { alerts } from './data.js?v=12';
+import { checklistTemplates, templateMatch } from './mock-db.js?v=9';
 
 const statusRank = { todo: 0, doing: 1, review: 2, verify: 3, done: 8, na: 9 };
 

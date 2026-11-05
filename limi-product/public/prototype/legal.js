@@ -1,4 +1,4 @@
-import { checklistTemplateById } from './mock-db.js?v=6';
+import { checklistTemplateById } from './mock-db.js?v=9';
 
 // Nguồn chính thức được chọn để minh họa cấu trúc dữ liệu. Nội dung tóm tắt không thay thế toàn văn.
 export const legalDocuments = [
