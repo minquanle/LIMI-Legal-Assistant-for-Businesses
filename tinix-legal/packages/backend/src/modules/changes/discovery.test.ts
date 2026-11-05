@@ -38,3 +38,11 @@ describe('discovery status helpers',()=>{
   expect(watchOrder([{id:'d1'}],[{id:'x'},{id:'d1'},{id:'y'}]).map(w=>w.id)).toEqual(['d1','x','y']);
  });
 });
+import {impactEvaluationDate} from './service.js';
+describe('law change impact date',()=>{
+ it('uses the effective date when the checklist set already existed',()=>{expect(impactEvaluationDate(new Date('2027-01-01'),new Date('2026-10-22T08:43:22Z'))).toBe('2027-01-01');});
+ it('uses the set publication date (Vietnam time) for a change already in force',()=>{
+  expect(impactEvaluationDate(new Date('2026-01-01'),new Date('2026-10-22T08:43:22Z'))).toBe('2026-10-22');
+  expect(impactEvaluationDate(new Date('2026-01-01'),new Date('2026-10-22T18:30:00Z'))).toBe('2026-10-23');
+ });
+});

@@ -61,3 +61,21 @@
   .detail-sheet .sheet-footer .ghost-danger,.detail-sheet .sheet-footer .secondary-button{flex:0 1 auto;width:auto;min-height:44px;padding:8px 10px}
   .inline-form{padding:14px}
 }
+
+/* Law-change approval: searchable obligation picker */
+.obligation-picker{border:1px solid #d9e6ec;border-radius:12px;padding:12px 14px;margin:0;display:grid;gap:10px;background:#fbfdfe}
+.obligation-picker legend{padding:0 6px;font-weight:600;color:#153650}
+.obligation-picker [data-picker-count]{font-variant-numeric:tabular-nums}
+.obligation-picker input[type=search]{width:100%;border:1px solid #c6e3e1;border-radius:8px;padding:9px 12px;background:#fff;color:#133c57}
+.picker-list{max-height:340px;overflow:auto;display:grid;gap:12px;padding-right:4px;overscroll-behavior:contain}
+.picker-group{display:grid;gap:4px}
+.picker-group h4{position:sticky;top:0;z-index:1;margin:0;padding:4px 0;background:#fbfdfe;font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;color:#175766}
+.picker-group h4 small{font-weight:400;color:#5b7083}
+.picker-group.suggested{border:1px dashed #9cc9c4;border-radius:10px;padding:6px 10px;background:#f1faf8}
+.picker-group.suggested h4{background:#f1faf8}
+.picker-item{padding:4px 2px}
+.obligation-picker [hidden]{display:none!important}
+.picker-chosen{display:flex;flex-wrap:wrap;gap:6px}
+.picker-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:4px 10px;border:1px solid #9cc9c4;border-radius:999px;background:#e8f5f3;color:#0f4d5a;font-size:.8125rem;text-align:left;cursor:pointer}
+.picker-chip:hover{background:#d6eeea}
+.picker-chip span[aria-hidden]{font-size:1rem;line-height:1}

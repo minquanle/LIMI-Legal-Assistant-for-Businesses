@@ -1,7 +1,7 @@
 import {notify} from './action-feedback.js?v=3';
 import {captureView,restoreView} from './ui-continuity.js?v=3';
 import {resolveWorkspaceView} from './workspace-navigation.js?v=4';
-import { productEnabled, isReviewer, renderProductOverview, renderProductFeedback, renderProductDiscovery, getProductAlertCount, getProductFeedbackCount, account, currentCompany, configureProduct, bootProduct, renderAccount, renderCompanies, renderProductHome, renderProductChanges,renderProductAdmin, renderProductProfile, mountProduct, saveProductProfile, lookupProductBusiness, captureUnknown, openProductAccount, renderNewOrganizationChoice, renderProductDetail } from './product-workspace.js?v=62';
+import { productEnabled, isReviewer, renderProductOverview, renderProductFeedback, renderProductDiscovery, getProductAlertCount, getProductFeedbackCount, account, currentCompany, configureProduct, bootProduct, renderAccount, renderCompanies, renderProductHome, renderProductChanges,renderProductAdmin, renderProductProfile, mountProduct, saveProductProfile, lookupProductBusiness, captureUnknown, openProductAccount, renderNewOrganizationChoice, renderProductDetail } from './product-workspace.js?v=66';
 import { renderRealLibrary, mountRealLibrary, configureRealLibrary, openLawSearch } from './real-library.js?v=5';
 import { samples, labels, groups, alerts } from './data.js?v=12';
 import { buildTasks, countTasks, compareTasksForAttention } from './rules.js?v=14';
